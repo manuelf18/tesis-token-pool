@@ -1001,7 +1001,7 @@ textarea {
   width: 100%; }
 
 aside.left-panel {
-  background: #0491ce;
+  background: #004d1a;
   display: table-cell;
   height: 100vh;
   min-height: 100%;
@@ -1012,7 +1012,7 @@ aside.left-panel {
   transition: width 0.3s ease; }
 
 .navbar {
-  background: #0491ce;
+  background: #004d1a;
   border-radius: 0;
   border: none;
   display: block;
@@ -1121,7 +1121,7 @@ aside.left-panel {
           .navbar .navbar-nav li.menu-item-has-children a:hover:before {
             color: #fff; }
         .navbar .navbar-nav li.menu-item-has-children .sub-menu {
-          background: #0491ce;
+          background: #004d1a;
           border: none;
           box-shadow: none;
           overflow-y: hidden;
@@ -1329,7 +1329,7 @@ header.fixed-top {
 .search-trigger {
   background: transparent;
   border: none;
-  color: #0491ce;
+  color: #004d1a;
   cursor: pointer;
   font-size: 16px;
   height: 41px;
@@ -1394,7 +1394,7 @@ header .form-inline {
   .header-left .dropdown .dropdown-toggle {
     background: transparent;
     border: none;
-    color: #0491ce;
+    color: #004d1a;
     font-size: 16px; }
     .header-left .dropdown .dropdown-toggle:after {
       display: none; }
@@ -1411,7 +1411,7 @@ header .form-inline {
     .header-left .dropdown .dropdown-toggle:active, .header-left .dropdown .dropdown-toggle:focus, .header-left .dropdown .dropdown-toggle:visited {
       background: none !important;
       border-color: transparent !important;
-      color: #0491ce !important; }
+      color: #004d1a !important; }
   .header-left .dropdown .dropdown-menu {
     background: #fff;
     border: none;
@@ -1423,7 +1423,7 @@ header .form-inline {
       margin: 0;
       padding: 5px 15px; }
     .header-left .dropdown .dropdown-menu .dropdown-item {
-      color: #0491ce;
+      color: #004d1a;
       font-size: 13px;
       padding: 10px 15px 3px;
       text-overflow: ellipsis; }
@@ -1482,7 +1482,7 @@ header .form-inline {
     z-index: 999;
     min-width: 150px; }
     .user-area .user-menu .nav-link {
-      color: #0491ce;
+      color: #004d1a;
       display: block;
       font-size: 14px;
       line-height: 22px;
@@ -2316,14 +2316,14 @@ header .form-inline {
     border-radius: 0 !important; }
     .dataTables_paginate .pagination li a {
       border-radius: 0 !important;
-      color: #0491ce; }
+      color: #004d1a; }
     .dataTables_paginate .pagination li.active a {
-      background: #0491ce;
-      border-color: #0491ce;
+      background: #004d1a;
+      border-color: #004d1a;
       color: #fff; }
     .dataTables_paginate .pagination li:hover a {
-      background: #0491ce;
-      border-color: #0491ce;
+      background: #004d1a;
+      border-color: #004d1a;
       color: #fff; }
 
 @media (max-width: 1368px) {
