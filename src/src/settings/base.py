@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # own apps:
+    'apps.home'
 ]
 
 MIDDLEWARE = [
@@ -66,6 +69,14 @@ TEMPLATES = [
         },
     },
 ]
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'staticfiles')  # production
+STATICFILES_DIRS = (
+    # os.path.join(BASE_DIR, 'static'),
+    'static',
+    os.path.join(os.path.dirname(BASE_DIR), 'static')
+)
+
 
 WSGI_APPLICATION = 'src.wsgi.application'
 
