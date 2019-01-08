@@ -1,210 +1,29 @@
--load static
-!!! 5
-html.no-js(lang='en')
-  head
-    meta(charset='utf-8')
-    meta(http-equiv='X-UA-Compatible', content='IE=edge')
-    title Sufee Admin - HTML5 Admin Template
-    meta(name='description', content='Sufee Admin - HTML5 Admin Template')
-    meta(name='viewport', content='width=device-width, initial-scale=1')
-    link(rel='apple-touch-icon', href='apple-icon.png')
-    link(rel='shortcut icon', href='favicon.ico')
-    link(rel='stylesheet', href='{% static "vendors/bootstrap/dist/css/bootstrap.min.css" %}')
-    link(rel='stylesheet', href='{% static "vendors/font-awesome/css/all.min.css" %}')
-    link(rel='stylesheet', href='{% static "vendors/themify-icons/css/themify-icons.css" %}')
-    link(rel='stylesheet', href='{% static "vendors/flag-icon-css/css/flag-icon.min.css" %}')
-    link(rel='stylesheet', href='{% static "vendors/selectfx/css/cs-skin-elastic.css" %}')
-    link(rel='stylesheet', href='{% static "vendors/jqvmap/dist/jqvmap.min.css" %}')
-    link(rel='stylesheet', href='{% static "assets/css/style.css" %}')
-    link(rel='stylesheet', href='{% static "assets/css/style2.css" %}')
-    link(href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800', rel='stylesheet', type='text/css')
-  body
-    // Left Panel
-    aside#left-panel.left-panel
-      nav.navbar.navbar-expand-sm.navbar-default
-        .navbar-header
-          button.navbar-toggler(type='button', data-toggle='collapse', data-target='#main-menu', aria-controls='main-menu', aria-expanded='false', aria-label='Toggle navigation')
-            i.fa.fa-bars
-          a.navbar-brand(href='./')
-            img(src='{% static "/images/logo.png" %}', alt='Logo')
-          a.navbar-brand.hidden(href='./')
-            img(src='{% static "/images/logo2.png" %}', alt='Logo')
-        #main-menu.main-menu.collapse.navbar-collapse
-          ul.nav.navbar-nav
-            li.active
-              a(href='')
-                i.menu-icon.fa.fa-dashboard
-                | Dashboard
-            h3.menu-title UI elements
-            // /.menu-title
-            li.menu-item-has-children.dropdown
-              a.dropdown-toggle(href='#', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
-                i.menu-icon.fas.fa-credit-card
-                | Comprar Token
-              ul.sub-menu.children.dropdown-menu
-                li
-                  i.fas.fa-puzzle-piece
-                  a(href='ui-buttons.html') Buttons
-                li
-                  i.fas.fa-id-badge
-                  a(href='ui-badges.html') Badges
-                li
-                  i.fas.fa-bars
-                  a(href='ui-tabs.html') Tabs
-                li
-                  i.fas.fa-share-square-o
-                  a(href='ui-social-buttons.html') Social Buttons
-                li
-                  i.fas.fa-id-card-o
-                  a(href='ui-cards.html') Cards
-                li
-                  i.fas.fa-exclamation-triangle
-                  a(href='ui-alerts.html') Alerts
-                li
-                  i.fas.fa-spinner
-                  a(href='ui-progressbar.html') Progress Bars
-                li
-                  i.fas.fa-fire
-                  a(href='ui-modals.html') Modals
-                li
-                  i.fas.fa-book
-                  a(href='ui-switches.html') Switches
-                li
-                  i.fas.fa-th
-                  a(href='ui-grids.html') Grids
-                li
-                  i.fas.fa-file-word-o
-                  a(href='ui-typgraphy.html') Typography
-            li.menu-item-has-children.dropdown
-              a.dropdown-toggle(href='#', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
-                i.menu-icon.fa.fa-cash-register
-                | Vender Token
-              ul.sub-menu.children.dropdown-menu
-                li
-                  i.fa.fa-puzzle-piece
-                  a(href='ui-buttons.html') Buttons
-                li
-                  i.fa.fa-id-badge
-                  a(href='ui-badges.html') Badges
-                li
-                  i.fa.fa-bars
-                  a(href='ui-tabs.html') Tabs
-                li
-                  i.fa.fa-share-square-o
-                  a(href='ui-social-buttons.html') Social Buttons
-                li
-                  i.fa.fa-id-card-o
-                  a(href='ui-cards.html') Cards
-                li
-                  i.fa.fa-exclamation-triangle
-                  a(href='ui-alerts.html') Alerts
-                li
-                  i.fa.fa-spinner
-                  a(href='ui-progressbar.html') Progress Bars
-                li
-                  i.fa.fa-fire
-                  a(href='ui-modals.html') Modals
-                li
-                  i.fa.fa-book
-                  a(href='ui-switches.html') Switches
-                li
-                  i.fa.fa-th
-                  a(href='ui-grids.html') Grids
-                li
-                  i.fa.fa-file-word-o
-                  a(href='ui-typgraphy.html') Typography
-        // /.navbar-collapse
-        // /#left-panel
-        // Left Panel
-        // Right Panel
-    #right-panel.right-panel
-          // Header
-          header#header.header
-            .header-menu
-              .offset-sm-7.col-sm-5
-                .user-area.dropdown.float-right
-                  a.dropdown-toggle(href='#', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
-                    img.user-avatar.rounded-circle(src='{% static "/images/admin.jpg" %}', alt='User Avatar')
-                  .user-menu.dropdown-menu
-                    a.nav-link(href='#')
-                      i.fa.fa-user
-                      |  My Profile
-                    a.nav-link(href='#')
-                      i.fa.fa-user
-                      |  Notifications 
-                      span.count 13
-                    a.nav-link(href='#')
-                      i.fa.fa-cog
-                      |  Settings
-                    a.nav-link(href='#')
-                      i.fa.fa-power-off
-                      |  Logout
-          // /header
-          // Header
-          .content.mt-5
-            .card
-              .col-12.my-2.py-5
-                h1.title.text-center Bienvenido a la pagina de cambio de monedas
-                h4.subtitle.text-center.font-weight-light.font-italic  Este es tu portal para el cambio de tokens de ETH a $
-                .row.mt-4
-                  .col-md-4.offset-md-2
-                    .card
-                      .card-header(style='background-color:white')
-                        .stat-widget-one
-                          .stat-icon.dib
-                            i.ti-money.text-success.border-success
-                          .stat-content.dib
-                            .stat-text(style='font-size:40px;') Precio del Token
-                      h1.card-body.py-5.text-center(style='font-size:50px;') $49.99
-                  .col-md-4
-                    .card
-                      .card-header(style='background-color:white')
-                        .stat-widget-one
-                          .stat-icon.dib
-                            i.ti-link.text-success.border-success
-                          .stat-content.dib
-                            .stat-text(style='font-size:40px;') Cantidad de Tokens
-                      h1.card-body.py-5.text-center(style='font-size:50px;') 22000
-                .row
-                  .col-md-3.offset-md-3
-                    h4.header.font-weight-light
-                      u Compra ahora
-                    h5.subheader.font-italic(style='font-size:15px;') Este es el el momento de comprar un token
-                    button.btn.btn-outline-success Comprar
-              //
-                <div class="card-body">
-                <h4 class="card-title mb-3">Card Image Title</h4>
-                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                </div>
-          // .content
-          // /#right-panel
-          // Right Panel
-    script(src='{% static "vendors/jquery/dist/jquery.min.js" %}')
-    script(src='{% static "vendors/popper.js/dist/umd/popper.min.js" %}')
-    script(src='{% static "vendors/bootstrap/dist/js/bootstrap.min.js" %}')
-    script(src='{% static "assets/js/main.js" %}')
-
-
-    script(src='{% static "vendors/chart.js/dist/Chart.bundle.min.js" %}')
-    script(src='{% static "assets/js/dashboard.js" %}')
-    script(src='{% static "assets/js/widgets.js" %}')
-    script(src='{% static "vendors/jqvmap/dist/jquery.vmap.min.js" %}')
-    script(src='{% static "vendors/jqvmap/examples/js/jquery.vmap.sampledata.js" %}')
-    script(src='{% static "vendors/jqvmap/dist/maps/jquery.vmap.world.js" %}')
-
-    script.
-            (function($) {
-            "use strict";
-            jQuery('#vmap').vectorMap({
-            map: 'world_en',
-            backgroundColor: null,
-            color: '#ffffff',
-            hoverOpacity: 0.7,
-            selectedColor: '#1de9b6',
-            enableZoom: true,
-            showTooltip: true,
-            values: sample_data,
-            scaleColors: ['#1de9b6', '#03a9f5'],
-            normalizeFunction: 'polynomial'
-            });
-            })(jQuery);
+extends base
+block content
+  h1.title.text-center Bienvenido a la pagina de cambio de monedas
+  h4.subtitle.text-center.font-weight-light.font-italic  Este es tu portal para el cambio de tokens de ETH a $
+  .row.mt-4
+    .col-5.offset-1.col-xl-4.offset-xl-2
+      .card
+        .card-header(style='background-color:white')
+          .stat-widget-one
+            .stat-icon.dib
+              i.ti-money.text-success.border-success(style='font-size:20px;')
+            .stat-content.dib
+              .stat-text(style='font-size:25px;') Precio del Token
+        h1.card-body.py-5.text-center(style='font-size:50px;') $49.99
+    .col-5.col-xl-4
+      .card
+        .card-header(style='background-color:white')
+          .stat-widget-one
+            .stat-icon.dib
+              i.ti-link.text-success.border-success(style='font-size:20px;')
+            .stat-content.dib
+              .stat-text(style='font-size:25px;') Cantidad de Tokens
+        h1.card-body.py-5.text-center(style='font-size:50px;') 22000
+  .row
+    .col-md-3.offset-md-3
+      h4.header.font-weight-light
+        u Compra ahora
+      h5.subheader.font-italic(style='font-size:15px;') Este es el el momento de comprar un token
+      button.btn.btn-outline-success Comprar

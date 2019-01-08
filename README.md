@@ -2,9 +2,9 @@
 Esta es la Tesis de Manuel Fernandez que sirve como trabajo de graduacion de la Universidad Tecnologica de Panama.
 
 ### This project uses:
-[Django](https://www.djangoproject.com/)
-[PostgreSQL](https://www.postgresql.org/)
-[Docker](https://www.docker.com/)
+[Django](https://www.djangoproject.com/)<br />
+[PostgreSQL](https://www.postgresql.org/)<br />
+[Docker](https://www.docker.com/)<br />
 
 ### Using Sufee admin
 Para instalar las dependencias que necesita el template usar:
