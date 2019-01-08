@@ -1,0 +1,64 @@
+- load static
+!!!5
+html.no-js(lang="en")
+head
+
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    title Login
+    meta(name='description', content='Sufee Admin - HTML5 Admin Template')
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='apple-touch-icon', href='apple-icon.png')
+    link(rel='shortcut icon', href='favicon.ico')
+    link(rel='apple-touch-icon', href='apple-icon.png')
+    link(rel='shortcut icon', href='favicon.ico')
+    link(rel='stylesheet', href='{% static "vendors/bootstrap/dist/css/bootstrap.min.css" %}')
+    link(rel='stylesheet', href='{% static "vendors/font-awesome/css/all.min.css" %}')
+    link(rel='stylesheet', href='{% static "vendors/themify-icons/css/themify-icons.css" %}')
+    link(rel='stylesheet', href='{% static "vendors/flag-icon-css/css/flag-icon.min.css" %}')
+    link(rel='stylesheet', href='{% static "vendors/selectfx/css/cs-skin-elastic.css" %}')
+    link(rel='stylesheet', href='{% static "vendors/jqvmap/dist/jqvmap.min.css" %}')
+    link(rel='stylesheet', href='{% static "assets/css/style.css" %}')
+    link(rel='stylesheet', href='{% static "assets/css/style2.css" %}')
+    link(href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800', rel='stylesheet', type='text/css')
+
+
+body.bg-dark
+    .sufee-login.d-flex.align-content-center.flex-wrap
+        .container
+            .login-content
+            .login-logo
+                a(href='index.html')
+                img.align-content(src='images/logo.png', alt='')
+            .login-form
+                form
+                .form-group
+                    label Email address
+                    input.form-control(type='email', placeholder='Email')
+                .form-group
+                    label Password
+                    input.form-control(type='password', placeholder='Password')
+                .checkbox
+                    label
+                    input(type='checkbox')
+                    |  Remember Me
+                    label.pull-right
+                    a(href='#') Forgotten Password?
+                button.btn.btn-success.btn-flat.m-b-30.m-t-30(type='submit') Sign in
+                .social-login-content
+                    .social-button
+                    button.btn.social.facebook.btn-flat.btn-addon.mb-3(type='button')
+                        i.ti-facebook
+                        | Sign in with facebook
+                    button.btn.social.twitter.btn-flat.btn-addon.mt-2(type='button')
+                        i.ti-twitter
+                        | Sign in with twitter
+                .register-link.m-t-15.text-center
+                    p
+                    | Don't have account ? 
+                    a(href='#')  Sign Up Here
+
+    script(src='{% static "vendors/jquery/dist/jquery.min.js" %}')
+    script(src='{% static "vendors/popper.js/dist/umd/popper.min.js" %}')
+    script(src='{% static "vendors/bootstrap/dist/js/bootstrap.min.js" %}')
+    script(src='{% static "assets/js/main.js" %}')

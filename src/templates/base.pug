@@ -120,25 +120,28 @@ html.no-js(lang='en')
     #right-panel.right-panel
           // Header
           header#header.header
-            .header-menu
-              .offset-sm-7.col-sm-5
-                .user-area.dropdown.float-right
-                  a.dropdown-toggle(href='#', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
-                    img.user-avatar.rounded-circle(src='{% static "/images/admin.jpg" %}', alt='User Avatar')
-                  .user-menu.dropdown-menu
-                    a.nav-link(href='#')
-                      i.fa.fa-user
-                      |  My Profile
-                    a.nav-link(href='#')
-                      i.fa.fa-user
-                      |  Notifications 
-                      span.count 13
-                    a.nav-link(href='#')
-                      i.fa.fa-cog
-                      |  Settings
-                    a.nav-link(href='#')
-                      i.fa.fa-power-off
-                      |  Logout
+            if is_logged == True
+              .header-menu
+                .offset-sm-7.col-sm-5
+                  .user-area.dropdown.float-right
+                    a.dropdown-toggle(href='#', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
+                      img.user-avatar.rounded-circle(src='{% static "/images/admin.jpg" %}', alt='User Avatar')
+                    .user-menu.dropdown-menu
+                      a.nav-link(href='#')
+                        i.fa.fa-user
+                        |  My Profile
+                      a.nav-link(href='#')
+                        i.fa.fa-user
+                        |  Notifications 
+                        span.count 13
+                      a.nav-link(href='#')
+                        i.fa.fa-cog
+                        |  Settings
+                      a.nav-link(href='#')
+                        i.fa.fa-power-off
+                        |  Logout
+            else
+              button.btn.btn-secondary.float-right Iniciar Sesion
           // /header
           // Header
           .content.mt-5
