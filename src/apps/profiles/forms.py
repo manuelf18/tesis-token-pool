@@ -1,8 +1,9 @@
-from django.forms import ModelForm
+from apps.core.forms import BootstrapModelForm
+
 from .models import User
 
 
-class UserModelForm(ModelForm):
+class UserModelForm(BootstrapModelForm):
     class Meta:
         model = User
         fields = ('email', 'name')

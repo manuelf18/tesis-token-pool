@@ -26,37 +26,7 @@ head
 body.bg-dark
     .sufee-login.d-flex.align-content-center.flex-wrap
         .container
-            .login-content
-            .login-logo
-                a(href='index.html')
-                img.align-content(src='images/logo.png', alt='')
-            .login-form
-                form
-                .form-group
-                    label Email address
-                    input.form-control(type='email', placeholder='Email')
-                .form-group
-                    label Password
-                    input.form-control(type='password', placeholder='Password')
-                .checkbox
-                    label
-                    input(type='checkbox')
-                    |  Remember Me
-                    label.pull-right
-                    a(href='#') Forgotten Password?
-                button.btn.btn-success.btn-flat.m-b-30.m-t-30(type='submit') Sign in
-                .social-login-content
-                    .social-button
-                    button.btn.social.facebook.btn-flat.btn-addon.mb-3(type='button')
-                        i.ti-facebook
-                        | Sign in with facebook
-                    button.btn.social.twitter.btn-flat.btn-addon.mt-2(type='button')
-                        i.ti-twitter
-                        | Sign in with twitter
-                .register-link.m-t-15.text-center
-                    p
-                    | Don't have account ? 
-                    a(href='#')  Sign Up Here
+            block content
 
     script(src='{% static "vendors/jquery/dist/jquery.min.js" %}')
     script(src='{% static "vendors/popper.js/dist/umd/popper.min.js" %}')

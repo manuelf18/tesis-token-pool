@@ -18,3 +18,4 @@ class LoginView(TemplateView):
 
 class SignUpView(CreateView):
     form_class = UserModelForm
+    template_name = "signup.pug"

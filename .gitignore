@@ -6,6 +6,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+
+## sql lite database
+db.sqlite
+
 ## bower denpendencies
 vendors
 bower_

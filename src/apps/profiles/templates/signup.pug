@@ -1,0 +1,5 @@
+extends base_dark
+block content
+    form(method="POST")
+        - csrf_token
+        {{form.as_p}}

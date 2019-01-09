@@ -9,5 +9,3 @@ ADD ./src/requirements/development.txt /code/requirements.txt
 RUN pip3 install -r requirements.txt
 ADD ./src/ /code/
 ADD ./utils/ /code/utils/
-# create unprivileged user
-RUN adduser --disabled-password --gecos '' deploy
