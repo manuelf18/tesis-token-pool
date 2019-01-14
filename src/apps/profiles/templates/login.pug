@@ -7,19 +7,15 @@ block content
             .login-form
                 form
                 .form-group
-                    label Email address
+                    label Email
                     input.form-control(type='email', placeholder='Email')
                 .form-group
-                    label Password
-                    input.form-control(type='password', placeholder='Password')
+                    label Contraseña
+                    input.form-control(type='password', placeholder='Contraseña')
                 .checkbox
                     label
-                    input(type='checkbox')
-                    |  Remember Me
-                    label.pull-right
-                    a(href='#') Forgotten Password?
                 button.btn.btn-success.btn-flat.m-b-30.m-t-30(type='submit') Sign in
                 .register-link.m-t-15.text-center
                     p
-                    | Don't have account ? 
-                    a(href='#')  Sign Up Here
+                    | ¿No tiene Cuenta ? 
+                    a(href='/signup')  Registrarme
