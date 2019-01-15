@@ -2,20 +2,22 @@ extends base_dark
 block content
     .login-content
             .login-logo
-                a(href='index.html')
-                img.align-content(src='images/logo.png', alt='')
+                a(href="{% url 'profiles:home' %}") hola
             .login-form
-                form
-                .form-group
-                    label Email
-                    input.form-control(type='email', placeholder='Email')
-                .form-group
-                    label Contraseña
-                    input.form-control(type='password', placeholder='Contraseña')
-                .checkbox
-                    label
-                button.btn.btn-success.btn-flat.m-b-30.m-t-30(type='submit') Sign in
-                .register-link.m-t-15.text-center
-                    p
-                    | ¿No tiene cuenta? 
-                    a(href='/signup')  Registrarme
+                if form.errors
+                    {{form.errors}}
+                form(method="POST" action="{% url 'profiles:login' %}")
+                    - csrf_token
+                    .form-group
+                        label Email
+                        input.form-control(type='email', placeholder='Email' name="username")
+                    .form-group
+                        label Contraseña
+                        input.form-control(type='password', placeholder='Contraseña' name="password")
+                    .checkbox
+                        label
+                    input(type="submit", value="Conectarme").btn.btn-success.btn-flat.m-b-30.m-t-30 Sign in
+                    .register-link.m-t-15.text-center
+                        p
+                        | ¿No tiene cuenta? 
+                        a(href='/signup')  Registrarme

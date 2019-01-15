@@ -15,8 +15,12 @@ class UserModelForm(BootstrapModelForm):
             'password': forms.PasswordInput()
         }
 
-    def save(self, commit=True):
-        # do something
-        if self.cleaned_data['password'] is not self.cleaned_data['confirm_password']:
-            raise ValueError('Passwords do not match')
-        super().save(commit=commit)
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get('password', None)
+        confirm_password = cleaned_data.pop('confirm_password', None)
+        if password is None or confirm_password is None:
+            raise forms.ValidationError("Password should not be empty")
+        elif password != confirm_password:
+            raise forms.ValidationError("Passwords do not match")
+        return cleaned_data
