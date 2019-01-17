@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # own apps:
     'apps.core',
     'apps.profiles',
+    'apps.tokens',
 ]
 
 MIDDLEWARE = [

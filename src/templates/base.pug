@@ -35,46 +35,22 @@ html.no-js(lang='en')
               a(href='')
                 i.menu-icon.fa.fa-dashboard
                 | Dashboard
-            h3.menu-title UI elements
+            h3.menu-title Menu
             // /.menu-title
+            if user.is_superuser == True
+              li.menu-item-has-children.dropdown
+                a.dropdown-toggle(href="/admin")
+                  i.menu-icon.fas.fa-user-tie
+                  | Admin
+              li.menu-item-has-children.dropdown
+                a.dropdown-toggle(href="/pools")
+                  i.menu-icon.fas.fa-scroll
+                  | Pozos
             li.menu-item-has-children.dropdown
-              a.dropdown-toggle(href='#', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
+              a.dropdown-toggle(href="{% url 'tokens:buyer-template' %}")
                 i.menu-icon.fas.fa-credit-card
                 | Comprar Token
-              ul.sub-menu.children.dropdown-menu
-                li
-                  i.fas.fa-puzzle-piece
-                  a(href='ui-buttons.html') Buttons
-                li
-                  i.fas.fa-id-badge
-                  a(href='ui-badges.html') Badges
-                li
-                  i.fas.fa-bars
-                  a(href='ui-tabs.html') Tabs
-                li
-                  i.fas.fa-share-square-o
-                  a(href='ui-social-buttons.html') Social Buttons
-                li
-                  i.fas.fa-id-card-o
-                  a(href='ui-cards.html') Cards
-                li
-                  i.fas.fa-exclamation-triangle
-                  a(href='ui-alerts.html') Alerts
-                li
-                  i.fas.fa-spinner
-                  a(href='ui-progressbar.html') Progress Bars
-                li
-                  i.fas.fa-fire
-                  a(href='ui-modals.html') Modals
-                li
-                  i.fas.fa-book
-                  a(href='ui-switches.html') Switches
-                li
-                  i.fas.fa-th
-                  a(href='ui-grids.html') Grids
-                li
-                  i.fas.fa-file-word-o
-                  a(href='ui-typgraphy.html') Typography
+              
             li.menu-item-has-children.dropdown
               a.dropdown-toggle(href='#', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
                 i.menu-icon.fa.fa-cash-register
@@ -138,7 +114,7 @@ html.no-js(lang='en')
                         i.fa.fa-power-off
                         |  Logout
             else
-              a(href='login').btn.btn-secondary.float-right Iniciar Sesion
+              a(href="{% url 'profiles:login' %}").btn.btn-secondary.float-right Iniciar Sesion
           // /header
           // Header
           .content.mt-5
