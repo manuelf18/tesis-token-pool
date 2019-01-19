@@ -15,4 +15,4 @@ class BuyerTemplateView(TemplateView):
 
 
 class BuyTokenView(CreateView):
-    template_name = 'index.pug'
+    template_name = 'buy_token_form.pug'
