@@ -35,7 +35,17 @@ services:
     ports:
       - "8000:8000"
     volumes:
+      - ./solidity:/code/solidity
       - ./src:/code
       - ./src/media:/code/media
       - ./utils:/code/utils
+    restart: always
+  ganache:
+    build:
+      context: .
+      dockerfile: ./docker/ganache-cli/Dockerfile
+    container_name: tesis_ganache_cli
+    hostname: tesis_ganache_cli
+    expose:
+      - 8545
     restart: always

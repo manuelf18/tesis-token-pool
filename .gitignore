@@ -22,3 +22,6 @@ env
 
 ## postgres - data ##
 postgres-data
+
+## node dependencies
+node_modules

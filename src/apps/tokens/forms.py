@@ -6,3 +6,8 @@ from .models import Pool
 
 
 class TransactionForm(BootstrapForm):
+    pass
+
+
+class HelloWorldTestForm(BootstrapForm):
+    text = forms.CharField(label='Entrada', max_length=100)

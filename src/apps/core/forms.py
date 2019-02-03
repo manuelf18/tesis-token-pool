@@ -17,4 +17,6 @@ class BootstrapModelForm(BootstrapBaseForm, ModelForm):
 
 
 class BootstrapForm(BootstrapBaseForm, forms.Form):
-    pass
+    def __init__(self, *args, **kwargs):
+        kwargs.pop('instance', None)
+        super().__init__(*args, **kwargs)
