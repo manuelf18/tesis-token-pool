@@ -29,7 +29,7 @@ class Contract:
         if message is None:
             return  # this should be an exception
         self.set_instance()
-        tx = self.instance.functions.set("hola mundo").transact()
-        self.web3.eth.waitForTransactionReceipt(tx)
-        the_var = self.instance.functions.myString().call()
-        return the_var
+        self.instance.functions.set(message).transact()
+        response = self.instance.functions.myString().call()
+        print(response)
+        return response
