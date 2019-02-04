@@ -1,0 +1,13 @@
+extends base_dark
+block content
+    .login-content
+            .login-logo
+                a(href='index.html')
+                img.align-content(src='images/logo.png', alt='')
+                h1(style='color:white;') Formulario de Registro
+            .login-form
+                {{form.errors}}
+                form(method="POST")
+                    - csrf_token
+                    {{form.as_p}}
+                    input.btn.btn-primary(type="submit", value="Registrarme")

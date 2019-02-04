@@ -1,0 +1,32 @@
+extends base
+-load static
+block content
+  h1.title.text-center Bienvenido a la pagina de cambio de monedas
+  h4.subtitle.text-center.font-weight-light.font-italic  Este es tu portal para el cambio de tokens de ETH a $
+  .row.mt-4
+    .col-5.offset-1.col-xl-4.offset-xl-2
+      .card
+        .card-header(style='background-color:white')
+          .stat-widget-one
+            .stat-icon.dib
+              i.ti-money.text-success.border-success(style='font-size:20px;')
+            .stat-content.dib
+              .stat-text(style='font-size:25px;') Precio del Token
+        h2.card-body.py-5.text-center(style='font-size:50px;') $49.99
+    .col-5.col-xl-4
+      .card
+        .card-header(style='background-color:white')
+          .stat-widget-one
+            .stat-icon.dib
+              i.ti-link.text-success.border-success(style='font-size:20px;')
+            .stat-content.dib
+              .stat-text(style='font-size:25px;') Cantidad de Tokens
+        h2.card-body.py-5.text-center(style='font-size:50px;') 22000
+  .row
+    .col-8.offset-2
+      .card.bg-flat-color-5.text-light
+        .card-body
+          .h4.m-0 Por que comprar?
+          .progress-bar.bg-light.mt-2.mb-2(role='progressbar', style='width: 20%; height: 5px;', aria-valuenow='20', aria-valuemin='0', aria-valuemax='100')
+          p.text-light Comprar es tu mejor opcion, ya que puedes entrar al gran mundo del tokens de ETH con un gran precio.<br>
+          button.btn.btn-light Comprar ya!

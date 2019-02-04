@@ -1,0 +1,25 @@
+extends base
+-load static
+block title
+  title Pagina de Compradores
+mixin card(pk)
+  .card
+    .card-header
+        .stat-content.dib
+            .stat-text(style='font-size:25px;'){{pool.name}}
+    h4.card-body.pt-5.text-justify Tipo del Token: {{pool.token_name}}
+    if user.is_anonymous == False
+        a(href="{% url 'tokens:buyer-create' pk %}").btn.btn-success Participar
+
+block content
+  h1.title.text-center Estos son los pozos disponibles
+  h4.subtitle.text-center.font-weight-light.font-italic  Este es tu portal para el cambio de tokens de ETH a $
+  .row.mt-4
+    for pool in pools
+      if forloop.first
+        .col-lg-4.offset-lg-2
+          +card(pool.pk)
+      else
+        .col-lg-4
+          +card(pool.pk)
+      endif

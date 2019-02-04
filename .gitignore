@@ -1,4 +1,27 @@
-# documentation
-/docs
 .DS_Store
+.vscode
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+
+## sql lite database
+db.sqlite3
+
+## bower denpendencies
 vendors
+bower_
+
+## python virtualenv ##
+.env
+venv
+.venv
+env
+
+## postgres - data ##
+postgres-data
+
+## node dependencies
+node_modules
