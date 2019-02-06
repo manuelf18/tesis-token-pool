@@ -25,9 +25,3 @@ class TestHelloWorldFormView(CreateView):
     template_name = 'test_blockchain_contract.pug'
     form_class = HelloWorldTestForm
     success_url = '/'
-
-    def form_valid(self, form, *args, **kwargs):
-        message = form.cleaned_data['text']
-        contract = Contract().send_to_contract(message="Hola Mundo")
-        print(contract)
-        return redirect(self.success_url)

@@ -9,7 +9,7 @@ contract("Nicknames", accounts => {
     // Set nickname
     try{
         const resp = await Contract.setNicknameByUser(myNickname, { from: accounts[0] });
-        truffleAssert.prettyPrintEmittedEvents(resp);
+        truffleAssert.eventEmitted(resp, 'Setter');
     }
     catch(e){
         console.log(`there was an error ${e}`);
@@ -26,6 +26,40 @@ contract("Nicknames", accounts => {
         Contract.setNicknameByUser(myNickname, { from: accounts[1] }),
         "The nickname exists"
     );
+  });
+
+  it(`should allow me to change the nickname ${myNickname}`, async () => {
+    const Contract = await Nicknames.deployed();
+    const newNickname = `Ranguliao`;
+    let oldNick;
+    // Set nickname
+    try{
+        oldNick = await Contract.getNicknameByUser({from: accounts[0]});
+        const resp = await Contract.setNicknameByUser(newNickname, { from: accounts[0] });
+        truffleAssert.eventEmitted(resp, 'Setter');
+    }
+    catch(e){
+        console.log(`there was an error ${e}`);
+    }
+
+    // Get myString from public function getNicknameByUser
+    const nickname = await Contract.getNicknameByUser({from: accounts[0]});
+    assert.notEqual(oldNick, nickname);
+  });
+
+  it(`should allow me to delete my nickname`, async () => {
+    const Contract = await Nicknames.deployed();
+    try{
+        const resp = await Contract.deleteNicknameByUser({from: accounts[0]});
+        truffleAssert.eventEmitted(resp, 'Deleter');
+        await truffleAssert.reverts(
+          Contract.getNicknameByUser({ from: accounts[0] }),
+          "The user doenst have a nickname"
+      );
+    }
+    catch(e){
+        console.log(`there was an error ${e}`);
+    }
   });
 
 
