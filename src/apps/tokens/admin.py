@@ -1,5 +1,6 @@
 from django.contrib import admin
-from apps.tokens.models import Pool
+from .models import Pool
+from .build import install
 
 
 @admin.register(Pool)
@@ -9,3 +10,8 @@ class PoolAdmin(admin.ModelAdmin):
     search_fields = ('token_name', 'name')
     actions_on_top = True
     actions_on_bottom = True
+
+    def save_model(self, request, obj, form, change):
+        if change is False:
+            install()
+        super().save_model(request, obj, form, change)

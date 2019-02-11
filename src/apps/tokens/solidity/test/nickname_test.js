@@ -62,5 +62,21 @@ contract("Nicknames", accounts => {
     }
   });
 
+  it(`should return the amount of nicknames`, async () => {
+    const Contract = await Nicknames.deployed();
+    let respArr = {
+      valid: null,
+      deleted: null
+    }
+    try{
+        respArr.valid = await Contract.getValidNicknames({from: accounts[0]});
+        respArr.deleted = await Contract.getDeletedNicknames({from: accounts[0]});
+        console.log(respArr);
+    }
+    catch(e){
+        console.log(`there was an error ${e}`);
+    }
+  });
+
 
 });

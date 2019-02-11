@@ -34,8 +34,8 @@ services:
     hostname: tesis_dj01
     ports:
       - "8000:8000"
+    user: root
     volumes:
-      - ./solidity:/code/solidity
       - ./src:/code
       - ./src/media:/code/media
       - ./utils:/code/utils
