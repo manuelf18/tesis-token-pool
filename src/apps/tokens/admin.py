@@ -13,5 +13,5 @@ class PoolAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         if change is False:
-            install()
+            install(obj.name, obj.token_name)
         super().save_model(request, obj, form, change)

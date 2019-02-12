@@ -3,21 +3,21 @@ from web3 import Web3, HTTPProvider
 
 
 class Contract:
-    def __init__(self, contract='./solidity/build/contracts/HelloWorld.json', *args, **kwargs):
+    def __init__(self, contract_name, *args, **kwargs):
+        where_am_i = os.path.dirname(os.path.realpath(__file__))
+        contract_path = '{}/solidity/build/contracts/{}'.format(where_am_i, contract_name)
         self.web3 = Web3(HTTPProvider('http://ganache:8545'))
         self.web3.eth.defaultAccount = self.web3.eth.accounts[0]
-        data = open(contract).read()
+        data = open(contract_path).read()
         self.json_data = json.loads(data)
+        self.set_contract()
 
     def set_contract(self, *args, **kwargs):
+        """ sets the contract """
         return self.web3.eth.contract(
             abi=self.json_data['abi'],
             bytecode=self.json_data['bytecode']
         )
-
-    def deploy_contract(self, *args, **kwargs):
-        tx_deploy = self.set_contract().constructor().transact()
-        return self.web3.eth.waitForTransactionReceipt(tx_deploy)
 
     def set_instance(self, *args, **kwargs):
         self.instance = self.web3.eth.contract(
