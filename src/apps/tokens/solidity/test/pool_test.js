@@ -19,7 +19,6 @@ contract("Pool", accounts => {
         try{
             await PoolContract.addPool('Pool1', StandardContractAdd , {from:accounts[0]});
             resp = await PoolContract.getPools({from: accounts[0]});
-            console.log(resp);
             assert.equal(resp[0], 'Pool1');
             // resp = await StandardTokenContract.balanceOf(PoolContract.address, {from: accounts[0]});
             // resp2 = await StandardTokenContract.balanceOf(accounts[0], {from: accounts[0]});
@@ -44,11 +43,13 @@ contract("Pool", accounts => {
         }
     });
     it(`should allow me to get into the pools`, async () => {
-        let resp;
+        let resp, resp2;
         try{
             await StandardTokenContract.approve(PoolContract.address, 20, {from:accounts[0]});
             resp = await PoolContract.addUserToPool(20, 1, {from:accounts[0]});
-            assert.equal(resp[0][0][0], 'Pool1');
+            // truffleAssert.eventEmitted(resp, 'Transfer');
+            resp2 = await StandardTokenContract.balanceOf(PoolContract.address);
+            console.log(resp2.toNumber());
         }
         catch(e){
             console.log(e);
