@@ -1,16 +1,51 @@
 (async function($){
     class Contract {
-        constructor(contractName){
+        constructor(contractName, networkId){
             this.web3 = new Web3(Web3.givenProvider || new Web3.providers.HttpProvider('http://127.0.0.1:7545'));
             this.contractName = contractName;
+            this.networkId = networkId || '5777';
         }
         async setContract(){
             try{
                 this.accounts = await this.web3.eth.getAccounts();
-                console.log(this.accounts);
-                let json = await $.ajax({ url:`http://localhost:8000/static/json/${this.contractName}.json` , method: "GET"});
+                const jsonObject = {
+                    abi: await this.getDeployedContractObject(this.contractName, ['abi']),
+                    address: await this.getDeployedContractObject(this.contractName, ['networks', this.networkId, 'address'])
+                }
                 this.web3.eth.defaultAccount = this.accounts[0];
-                this.contract = new this.web3.eth.Contract(json['abi'], '0xb1c4480a6664Aa5E84D9e72B40103afDB8d0e2d9');
+                this.contract = new this.web3.eth.Contract(jsonObject.abi, jsonObject.address);
+            }
+            catch(e) {
+                console.log(e);
+            }
+        }
+        async getDeployedContractJSON(contractName){
+            // returns the address of a deployed contract
+            try{
+                let json = await $.ajax({ url:`http://localhost:8000/static/json/${contractName}.json` , method: "GET"});
+                return json;
+            }
+            catch(e) {
+                console.log(e);
+            }
+        }
+        /**
+            * Gets a very specific Object of a Contract
+            * @param {string} contractName the name of the contract whose JSON you want. 
+            * @param {array} arr The array of parameters that will be indexed from the JSON, for example (abi) will find the [abi] in the JSON contract defined.
+        */
+        async getDeployedContractObject(contractName, arr){
+            try{
+                let i, x = arr.splice(0,1), obj, json = await this.getDeployedContractJSON(contractName);
+                obj = json[x];
+                if (arr.length === 1)
+                    return obj;
+                let sub = arr.length;
+                for(i=1; i<=sub; i++){
+                    x = arr.splice(0,1);
+                    obj = obj[x];
+                }
+                return obj;
             }
             catch(e) {
                 console.log(e);
@@ -24,16 +59,17 @@
         }
         async addPool(){
             try{
-                console.log(this.accounts[0]);
-                await this.contract.methods.addPool('new Pool', '0xcb1514DA0236d254127bF1f10141967325F7693d').send({from:this.accounts[0]});
+                const tokenContractAddress = await this.getDeployedContractObject('StandardToken', ['networks', this.networkId, 'address']);
+                console.log(tokenContractAddress);
+                await this.contract.methods.addPool('new Pool', tokenContractAddress).send({from:this.accounts[0]});
             }
             catch(e){
-                console.log('error in method addPools: '+ e);
+                console.log('error in method addPool: '+ e);
             }
         }
         async getPools(){
             try{
-                const pools = await this.contract.methods.getPools().call();
+                const pools = await this.contract.methods.getPools().send({from:this.accounts[0]});
                 return pools;
             }
             catch(e){
@@ -48,6 +84,7 @@
         await obj.addPool();
         let xpools = await obj.getPools();
         console.log(xpools);
+
     }
     main();
 })(jQuery);

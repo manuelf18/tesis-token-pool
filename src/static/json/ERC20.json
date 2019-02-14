@@ -166,9 +166,9 @@
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity >=0.4.10 <0.6.0;\n\ninterface ERC20 {\n    function balanceOf(address who) external view returns (uint256);\n    function transfer(address to, uint256 value) external returns (bool);\n    function allowance(address owner, address spender) external view returns (uint256);\n    function transferFrom(address from, address to, uint256 value) external returns (bool);\n    function approve(address spender, uint256 value) external returns (bool);\n    event Transfer(address indexed from, address indexed to, uint256 value);\n    event Approval(address indexed owner, address indexed spender, uint256 value);\n}",
-  "sourcePath": "/Users/manuelf/Documents/tesis/src/apps/tokens/solidity/contracts/lib/ERC20.sol",
+  "sourcePath": "/Users/manuel/Documents/tesis/src/apps/tokens/solidity/contracts/lib/ERC20.sol",
   "ast": {
-    "absolutePath": "/Users/manuelf/Documents/tesis/src/apps/tokens/solidity/contracts/lib/ERC20.sol",
+    "absolutePath": "/Users/manuel/Documents/tesis/src/apps/tokens/solidity/contracts/lib/ERC20.sol",
     "exportedSymbols": {
       "ERC20": [
         613
@@ -950,7 +950,7 @@
     "src": "0:614:3"
   },
   "legacyAST": {
-    "absolutePath": "/Users/manuelf/Documents/tesis/src/apps/tokens/solidity/contracts/lib/ERC20.sol",
+    "absolutePath": "/Users/manuel/Documents/tesis/src/apps/tokens/solidity/contracts/lib/ERC20.sol",
     "exportedSymbols": {
       "ERC20": [
         613
@@ -1737,7 +1737,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.1",
-  "updatedAt": "2019-02-13T00:41:25.861Z",
+  "updatedAt": "2019-02-14T21:01:11.699Z",
   "devdoc": {
     "methods": {}
   },
