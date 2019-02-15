@@ -55,12 +55,11 @@
 
     class PoolContract extends Contract {
         constructor(){
-            super('PoolManager');
+            super('PoolManager', '1550195851854');
         }
         async addPool(){
             try{
                 const tokenContractAddress = await this.getDeployedContractObject('StandardToken', ['networks', this.networkId, 'address']);
-                console.log(tokenContractAddress);
                 await this.contract.methods.addPool('new Pool', tokenContractAddress).send({from:this.accounts[0]});
             }
             catch(e){
@@ -69,7 +68,7 @@
         }
         async getPools(){
             try{
-                const pools = await this.contract.methods.getPools().send({from:this.accounts[0]});
+                const pools = await this.contract.methods.getPools().call({from:this.accounts[0]});
                 return pools;
             }
             catch(e){
@@ -84,7 +83,6 @@
         await obj.addPool();
         let xpools = await obj.getPools();
         console.log(xpools);
-
     }
     main();
 })(jQuery);
