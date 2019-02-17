@@ -137,7 +137,7 @@ html.no-js(lang='en')
     script(src='{% static "vendors/jqvmap/dist/jquery.vmap.min.js" %}')
     script(src='{% static "vendors/jqvmap/examples/js/jquery.vmap.sampledata.js" %}')
     script(src='{% static "vendors/jqvmap/dist/maps/jquery.vmap.world.js" %}')
-
+    script(src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js")
     script.
             (function($) {
             "use strict";
@@ -154,3 +154,5 @@ html.no-js(lang='en')
             normalizeFunction: 'polynomial'
             });
             })(jQuery);
+  
+  block extra_js

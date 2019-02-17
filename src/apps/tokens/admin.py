@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Pool
 from .build import install
+from .contract import PoolContract
 
 
 @admin.register(Pool)
@@ -13,5 +14,6 @@ class PoolAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         if change is False:
-            install(obj.name, obj.token_name)
+            pool = PoolContract('1550195851854')
+            pool.create_pool(obj.name, obj.token_name)
         super().save_model(request, obj, form, change)

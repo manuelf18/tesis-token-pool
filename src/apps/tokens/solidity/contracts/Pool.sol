@@ -30,6 +30,15 @@ contract PoolManager{
         return (name, tokenA);
     }
 
+    function getPoolsLength() public view returns (uint) {
+        return name.length;
+    }
+
+    function getPoolByIndex(uint index) public view returns(string memory, address) {
+        return (name[index], tokenA[index]);
+    }
+
+
     // function getUsersByIndex(uint _indexP, uint _indexU) public view returns(address, uint amount){
     //     return (pools[_indexP].users[_indexU].userA, pools[_indexP].users[_indexU].amount);
     // }
