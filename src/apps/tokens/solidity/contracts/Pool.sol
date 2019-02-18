@@ -1,5 +1,4 @@
 pragma solidity >=0.4.10 <0.6.0;
-pragma experimental ABIEncoderV2;
 
 import "./lib/ERC20.sol";
 contract PoolManager{
@@ -15,10 +14,17 @@ contract PoolManager{
     uint[] usersIndex;
     
     mapping(uint => User) users;
+    mapping(address => bool) poolExists;
 
-    function addPool(string memory _name, address _tokenA) public{
+    modifier onlyOnePool(address _tokenA){
+        require(poolExists[_tokenA] == false, "");
+        _;
+    }
+
+    function addPool(string memory _name, address _tokenA) public onlyOnePool(_tokenA){
         name.push(_name);
         tokenA.push(_tokenA);
+        poolExists[_tokenA] = true;
     }
 
     function addUserToPool(uint _amount, uint _poolIndex) public{
@@ -26,20 +32,13 @@ contract PoolManager{
         ERC20(tokenContract).transferFrom(msg.sender, address(this), _amount);
     }
 
-    function getPools() public view returns (string[] memory, address[] memory){
-        return (name, tokenA);
-    }
-
     function getPoolsLength() public view returns (uint) {
-        return name.length;
+        if (name.length > tokenA.length)
+            return name.length;
+        return tokenA.length;
     }
 
     function getPoolByIndex(uint index) public view returns(string memory, address) {
         return (name[index], tokenA[index]);
     }
-
-
-    // function getUsersByIndex(uint _indexP, uint _indexU) public view returns(address, uint amount){
-    //     return (pools[_indexP].users[_indexU].userA, pools[_indexP].users[_indexU].amount);
-    // }
 }

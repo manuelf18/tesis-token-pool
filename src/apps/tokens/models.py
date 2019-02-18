@@ -17,10 +17,12 @@ class Pool(HistoryBase):
     admin = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
 
-"""
-class Token(HistoryBase):
-    pool = models.ForeignKey(Pool, null=True, blank=True, related_name='token',
-                             on_delete=models.SET_NULL, verbose_name="Tipo de proyecto")
-    owner = models.ForeignKey(User, null=True, blank=True, related_name='token',
-                              on_delete=models.SET_NULL, verbose_name="Dueño")
-"""
+class Network(HistoryBase):
+    url = models.CharField(max_length=50, null=True, blank=True,
+                           default='', verbose_name="Url")
+    port = models.CharField(max_length=50, null=True, blank=True,
+                            default='', verbose_name="Puerto")
+    active = models.BooleanField(default=False, name='Activo')
+
+    def save(self):
+        super().save()
