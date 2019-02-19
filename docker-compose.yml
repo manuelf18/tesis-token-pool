@@ -21,7 +21,7 @@ services:
       context: .
       dockerfile: ./docker/django/Dockerfile
     container_name: tesis_dj01
-    command: bash -c "/code/utils/wait-for-it.sh postgres:5432 && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
+    command: bash -c "/code/utils/migrate.sh && /code/utils/wait-for-it.sh postgres:5432 && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:8000"
     depends_on:
       - db
       - ganache
@@ -46,7 +46,7 @@ services:
       context: .
       dockerfile: ./docker/ganache-cli/Dockerfile
     container_name: tesis_ganache_cli
-    command: bash "ganache-cli -h 0.0.0.0"
+    command: bash "ganache-cli -i 5777"
     hostname: tesis_ganache_cli
     expose:
       - 8545
