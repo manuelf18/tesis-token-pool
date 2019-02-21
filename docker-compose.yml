@@ -46,7 +46,13 @@ services:
       context: .
       dockerfile: ./docker/ganache-cli/Dockerfile
     container_name: tesis_ganache_cli
-    command: bash "ganache-cli -i 5777"
+    entrypoint:
+      - node
+      - /app/ganache-core.docker.cli.js
+      - --networkId
+      - '5777'
+      - --hostname
+      - '0.0.0.0'
     hostname: tesis_ganache_cli
     expose:
       - 8545

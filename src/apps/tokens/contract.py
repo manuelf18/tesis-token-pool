@@ -1,11 +1,12 @@
 import json
 import os
 from web3 import Web3, HTTPProvider
+from .models import Network
 
 
 class Contract:
-    def __init__(self, network_id, contract_name, *args, **kwargs):
-        self.network_id = network_id
+    def __init__(self, contract_name, *args, **kwargs):
+        self.network_id = Network.objects.get(connected=True).port
         self.web3 = Web3(HTTPProvider('http://ganache:8545'))
         self.web3.eth.defaultAccount = self.web3.eth.accounts[0]
         json_data = self.get_contract_json(contract_name)
@@ -30,8 +31,8 @@ class Contract:
 
 
 class PoolContract(Contract):
-    def __init__(self, network_id):
-        super().__init__(network_id, 'PoolManager')
+    def __init__(self):
+        super().__init__('PoolManager')
 
     def create_pool(self, name, token_name):
         json_data = self.get_contract_json(token_name)

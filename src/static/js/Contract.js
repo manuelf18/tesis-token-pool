@@ -55,8 +55,8 @@ class Contract {
 }
 
 class PoolContract extends Contract {
-    constructor($){
-        super($, 'PoolManager', '1550195851854');
+    constructor($, networkId){
+        super($, 'PoolManager', networkId || 5777);
     }
     async addPool(){
         try{
@@ -78,7 +78,6 @@ class PoolContract extends Contract {
     }
     async getPoolsByIndex(index){
         try{
-            console.log(this.contract.methods);
             let pools = [], i;
             for(i=0; i<index; i++)
                 pools.push(await this.contract.methods.getPoolByIndex(i).call({from:this.accounts[0]}));
@@ -91,8 +90,8 @@ class PoolContract extends Contract {
     async drawPools(){
         try{
             const amount = await this.getPoolsLength();
-            const pools = await this.getPoolsByIndex(amount);
-            console.log(pools);         
+            const pools = await this.getPoolsByIndex(amount);  
+            console.log(pools);     
             pools.forEach((pool) => {
                 this.$('.pools').find('tbody').append(
                     `<tr>

@@ -22,7 +22,4 @@ class Network(HistoryBase):
                            default='', verbose_name="Url")
     port = models.CharField(max_length=50, null=True, blank=True,
                             default='', verbose_name="Puerto")
-    active = models.BooleanField(default=False, name='Activo')
-
-    def save(self):
-        super().save()
+    connected = models.BooleanField(default=False, verbose_name='Conectado')
