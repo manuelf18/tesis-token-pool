@@ -1,4 +1,6 @@
 extends base_dark
+block title
+    title Compra de Token
 block content
     .login-content
             .login-logo
@@ -6,10 +8,9 @@ block content
                 img.align-content(src='images/logo.png', alt='')
                 h1(style='color:white;') Compra de Tokens
             .login-form
-                {{form.errors}}
-                form(method="POST")
                     - csrf_token
-                    {{form.as_p}}
+                    label Cantidad de Tokens a Comprar
+                    input#qty.form-control(type="number", name="")
                     button.buy-btn.btn.btn-primary(type="button") Comprar
 
 block extra_js
@@ -19,7 +20,7 @@ block extra_js
             await poolObj.setContract();
             $(".buy-btn").click(async () => {
                 try{
-                    console.log(await poolObj.addUserToPool($('#id_quantity').val(), 'StandardToken', '0x9C6Db6594E96d85519E925D7dEf9f4E86cb0fA98'));
+                    await poolObj.addUserToPool($('#qty').val(), 'StandardToken', '0x9C6Db6594E96d85519E925D7dEf9f4E86cb0fA98');
                 }
                 catch(e){
                     alert(e);

@@ -15,9 +15,8 @@ class BuyerTemplateView(TemplateView):
         return ctx
 
 
-class BuyTokenView(CreateView):
+class BuyTokenView(TemplateView):
     template_name = 'buy_form.pug'
-    form_class = TokenBuyClass
 
 
 class TestHelloWorldFormView(CreateView):

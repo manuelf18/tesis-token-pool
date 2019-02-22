@@ -1,5 +1,5 @@
 class Contract {
-    // Please make sure to have jQuery enabled when importing this class in the 
+    // Please make sure to have jQuery enabled when importing this class in the browser
     constructor($, contractName, networkId){
         this.$ = $;
         this.web3 = new Web3(Web3.givenProvider || new Web3.providers.HttpProvider('http://127.0.0.1:7545'));
@@ -71,10 +71,10 @@ class PoolContract extends Contract {
     constructor($, networkId){
         super($, 'PoolManager', networkId);
     }
-    async addPool(){
+    async addPool(tokenName, networkId, poolName){
         try{
-            const tokenContractAddress = await this.getDeployedContractObject('StandardToken', ['networks', this.networkId, 'address']);
-            await this.contract.methods.addPool('new Pool', tokenContractAddress).send({from:this.accounts[0]});
+            const tokenContractAddress = await this.getDeployedContractObject(tokenName, ['networks', networkId || this.networkId, 'address']);
+            await this.contract.methods.addPool(poolName, tokenContractAddress).send({from:this.accounts[0]});
         }
         catch(e){
             console.log('error in method addPool: '+ e);
@@ -112,17 +112,19 @@ class PoolContract extends Contract {
             console.log('error in method getPools: '+ e);
         }
     }
-    async drawPools(){
+    async drawPools(tableClass){
         try{
             const amount = await this.getPoolsLength();
             const pools = await this.getPoolsByIndex(amount);  
             for ( let [index, pool] of pools.entries() ){
-                this.$('.pools').find('tbody').append(
+                this.$(tableClass).find('tbody').append(
                     `<tr>
+                        <th scope='row'>${index}</th>
                         <td>${pool[0]}</td>
                         <td>${pool[2]}</td>
                         <td>${pool[1]}</td>
-                        <td><a href='/tokens/buy/${index}' class='btn btn-success'>Entrar</button></td>
+                        <td><a href='/tokens/buy/${index}' class='btn btn-success'>Entrar</button>
+                            <a href='/tokens/pull/${index}' style='margin-left:5px' class='btn btn-danger'>Sacar</button></td>
                     </tr>`);
             }
         }
