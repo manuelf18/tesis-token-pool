@@ -9,36 +9,39 @@ contract PoolManager{
     }
 
     string[] name;
-    address[] tokenA;
+    address[] tokenAddress;
+    uint[] poolAmount;
 
     uint[] usersIndex;
     
     mapping(uint => User) users;
     mapping(address => bool) poolExists;
 
-    modifier onlyOnePool(address _tokenA){
-        require(poolExists[_tokenA] == false, "");
+    modifier onlyOnePool(address _tokenAddress){
+        require(poolExists[_tokenAddress] == false, "");
         _;
     }
 
-    function addPool(string memory _name, address _tokenA) public onlyOnePool(_tokenA){
+    function addPool(string memory _name, address _tokenAddress) public onlyOnePool(_tokenAddress){
         name.push(_name);
-        tokenA.push(_tokenA);
-        poolExists[_tokenA] = true;
+        tokenAddress.push(_tokenAddress);
+        poolAmount.push(0);
+        poolExists[_tokenAddress] = true;
     }
 
     function addUserToPool(uint _amount, uint _poolIndex) public{
-        address tokenContract = tokenA[_poolIndex];
+        address tokenContract = tokenAddress[_poolIndex];
         ERC20(tokenContract).transferFrom(msg.sender, address(this), _amount);
+        poolAmount[_poolIndex] += _amount;
     }
 
     function getPoolsLength() public view returns (uint) {
-        if (name.length > tokenA.length)
+        if (name.length > tokenAddress.length)
             return name.length;
-        return tokenA.length;
+        return tokenAddress.length;
     }
 
-    function getPoolByIndex(uint index) public view returns(string memory, address) {
-        return (name[index], tokenA[index]);
+    function getPoolByIndex(uint index) public view returns(string memory, uint, address) {
+        return (name[index], poolAmount[index], tokenAddress[index]);
     }
 }

@@ -1,7 +1,7 @@
 extends base
 -load static
 block title
-  title Pagina de Compradores
+title Pagina de Compradores
 mixin card(pk)
   .card
     .card-header
@@ -19,16 +19,16 @@ block content
     thead
       tr
         th(scope="col") Nombre
-        th(scope="col") Tipo
+        th(scope="col") Direccion del Token
+        th(scope="col") Cantidad Disponible
         th(scope="col") Unirse        
     tbody
-
 
 block extra_js
   script(src='{% static "js/Contract.js" %}')
   script.
     (async function($){
-      let x = new PoolContract($);
-      await x.setContract();
-      await x.drawPools();
+      let poolObj = new PoolContract($);
+      await poolObj.setContract();
+      await poolObj.drawPools();
     })(jQuery);

@@ -5,8 +5,8 @@ from apps.core.forms import BootstrapForm, BootstrapModelForm
 from .models import Pool
 
 
-class TransactionForm(BootstrapForm):
-    pass
+class TokenBuyClass(BootstrapForm):
+    quantity = forms.DecimalField(label='Cantidad')
 
 
 class HelloWorldTestForm(BootstrapForm):

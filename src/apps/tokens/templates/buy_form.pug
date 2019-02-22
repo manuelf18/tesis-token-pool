@@ -1,0 +1,29 @@
+extends base_dark
+block content
+    .login-content
+            .login-logo
+                a(href='index.html')
+                img.align-content(src='images/logo.png', alt='')
+                h1(style='color:white;') Compra de Tokens
+            .login-form
+                {{form.errors}}
+                form(method="POST")
+                    - csrf_token
+                    {{form.as_p}}
+                    button.buy-btn.btn.btn-primary(type="button") Comprar
+
+block extra_js
+    script.
+        (async function($){
+            let poolObj = new PoolContract($);
+            await poolObj.setContract();
+            $(".buy-btn").click(async () => {
+                try{
+                    console.log(await poolObj.addUserToPool($('#id_quantity').val(), 'StandardToken', '0x9C6Db6594E96d85519E925D7dEf9f4E86cb0fA98'));
+                }
+                catch(e){
+                    alert(e);
+                    throw new Error(e);
+                }
+            }); 
+        })(jQuery);

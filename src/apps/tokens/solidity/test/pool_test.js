@@ -48,7 +48,6 @@ contract("Pool", accounts => {
         try{
             await StandardTokenContract.approve(PoolContract.address, 20, {from:accounts[0]});
             await PoolContract.addUserToPool(20, 1, {from:accounts[0]});
-            // truffleAssert.eventEmitted(resp, 'Transfer');
             resp = await StandardTokenContract.balanceOf(PoolContract.address);
             assert.equal(resp.toNumber(), 20);
         }

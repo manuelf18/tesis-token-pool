@@ -9,12 +9,10 @@ class Contract {
     async setContract(){
         try{
             this.accounts = await this.web3.eth.getAccounts();
-            const jsonObject = {
-                abi: await this.getDeployedContractObject(this.contractName, ['abi']),
-                address: await this.getDeployedContractObject(this.contractName, ['networks', this.networkId, 'address'])
-            }
+            this.abi = await this.getDeployedContractObject(this.contractName, ['abi']);
+            this.address = await this.getDeployedContractObject(this.contractName, ['networks', this.networkId, 'address'])
             this.web3.eth.defaultAccount = this.accounts[0];
-            this.contract = new this.web3.eth.Contract(jsonObject.abi, jsonObject.address);
+            this.contract = new this.web3.eth.Contract(this.abi, this.address);
         }
         catch(e) {
             console.log(e);
@@ -54,9 +52,24 @@ class Contract {
     }
 }
 
+class TokenContract extends Contract {
+    constructor($, nameOfTokenContract ,networkId){
+        super($, nameOfTokenContract, networkId);
+    }
+    async approve(address, amount){
+        try{
+            await this.contract.methods.approve(address, amount).send({from:this.accounts[0]});
+        }
+        catch(e){
+            console.log('error in approve: ' + e);
+        }
+    }
+}
+
+
 class PoolContract extends Contract {
     constructor($, networkId){
-        super($, 'PoolManager', networkId || 5777);
+        super($, 'PoolManager', networkId);
     }
     async addPool(){
         try{
@@ -65,6 +78,18 @@ class PoolContract extends Contract {
         }
         catch(e){
             console.log('error in method addPool: '+ e);
+        }
+    }
+    async addUserToPool(amount, tokenName, tokenIndex){
+        try{
+            const tokenContractObj = new TokenContract(this.$, tokenName || 'StandardToken', this.networkId);
+            await tokenContractObj.setContract();
+            await tokenContractObj.approve(this.address, amount);
+            await this.contract.methods.addUserToPool(amount, 0).send({from:this.accounts[0]});
+        }
+        catch(e){
+            console.log('error in method addUserToToken: ' + e);
+            throw Error(e);
         }
     }
     async getPoolsLength(){
@@ -91,15 +116,15 @@ class PoolContract extends Contract {
         try{
             const amount = await this.getPoolsLength();
             const pools = await this.getPoolsByIndex(amount);  
-            console.log(pools);     
-            pools.forEach((pool) => {
+            for ( let [index, pool] of pools.entries() ){
                 this.$('.pools').find('tbody').append(
                     `<tr>
                         <td>${pool[0]}</td>
+                        <td>${pool[2]}</td>
                         <td>${pool[1]}</td>
-                        <td><button class='btn btn-success'>Entrar</button></td>
+                        <td><a href='/tokens/buy/${index}' class='btn btn-success'>Entrar</button></td>
                     </tr>`);
-            });
+            }
         }
         catch(e){
             console.log('error in method getPools: '+ e);
