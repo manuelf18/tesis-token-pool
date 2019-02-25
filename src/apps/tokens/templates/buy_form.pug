@@ -20,7 +20,13 @@ block extra_js
             await poolObj.setContract();
             $(".buy-btn").click(async () => {
                 try{
-                    await poolObj.addUserToPool($('#qty').val(), 'StandardToken', '0x9C6Db6594E96d85519E925D7dEf9f4E86cb0fA98');
+                    let url = $(location). attr("href");
+                    let index = substringAfter(url, '/', url.indexOf('buy'));
+                    let qty = $('#qty').val();
+                    await poolObj.addUserToPool(qty, 'StandardToken', index);
+                    console.log(await poolObj.getUsersAddingLength());
+                    console.log(await poolObj.getUsersAddingByIndex(1));
+                    alert(`Ha introducido ${qty} tokens con exito`);
                 }
                 catch(e){
                     alert(e);

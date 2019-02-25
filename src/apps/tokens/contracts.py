@@ -34,7 +34,7 @@ class PoolContract(Contract):
     def __init__(self):
         super().__init__('PoolManager')
 
-    def create_pool(self, name, token_name):
+    def create_pool(self, pool_name, token_name):
         json_data = self.get_contract_json(token_name)
         token_address = self.get_address_from_json(json_data)
-        self.contract.functions.addPool(name, token_address).transact()
+        self.contract.functions.addPool(pool_name, token_name, token_address).transact()

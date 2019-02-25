@@ -3,7 +3,7 @@ from django.views.generic import CreateView, TemplateView
 
 from .forms import HelloWorldTestForm, TokenBuyClass
 from .models import Pool
-from .contract import Contract
+from .contracts import Contract
 
 
 class BuyerTemplateView(TemplateView):

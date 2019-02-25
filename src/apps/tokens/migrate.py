@@ -1,7 +1,7 @@
 from apps.tokens.models import Pool
-from apps.tokens.contract import PoolContract
+from apps.tokens.contracts import PoolContract
 
-pools = Pool.objets.all()
+pools = Pool.objects.all()
 pool_contract = PoolContract()
 
 for pool in pools:

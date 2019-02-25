@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.core.exceptions import MultipleObjectsReturned
 
-from .contract import PoolContract
+from .contracts import PoolContract
 from .models import Network, Pool
 
 

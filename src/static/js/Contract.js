@@ -71,10 +71,21 @@ class PoolContract extends Contract {
     constructor($, networkId){
         super($, 'PoolManager', networkId);
     }
+    /**
+        * Handles money conversion with an Eth Contract
+        * @param {number} number a number representing a money value.
+        * @param {boolean} up if the number is being sent [true] or being received [false] by the contract, defaults to [true]
+    */
+    _moneyChanger(number, up = true){
+        if(up === true)
+            return number * 100;
+        return number / 100;
+    }
     async addPool(tokenName, networkId, poolName){
         try{
             const tokenContractAddress = await this.getDeployedContractObject(tokenName, ['networks', networkId || this.networkId, 'address']);
             await this.contract.methods.addPool(poolName, tokenContractAddress).send({from:this.accounts[0]});
+            return true;
         }
         catch(e){
             console.log('error in method addPool: '+ e);
@@ -85,11 +96,31 @@ class PoolContract extends Contract {
             const tokenContractObj = new TokenContract(this.$, tokenName || 'StandardToken', this.networkId);
             await tokenContractObj.setContract();
             await tokenContractObj.approve(this.address, amount);
-            await this.contract.methods.addUserToPool(amount, 0).send({from:this.accounts[0]});
+            await this.contract.methods.addUserToPool(amount, tokenIndex, this._moneyChanger(1.50)).send({from:this.accounts[0]});
         }
         catch(e){
             console.log('error in method addUserToToken: ' + e);
             throw Error(e);
+        }
+    }
+    async getUsersAddingLength(){
+        try{
+            const usersAdding = await this.contract.methods.getUsersAddingLength().call({from:this.accounts[0]});
+            return usersAdding;
+        }
+        catch(e){
+            console.log('error in method getUsersAdding: '+ e);
+        }
+    }
+    async getUsersAddingByIndex(index){
+        try{
+            let usersAdding = [], i;
+            for(i=0; i<index; i++)
+                usersAdding.push(await this.contract.methods.getUsersAddingByIndex(i).call({from:this.accounts[0]}));
+            return usersAdding;
+        }
+        catch(e){
+            console.log('error in method getUsersAdding: '+ e);
         }
     }
     async getPoolsLength(){
@@ -120,11 +151,11 @@ class PoolContract extends Contract {
                 this.$(tableClass).find('tbody').append(
                     `<tr>
                         <th scope='row'>${index}</th>
+                        <td>${pool[1]}</td>
                         <td>${pool[0]}</td>
                         <td>${pool[2]}</td>
-                        <td>${pool[1]}</td>
-                        <td><a href='/tokens/buy/${index}' class='btn btn-success'>Entrar</button>
-                            <a href='/tokens/pull/${index}' style='margin-left:5px' class='btn btn-danger'>Sacar</button></td>
+                        <td><a href='/tokens/buy/${index}' class='btn btn-success'>Depositar Tokens</button>
+                            <a href='/tokens/pull/${index}' style='margin-left:5px' class='btn btn-danger'>Retirar Tokens</button></td>
                     </tr>`);
             }
         }

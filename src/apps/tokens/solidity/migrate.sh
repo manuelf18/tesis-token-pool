@@ -1,4 +1,4 @@
-truffle compile
-truffle migrate --reset
-rm -R ../../../static/json/
-cp -R build/contracts ../../../static/json/
+sudo rm -R build/contracts
+sudo truffle compile
+sudo truffle migrate --reset --network development_local
+sudo truffle test  --network development_local

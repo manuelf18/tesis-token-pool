@@ -1,6 +1,6 @@
 cd apps/tokens/solidity/
+rm -R build/contracts
 truffle compile
 truffle migrate --reset
-python migrate.py
 rm -R ../../../static/json/
 cp -R build/contracts ../../../static/json/

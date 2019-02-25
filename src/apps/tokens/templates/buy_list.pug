@@ -19,8 +19,8 @@ block content
     thead
       tr
         th(scope="col") #        
-        th(scope="col") Nombre
-        th(scope="col") Direccion del Token
+        th(scope="col") Nombre del Pozo
+        th(scope="col") Nombre del Token
         th(scope="col") Cantidad Disponible
         th(scope="col") Unirse        
     tbody
@@ -31,5 +31,6 @@ block extra_js
     (async function($){
       let poolObj = new PoolContract($);
       await poolObj.setContract();
+      console.log(await poolObj.getPoolsLength());
       await poolObj.drawPools('.pools');
     })(jQuery);
