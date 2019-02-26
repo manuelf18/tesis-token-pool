@@ -3,70 +3,80 @@ pragma solidity >=0.4.10 <0.6.0;
 import "./lib/ERC20.sol";
 contract PoolManager{
     // these are the structs
-    event UserIndex (uint);
-    struct UserCommit { address userA; uint amount; uint value; }
-    UserCommit[] UsersAdding;
-    UserCommit[] UsersWithdrawing;
-    mapping(address => uint) userAdded;
+    event createUserIndex (uint);
+    struct User { address userAddress; uint amount; }
+    User[] UsersArr;
+    mapping(address => uint) userIndex;
 
-    string[] poolName;
-    address[] tokenAddress;
-    mapping(address => string) tokenName;
-    uint[] poolAmount;
+    struct Pool { string poolName; string tokenName; address tokenAddress; uint amount; uint value; }
+    Pool[] PoolsArr;
+    mapping(address => uint) poolIndex;
+    // string[] poolName;
+    // address[] tokenAddress;
+    // mapping(address => string) tokenName;
+    // uint[] poolAmount;
 
     
     modifier poolExists(address _tokenAddress){
-        require(keccak256(abi.encode(tokenName[_tokenAddress])) != keccak256(""), "");
+        require(_tokenAddress != address(0x0), "Address already assigned");
         _;
     }
 
-    function addPool(string memory _poolName, string memory _tokenName, address _tokenAddress) public poolExists(_tokenAddress) {
-        poolName.push(_poolName);
-        tokenAddress.push(_tokenAddress);
-        tokenName[_tokenAddress] = _tokenName;
-        poolAmount.push(0);
+    function addPool(string memory _poolName, string memory _tokenName, address _tokenAddress, uint _value) public poolExists(_tokenAddress) {
+        Pool memory pool;
+        pool.poolName = _poolName;
+        pool.tokenName = _tokenName;
+        pool.tokenAddress = _tokenAddress;
+        pool.value = _value;
+        pool.amount = 0;
+        PoolsArr.push(pool);
     }
 
-    function addUserToPool(uint _amount, uint _poolIndex, uint _value) public {
+    function addUserToPool(uint _amount, uint _poolIndex) public {
         // UserCommit memory user;
-        UserCommit memory user;
-        address tokenContract = tokenAddress[_poolIndex];
+        User memory user;
+        Pool memory pool = PoolsArr[_poolIndex];
+        address tokenContract = pool.tokenAddress;
         ERC20(tokenContract).transferFrom(msg.sender, address(this), _amount);
-        poolAmount[_poolIndex] += _amount;
-        if (userAdded[msg.sender] == 0) {
-            user.userA = msg.sender;
+        pool.amount += _amount;
+        if (userIndex[msg.sender] == 0) {
+            user.userAddress = msg.sender;
             user.amount = _amount;
-            user.value = _value;
-            userAdded[msg.sender] = UsersAdding.push(user);
-            emit UserIndex(userAdded[msg.sender]);
+            userIndex[msg.sender] = UsersArr.push(user);
+            emit createUserIndex(userIndex[msg.sender]);
         }
         else {
-            UsersAdding[userAdded[msg.sender] - 1].amount += _amount;
+            UsersArr[userIndex[msg.sender] - 1].amount += _amount;
         }
+        PoolsArr[_poolIndex] = pool;
     }
 
-    function commitToken(uint _amount, uint _value) public {
-        UserCommit memory user;
-        user.userA = msg.sender;
-        user.amount = _amount;
-        user.value = _value;
-        UsersWithdrawing.push(user);
+    function getTokens(uint _amount, uint _poolIndex) public {
+        Pool memory pool = PoolsArr[_poolIndex];
+        require(pool.amount >= _amount, "No hay suficientes tokens");
+        address tokenContract = pool.tokenAddress;
+        // ERC20(tokenContract).approve(msg.sender, _amount);
+        ERC20(tokenContract).transfer(msg.sender, _amount);
+        pool.amount -= _amount;
+        PoolsArr[_poolIndex] = pool;
+        // TODO: implement payment to other users.
     }
 
-    function getUsersAddingLength() public view returns (uint) {
-        return UsersAdding.length;
+    function getUsersLength() public view returns (uint) {
+        return UsersArr.length;
     }
 
-    function getUsersAddingByIndex(uint index) public view returns(address, uint, uint) {
-        UserCommit memory user = UsersAdding[index];
-        return (user.userA, user.amount, user.value);
+    function getUserByIndex(uint index) public view returns(address, uint) {
+        User memory user = UsersArr[index];
+        return (user.userAddress, user.amount);
     }
 
     function getPoolsLength() public view returns (uint) {
-        return tokenAddress.length;
+        return PoolsArr.length;
     }
 
-    function getPoolByIndex(uint index) public view returns(string memory, string memory, uint, address) {
-        return (tokenName[tokenAddress[index]], poolName[index], poolAmount[index], tokenAddress[index]);
+    function getPoolByIndex(uint index) public view returns(string memory, string memory, uint, address, uint) {
+        Pool memory pool = PoolsArr[index];
+        return (pool.tokenName, pool.poolName, pool.amount, pool.tokenAddress, pool.value);
     }
 }

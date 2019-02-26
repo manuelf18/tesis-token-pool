@@ -14,6 +14,7 @@ class Pool(HistoryBase):
                                       verbose_name='Fecha de inicio')
     end_date = models.DateTimeField(null=True, blank=True,
                                     verbose_name='Fecha de finalizacion')
+    token_value = models.IntegerField(default=1, verbose_name='Valor del Token')
     admin = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
 

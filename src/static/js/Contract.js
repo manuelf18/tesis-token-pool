@@ -96,7 +96,7 @@ class PoolContract extends Contract {
             const tokenContractObj = new TokenContract(this.$, tokenName || 'StandardToken', this.networkId);
             await tokenContractObj.setContract();
             await tokenContractObj.approve(this.address, amount);
-            await this.contract.methods.addUserToPool(amount, tokenIndex, this._moneyChanger(1.50)).send({from:this.accounts[0]});
+            await this.contract.methods.addUserToPool(amount, tokenIndex).send({from:this.accounts[0]});
         }
         catch(e){
             console.log('error in method addUserToToken: ' + e);
@@ -132,6 +132,14 @@ class PoolContract extends Contract {
             console.log('error in method getPools: '+ e);
         }
     }
+    async getSpecificPool(index){
+        try{
+            return await this.contract.methods.getPoolByIndex(index).call({from:this.accounts[0]});
+        }
+        catch(e){
+            console.log('error in method getSpecificPool: '+ e);
+        }
+    }
     async getPoolsByIndex(index){
         try{
             let pools = [], i;
@@ -141,6 +149,17 @@ class PoolContract extends Contract {
         }
         catch(e){
             console.log('error in method getPools: '+ e);
+        }
+    }
+    async getTokens(amount, poolIndex){
+        try{
+            let pool = await this.getSpecificPool(poolIndex);
+            if (amount > pool[2])
+                throw new Error('La cantidad de Tokens solicitados es mayor a la disponible');
+            await this.contract.methods.getTokens(amount, poolIndex).send({from:this.accounts[0]});
+        }
+        catch(e){
+            console.log('error in method getTokens: '+ e);
         }
     }
     async drawPools(tableClass){
@@ -155,7 +174,7 @@ class PoolContract extends Contract {
                         <td>${pool[0]}</td>
                         <td>${pool[2]}</td>
                         <td><a href='/tokens/buy/${index}' class='btn btn-success'>Depositar Tokens</button>
-                            <a href='/tokens/pull/${index}' style='margin-left:5px' class='btn btn-danger'>Retirar Tokens</button></td>
+                            <a href='/tokens/get/${index}' style='margin-left:5px' class='btn btn-danger'>Retirar Tokens</button></td>
                     </tr>`);
             }
         }

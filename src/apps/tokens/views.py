@@ -19,7 +19,5 @@ class BuyTokenView(TemplateView):
     template_name = 'buy_form.pug'
 
 
-class TestHelloWorldFormView(CreateView):
-    template_name = 'test_blockchain_contract.pug'
-    form_class = HelloWorldTestForm
-    success_url = '/'
+class GetTokenView(TemplateView):
+    template_name = 'get_tokens_form.pug'

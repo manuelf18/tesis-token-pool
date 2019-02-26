@@ -1,17 +1,17 @@
 extends base_dark
 block title
-    title Deposito de Tokens
+    title Solicitud de Tokens
 block content
     .login-content
             .login-logo
                 a(href='index.html')
                 img.align-content(src='images/logo.png', alt='')
-                h1(style='color:white;') Deposito de Tokens
+                h1(style='color:white;') Solicitud de Tokens
             .login-form
                     - csrf_token
-                    label Cantidad de Tokens a Depositar
+                    label Cantidad de Tokens a Solicitar
                     input#qty.form-control(type="number", name="")
-                    button.buy-btn.btn.btn-primary(type="button") Enviar
+                    button.buy-btn.btn.btn-primary(type="button") Extraer
 
 block extra_js
     script.
@@ -21,12 +21,11 @@ block extra_js
             $(".buy-btn").click(async () => {
                 try{
                     let url = $(location). attr("href");
-                    let index = substringAfter(url, '/', url.indexOf('buy'));
+                    let index = substringAfter(url, '/', url.indexOf('get'));
+                    console.log(index);
                     let qty = $('#qty').val();
-                    await poolObj.addUserToPool(qty, 'StandardToken', index);
-                    console.log(await poolObj.getUsersAddingLength());
-                    console.log(await poolObj.getUsersAddingByIndex(1));
-                    alert(`Ha introducido ${qty} tokens con exito`);
+                    await poolObj.getTokens(qty, index);
+                    alert(`Ha recibido ${qty} tokens con exito`);
                 }
                 catch(e){
                     alert(e);

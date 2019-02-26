@@ -16,7 +16,7 @@ class PoolAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if change is False:
             pool = PoolContract()
-            pool.create_pool(obj.name, obj.token_name)
+            pool.create_pool(obj.name, obj.token_name, obj.token_value)
         super().save_model(request, obj, form, change)
 
 
