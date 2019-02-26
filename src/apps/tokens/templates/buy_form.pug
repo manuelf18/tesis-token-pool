@@ -24,8 +24,6 @@ block extra_js
                     let index = substringAfter(url, '/', url.indexOf('buy'));
                     let qty = $('#qty').val();
                     await poolObj.addUserToPool(qty, 'StandardToken', index);
-                    console.log(await poolObj.getUsersAddingLength());
-                    console.log(await poolObj.getUsersAddingByIndex(1));
                     alert(`Ha introducido ${qty} tokens con exito`);
                 }
                 catch(e){

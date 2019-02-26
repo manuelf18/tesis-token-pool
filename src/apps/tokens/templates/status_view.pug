@@ -1,0 +1,49 @@
+extends base
+-load static
+block title
+    title Pagina de Estado
+
+block content
+    h1.title.text-center Transacciones
+    h4.subtitle.text-center.font-weight-light.font-italic  Este es tu portal para el cambio de tokens de ETH a $
+    .row.mt-4
+        .container
+            .col-6
+                h1 Depositos
+                table.pools.table
+                    thead
+                        tr
+                            th(scope="col") Id del Pozo        
+                            th(scope="col") Cantidad Introcida
+                            th(scope="col") Otro Campo
+                    tbody
+
+            .col-6
+                h1 Retiros
+    
+block extra_js
+    script(src='{% static "js/Contract.js" %}')
+    script.
+        (async function($){
+            try{
+                let poolObj = new PoolContract($);
+                await poolObj.setContract();
+                const poolAmount = await poolObj.getPoolsLength();
+                let pools = [];
+                for (i = 0; i < poolAmount; i++){
+                   pools.push(await poolObj.getUserFromPool(i));
+                }       
+                for ( let [index, pool] of pools.entries() ){
+                    $('.pools').find('tbody').append(
+                        `<tr>
+                            <th scope='row'>${index}</th>
+                            <td>${pool[1]}</td>
+                        </tr>`);
+                }
+            }
+            catch(e){
+                console.log('error drawing the pool: '+ e);
+            }
+        })(jQuery);
+
+

@@ -22,7 +22,6 @@ block extra_js
                 try{
                     let url = $(location). attr("href");
                     let index = substringAfter(url, '/', url.indexOf('get'));
-                    console.log(index);
                     let qty = $('#qty').val();
                     await poolObj.getTokens(qty, index);
                     alert(`Ha recibido ${qty} tokens con exito`);

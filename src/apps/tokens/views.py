@@ -21,3 +21,7 @@ class BuyTokenView(TemplateView):
 
 class GetTokenView(TemplateView):
     template_name = 'get_tokens_form.pug'
+
+
+class StatusView(TemplateView):
+    template_name = 'status_view.pug'

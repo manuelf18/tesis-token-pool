@@ -103,26 +103,6 @@ class PoolContract extends Contract {
             throw Error(e);
         }
     }
-    async getUsersAddingLength(){
-        try{
-            const usersAdding = await this.contract.methods.getUsersAddingLength().call({from:this.accounts[0]});
-            return usersAdding;
-        }
-        catch(e){
-            console.log('error in method getUsersAdding: '+ e);
-        }
-    }
-    async getUsersAddingByIndex(index){
-        try{
-            let usersAdding = [], i;
-            for(i=0; i<index; i++)
-                usersAdding.push(await this.contract.methods.getUsersAddingByIndex(i).call({from:this.accounts[0]}));
-            return usersAdding;
-        }
-        catch(e){
-            console.log('error in method getUsersAdding: '+ e);
-        }
-    }
     async getPoolsLength(){
         try{
             const pools = await this.contract.methods.getPoolsLength().call({from:this.accounts[0]});
@@ -132,28 +112,28 @@ class PoolContract extends Contract {
             console.log('error in method getPools: '+ e);
         }
     }
-    async getSpecificPool(index){
+    async getPool(index){
         try{
             return await this.contract.methods.getPoolByIndex(index).call({from:this.accounts[0]});
         }
         catch(e){
-            console.log('error in method getSpecificPool: '+ e);
+            console.log('error in method getPool: '+ e);
         }
     }
-    async getPoolsByIndex(index){
+    async getAllPools(amount){
         try{
             let pools = [], i;
-            for(i=0; i<index; i++)
-                pools.push(await this.contract.methods.getPoolByIndex(i).call({from:this.accounts[0]}));
+            for(i=0; i < amount; i++)
+                pools.push(await this.getPool(i));
             return pools;
         }
         catch(e){
-            console.log('error in method getPools: '+ e);
+            console.log('error in method getAllPools: '+ e);
         }
     }
     async getTokens(amount, poolIndex){
         try{
-            let pool = await this.getSpecificPool(poolIndex);
+            let pool = await this.getPool(poolIndex);
             if (amount > pool[2])
                 throw new Error('La cantidad de Tokens solicitados es mayor a la disponible');
             await this.contract.methods.getTokens(amount, poolIndex).send({from:this.accounts[0]});
@@ -162,24 +142,20 @@ class PoolContract extends Contract {
             console.log('error in method getTokens: '+ e);
         }
     }
-    async drawPools(tableClass){
+    async getAmountOfUsersInPool(){
         try{
-            const amount = await this.getPoolsLength();
-            const pools = await this.getPoolsByIndex(amount);  
-            for ( let [index, pool] of pools.entries() ){
-                this.$(tableClass).find('tbody').append(
-                    `<tr>
-                        <th scope='row'>${index}</th>
-                        <td>${pool[1]}</td>
-                        <td>${pool[0]}</td>
-                        <td>${pool[2]}</td>
-                        <td><a href='/tokens/buy/${index}' class='btn btn-success'>Depositar Tokens</button>
-                            <a href='/tokens/get/${index}' style='margin-left:5px' class='btn btn-danger'>Retirar Tokens</button></td>
-                    </tr>`);
-            }
+            return await this.contract.methods.getAmountOfUsersInPool().call({from:this.accounts[0]});
         }
         catch(e){
-            console.log('error in method getPools: '+ e);
+            console.log('error in method getAmountOfUsers ' + e);
+        }
+    }
+    async getUserFromPool(poolIndex) {
+        try{
+            return await this.contract.methods.getUserFromPool(poolIndex).call({from:this.accounts[0]});
+        }
+        catch(e){
+            console.log('error in method getAmountOfUsers ' + e);
         }
     }
 }

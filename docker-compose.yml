@@ -51,6 +51,7 @@ services:
       - /app/ganache-core.docker.cli.js
       - --networkId
       - '5777'
+      - -q
       - --hostname
       - '0.0.0.0'
     hostname: tesis_ganache_cli
