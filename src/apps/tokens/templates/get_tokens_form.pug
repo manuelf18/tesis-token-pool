@@ -8,7 +8,7 @@ block content
                 img.align-content(src='images/logo.png', alt='')
                 h1(style='color:white;') Solicitud de Tokens
             .login-form
-                    - csrf_token
+                    //- - csrf_token
                     label Cantidad de Tokens a Solicitar
                     input#qty.form-control(type="number", name="")
                     button.buy-btn.btn.btn-primary(type="button") Extraer
@@ -24,10 +24,13 @@ block extra_js
                     let index = substringAfter(url, '/', url.indexOf('get'));
                     let qty = $('#qty').val();
                     await poolObj.getTokens(qty, index);
+                    let data = {pool_index: index, qty: qty, csrfmiddlewaretoken: '{{ csrf_token }}'};
+                    await $.ajax({ url:`http://localhost:8000/tokens/pay`, method: "POST", data:data});
                     alert(`Ha recibido ${qty} tokens con exito`);
                 }
                 catch(e){
-                    alert(e);
+                    alert('Hubo un error');
+                    console.log(e);
                     throw new Error(e);
                 }
             }); 

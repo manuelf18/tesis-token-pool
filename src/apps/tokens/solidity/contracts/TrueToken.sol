@@ -3,7 +3,7 @@ pragma solidity >=0.4.10 <0.6.0;
 import "./lib/SafeMath.sol";
 import "./lib/ERC20.sol";
 
-contract StandardToken is ERC20 {
+contract TrueToken is ERC20 {
     using SafeMath for uint;
      
     string internal _name;

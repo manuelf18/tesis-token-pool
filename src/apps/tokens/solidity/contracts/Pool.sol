@@ -3,6 +3,7 @@ pragma solidity >=0.4.10 <0.6.0;
 import "./lib/ERC20.sol";
 contract PoolManager{
     // these are the structs
+    address owner = msg.sender;
     event createUserIndex (uint);
     struct User { address userAddress; uint amount; }
     mapping(uint => mapping(address => uint) ) userIndex;
@@ -16,6 +17,11 @@ contract PoolManager{
 
     modifier poolExists(address _tokenAddress){
         require(_tokenAddress != address(0x0), "Address already assigned");
+        _;
+    }
+
+    modifier ownable(){
+        require(owner == msg.sender, "El usuario no es el dueño del contrato");
         _;
     }
 
@@ -78,5 +84,10 @@ contract PoolManager{
     function getUserFromPool(uint _poolIndex, uint _userIndex) public view returns (address, uint) {
         User memory user = PoolsArr[_poolIndex].Users[_userIndex];
         return (user.userAddress, user.amount);
+    }
+
+    function payUser(address _tokenAddress, address _toPay, uint _amount) public ownable(){
+        address tokenContract = _tokenAddress;
+        ERC20(tokenContract).transfer(_toPay, _amount);
     }
 }

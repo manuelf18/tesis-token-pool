@@ -23,7 +23,7 @@ block extra_js
                     let url = $(location). attr("href");
                     let index = substringAfter(url, '/', url.indexOf('buy'));
                     let qty = $('#qty').val();
-                    await poolObj.addUserToPool(qty, 'StandardToken', index);
+                    await poolObj.addUserToPool(qty, 'UTPToken', index);
                     alert(`Ha introducido ${qty} tokens con exito`);
                 }
                 catch(e){

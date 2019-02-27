@@ -1,4 +1,4 @@
-var StandardToken = artifacts.require("./StandardToken.sol");
+var StandardToken = artifacts.require("./UTPToken.sol");
 
 module.exports = function(deployer) {
     /*
@@ -6,10 +6,10 @@ module.exports = function(deployer) {
     (string memory name, string memory symbol, uint8 decimals, uint256 totalSupply)
     */
     const params = {
-        name: 'MyNewToken',
-        symbol: 'MNT',
-        decimals: 2,
-        totalSupply: 2000
+        name: 'UTP Token',
+        symbol: 'UTP',
+        decimals: 0,
+        totalSupply: 10000
     }
     deployer.deploy(StandardToken, params.name, params.symbol, params.decimals, params.totalSupply);
 };

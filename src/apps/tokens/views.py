@@ -1,9 +1,10 @@
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView, TemplateView
 
+from .contracts import PoolContract
 from .forms import HelloWorldTestForm, TokenBuyClass
 from .models import Pool
-from .contracts import Contract
 
 
 class BuyerTemplateView(TemplateView):
@@ -25,3 +26,30 @@ class GetTokenView(TemplateView):
 
 class StatusView(TemplateView):
     template_name = 'status_view.pug'
+
+
+# class PayView(TemplateView):
+
+#     def get_context_data(self, *args, **kwargs):
+#         print(self.request.POST)
+#         return super().get_context_data(kwargs)
+
+
+""" This is the only function based view in this project,
+    because it's only goal is to comunicate with the Contract class """
+
+
+def pay_view(request):
+    if request.method == 'POST':
+        token_qty = request.POST.get('qty', None)
+        pool_index = request.POST.get('pool_index', None)
+        if (token_qty is None or pool_index is None):
+            response = HttpResponse('Failure')
+            response.status_code = 400
+            return response
+        pool = PoolContract()
+        pool.pay(int(pool_index), int(token_qty))
+        response = HttpResponse('Success')
+        response.status_code = 200
+        return response
+    return HttpResponse('Wrong Method').status_code(405)
