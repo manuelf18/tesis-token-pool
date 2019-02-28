@@ -8,7 +8,7 @@ module.exports = function(deployer) {
     const params = {
         name: 'True Token',
         symbol: 'TRU',
-        decimals: 4,
+        decimals: 2,
         totalSupply: 200000000
     }
     deployer.deploy(StandardToken, params.name, params.symbol, params.decimals, params.totalSupply);

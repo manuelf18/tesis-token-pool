@@ -8,8 +8,8 @@ module.exports = function(deployer) {
     const params = {
         name: 'UTP Token',
         symbol: 'UTP',
-        decimals: 0,
-        totalSupply: 10000
+        decimals: 2,
+        totalSupply: 10000000
     }
     deployer.deploy(StandardToken, params.name, params.symbol, params.decimals, params.totalSupply);
 };

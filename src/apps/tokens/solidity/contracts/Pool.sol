@@ -5,6 +5,7 @@ contract PoolManager{
     // these are the structs
     address owner = msg.sender;
     event createUserIndex (uint);
+    event superAmount(uint x);
     struct User { address userAddress; uint amount; }
     mapping(uint => mapping(address => uint) ) userIndex;
 
@@ -49,7 +50,7 @@ contract PoolManager{
             emit createUserIndex(userIndex[_poolIndex][msg.sender]);
         }
         else {
-            pool.Users[userIndex[_poolIndex][msg.sender] - 1].amount += _amount;
+            pool.Users[userIndex[_poolIndex][msg.sender]].amount += _amount;
         }
     }
 
@@ -82,12 +83,17 @@ contract PoolManager{
     }
 
     function getUserFromPool(uint _poolIndex, uint _userIndex) public view returns (address, uint) {
-        User memory user = PoolsArr[_poolIndex].Users[_userIndex];
+        User memory user = PoolsArr[_poolIndex].Users[_userIndex + 1];
         return (user.userAddress, user.amount);
     }
 
-    function payUser(address _tokenAddress, address _toPay, uint _amount) public ownable(){
-        address tokenContract = _tokenAddress;
-        ERC20(tokenContract).transfer(_toPay, _amount);
+    function updateUserAmount(uint _poolIndex, uint _userIndex, uint _amount, bool add) public ownable(){
+        User memory user = PoolsArr[_poolIndex].Users[_userIndex + 1];
+        if (add)
+            user.amount += _amount;
+        else
+            user.amount -= _amount;
+        emit superAmount(user.amount);
+        PoolsArr[_poolIndex].Users[_userIndex] = user;
     }
 }

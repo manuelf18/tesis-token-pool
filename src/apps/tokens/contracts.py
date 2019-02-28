@@ -30,6 +30,26 @@ class Contract:
         return json_data['networks'][self.network_id]['address']
 
 
+class TokenContract(Contract):
+    def __init__(self, token_name):
+        super().__init__(token_name)
+
+    def balance(self):
+        return self.contract.functions.balanceOf(self.web3.eth.defaultAccount).call()
+
+    def approve(self, user_address, amount):
+        return self.contract.functions.approve(user_address, amount).transact()
+
+    def transfer(self, user_address, amount):
+        return self.contract.functions.transfer(user_address, amount).transact()
+
+    def allowance(self, user_address):
+        return self.contract.functions.allowance(self.web3.eth.defaultAccount, user_address).call()
+
+    def transferFrom(self, _from, to, amount):
+        return self.contract.functions.transferFrom(_from, to, amount).transact()
+
+
 class PoolContract(Contract):
     def __init__(self):
         super().__init__('PoolManager')
@@ -44,17 +64,15 @@ class PoolContract(Contract):
 
     def pay(self, pool_index, tokens_qty):
         try:
-            total = self.contract.functions.getPoolByIndex(pool_index).call()[2]
+            total = self.contract.functions.getPoolByIndex(pool_index).call()[2] + tokens_qty
             amount = self.contract.functions.getAmountOfUsersInPool(pool_index).call()
             json_data = self.get_contract_json('TrueToken')
             token_address = self.get_address_from_json(json_data)
+            tc = TokenContract('TrueToken')
             for i in range(amount):
-                [user_address, user_amount] = self.contract.functions.getUserFromPool(pool_index).call()
-                to_pay = (user_amount/total) * tokens_qty
-                print(token_address)
-                print(user_address)
-                print(to_pay)
-                self.contract.functions.payUser(token_address, user_address, to_pay).call()
-
+                [user_address, user_amount] = self.contract.functions.getUserFromPool(pool_index, i).call()
+                to_pay = int((user_amount / total) * tokens_qty)
+                self.contract.functions.updateUserAmount(pool_index, i, to_pay, False).transact()
+                tc.transfer(user_address, to_pay)
         except Exception as e:
             print(e)
