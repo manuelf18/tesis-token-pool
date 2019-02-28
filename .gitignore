@@ -10,9 +10,12 @@ __pycache__/
 ## sql lite database
 db.sqlite3
 
-## bower denpendencies
+## static files
+
 vendors
-bower_
+bower_components
+src/static/json/
+src/static/css/
 
 ## python virtualenv
 .env
@@ -28,4 +31,3 @@ node_modules
 
 ## solidity json contract files
 build
-src/static/json/

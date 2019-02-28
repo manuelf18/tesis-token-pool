@@ -1,3 +1,4 @@
 cd src/static
-bower install
-mv bower_components vendors
+yarn install
+mv node_modules/@bower_components vendors/
+rm -R node_modules
