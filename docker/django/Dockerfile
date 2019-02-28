@@ -5,7 +5,9 @@ ENV PYTHONUNBUFFERED 1
 RUN apt-get install curl && \
     curl -sL https://deb.nodesource.com/setup_8.x | bash && \
     apt-get install -y nodejs && \ 
-    npm install -g truffle
+    npm install -g truffle && \
+    npm install -g yarn && \
+    npm install -g sass
 RUN mkdir /code
 WORKDIR /code
 ADD ./src/requirements/base.txt /code/base.txt
@@ -13,3 +15,4 @@ ADD ./src/requirements/development.txt /code/requirements.txt
 RUN pip3 install -r requirements.txt
 ADD ./src/ /code/
 ADD ./utils/ /code/utils/
+RUN bash utils/install_bower_dependencies.sh
