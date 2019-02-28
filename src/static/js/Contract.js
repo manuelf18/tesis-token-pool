@@ -16,6 +16,7 @@ class Contract {
         }
         catch(e) {
             console.log(e);
+            throw new Error(e);
         }
     }
     async getDeployedContractJSON(contractName){
@@ -26,6 +27,7 @@ class Contract {
         }
         catch(e) {
             console.log(e);
+            throw new Error(e);
         }
     }
     /**
@@ -58,7 +60,7 @@ class TokenContract extends Contract {
     }
     async approve(address, amount){
         try{
-            await this.contract.methods.approve(address, amount).send({from:this.accounts[0]});
+            return await this.contract.methods.approve(address, amount).send({from:this.accounts[0]});
         }
         catch(e){
             console.log('error in approve: ' + e);
@@ -89,6 +91,7 @@ class PoolContract extends Contract {
         }
         catch(e){
             console.log('error in method addPool: '+ e);
+            throw new Error(e);
         }
     }
     async addUserToPool(amount, tokenName, tokenIndex){
@@ -110,6 +113,7 @@ class PoolContract extends Contract {
         }
         catch(e){
             console.log('error in method getPools: '+ e);
+            throw new Error(e);
         }
     }
     async getPool(index){
@@ -118,6 +122,7 @@ class PoolContract extends Contract {
         }
         catch(e){
             console.log('error in method getPool: '+ e);
+            throw new Error(e);
         }
     }
     async getAllPools(amount){
@@ -129,17 +134,19 @@ class PoolContract extends Contract {
         }
         catch(e){
             console.log('error in method getAllPools: '+ e);
+            throw new Error(e);
         }
     }
     async getTokens(amount, poolIndex){
         try{
-            let pool = await this.getPool(poolIndex);
-            if (amount > pool[2])
+            let pool = parseInt(await this.getPool(poolIndex)[2]);
+            if (amount > pool)
                 throw new Error('La cantidad de Tokens solicitados es mayor a la disponible');
             await this.contract.methods.getTokens(amount, poolIndex).send({from:this.accounts[0]});
         }
         catch(e){
             console.log('error in method getTokens: '+ e);
+            throw new Error(e);
         }
     }
     async getAmountOfUsersInPool(){

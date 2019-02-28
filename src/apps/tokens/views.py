@@ -2,6 +2,8 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView, TemplateView
 
+import stripe
+
 from .contracts import PoolContract
 from .forms import HelloWorldTestForm, TokenBuyClass
 from .models import Pool
@@ -47,9 +49,21 @@ def pay_view(request):
             response = HttpResponse('Failure')
             response.status_code = 400
             return response
-        pool = PoolContract()
-        pool.pay(int(pool_index), int(token_qty))
-        response = HttpResponse('Success')
-        response.status_code = 200
-        return response
+        try:
+            token_qty = int(token_qty)
+            pool_index = int(pool_index)
+            stripe.api_key = "sk_test_KuzPN3hC3fKgYD8KljCMkZ2F"
+            stripe.Charge.create(
+                amount=token_qty,
+                currency="usd",
+                description="Cargo de compra de {} tokens".format(token_qty / 100),
+                source="tok_amex",
+            )
+            pool = PoolContract()
+            pool.pay(pool_index, token_qty)
+            response = HttpResponse('Success')
+            response.status_code = 200
+            return response
+        except:
+            raise Exception('Hubo un error')
     return HttpResponse('Wrong Method').status_code(405)

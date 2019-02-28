@@ -58,7 +58,7 @@ class PoolContract(Contract):
         json_data = self.get_contract_json(token_name)
         token_address = self.get_address_from_json(json_data)
         try:
-            self.contract.functions.addPool(pool_name, token_name, token_address, token_value).transact()
+            return self.contract.functions.addPool(pool_name, token_name, token_address, token_value).transact()
         except Exception as e:
             print(e)
 
@@ -73,6 +73,6 @@ class PoolContract(Contract):
                 [user_address, user_amount] = self.contract.functions.getUserFromPool(pool_index, i).call()
                 to_pay = int((user_amount / total) * tokens_qty)
                 self.contract.functions.updateUserAmount(pool_index, i, to_pay, False).transact()
-                tc.transfer(user_address, to_pay)
+                self.contract.functions.payUser(token_address, user_address, to_pay).transact()
         except Exception as e:
             print(e)

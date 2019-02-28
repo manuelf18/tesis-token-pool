@@ -22,9 +22,9 @@ block extra_js
                 try{
                     let url = $(location). attr("href");
                     let index = substringAfter(url, '/', url.indexOf('buy'));
-                    let qty = $('#qty').val();
+                    let qty = $('#qty').val() * 100;
                     await poolObj.addUserToPool(qty, 'UTPToken', index);
-                    alert(`Ha introducido ${qty} tokens con exito`);
+                    alert(`Ha introducido ${qty / 100} tokens con exito`);
                 }
                 catch(e){
                     alert(e);
