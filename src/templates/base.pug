@@ -44,58 +44,14 @@ html.no-js(lang='en')
                   i.menu-icon.fas.fa-user-tie
                   | Admin
               li.menu-item-has-children.dropdown
-                a.dropdown-toggle(href="/pools")
+                a.dropdown-toggle(href="{% url 'tokens:buyer-template' %}")
                   i.menu-icon.fas.fa-scroll
                   | Pozos
             li.menu-item-has-children.dropdown
-              a.dropdown-toggle(href="{% url 'tokens:buyer-template' %}")
+              a.dropdown-toggle(href="{% url 'tokens:status' %}")
                 i.menu-icon.fas.fa-credit-card
                 | Comprar Token
-              
-            li.menu-item-has-children.dropdown
-              a.dropdown-toggle(href='#', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
-                i.menu-icon.fa.fa-cash-register
-                | Vender Token
-              ul.sub-menu.children.dropdown-menu
-                li
-                  i.fa.fa-puzzle-piece
-                  a(href='ui-buttons.html') Buttons
-                li
-                  i.fa.fa-id-badge
-                  a(href='ui-badges.html') Badges
-                li
-                  i.fa.fa-bars
-                  a(href='ui-tabs.html') Tabs
-                li
-                  i.fa.fa-share-square-o
-                  a(href='ui-social-buttons.html') Social Buttons
-                li
-                  i.fa.fa-id-card-o
-                  a(href='ui-cards.html') Cards
-                li
-                  i.fa.fa-exclamation-triangle
-                  a(href='ui-alerts.html') Alerts
-                li
-                  i.fa.fa-spinner
-                  a(href='ui-progressbar.html') Progress Bars
-                li
-                  i.fa.fa-fire
-                  a(href='ui-modals.html') Modals
-                li
-                  i.fa.fa-book
-                  a(href='ui-switches.html') Switches
-                li
-                  i.fa.fa-th
-                  a(href='ui-grids.html') Grids
-                li
-                  i.fa.fa-file-word-o
-                  a(href='ui-typgraphy.html') Typography
-        // /.navbar-collapse
-        // /#left-panel
-        // Left Panel
-        // Right Panel
     #right-panel.right-panel
-          // Header
           header#header.header
             if user.is_anonymous == False
               .header-menu
@@ -116,41 +72,35 @@ html.no-js(lang='en')
                         |  Logout
             else
               a(href="{% url 'profiles:login' %}").btn.btn-secondary.float-right Iniciar Sesion
-          // /header
-          // Header
           .content.mt-5
             .card
               .col-12.my-2.py-5
                 block content
-          // .content
-          // /#right-panel
-          // Right Panel
     script(src='{% static "vendors/jquery/dist/jquery.min.js" %}')
     script(src='{% static "vendors/popper.js/dist/umd/popper.min.js" %}')
     script(src='{% static "vendors/bootstrap/dist/js/bootstrap.min.js" %}')
     script(src='{% static "assets/js/main.js" %}')
-
-
     script(src='{% static "vendors/chart.js/dist/Chart.bundle.min.js" %}')
     script(src='{% static "assets/js/dashboard.js" %}')
     script(src='{% static "assets/js/widgets.js" %}')
     script(src='{% static "vendors/jqvmap/dist/jquery.vmap.min.js" %}')
     script(src='{% static "vendors/jqvmap/examples/js/jquery.vmap.sampledata.js" %}')
     script(src='{% static "vendors/jqvmap/dist/maps/jquery.vmap.world.js" %}')
-
+    script(src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js")
     script.
             (function($) {
-            "use strict";
-            jQuery('#vmap').vectorMap({
-            map: 'world_en',
-            backgroundColor: null,
-            color: '#ffffff',
-            hoverOpacity: 0.7,
-            selectedColor: '#1de9b6',
-            enableZoom: true,
-            showTooltip: true,
-            values: sample_data,
-            scaleColors: ['#1de9b6', '#03a9f5'],
-            normalizeFunction: 'polynomial'
-            });
+              "use strict";
+              jQuery('#vmap').vectorMap({
+              map: 'world_en',
+              backgroundColor: null,
+              color: '#ffffff',
+              hoverOpacity: 0.7,
+              selectedColor: '#1de9b6',
+              enableZoom: true,
+              showTooltip: true,
+              values: sample_data,
+              scaleColors: ['#1de9b6', '#03a9f5'],
+              normalizeFunction: 'polynomial'
+              });
             })(jQuery);
+  block extra_js

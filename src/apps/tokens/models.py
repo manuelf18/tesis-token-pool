@@ -14,13 +14,13 @@ class Pool(HistoryBase):
                                       verbose_name='Fecha de inicio')
     end_date = models.DateTimeField(null=True, blank=True,
                                     verbose_name='Fecha de finalizacion')
+    token_value = models.IntegerField(default=1, verbose_name='Valor del Token')
     admin = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
 
-"""
-class Token(HistoryBase):
-    pool = models.ForeignKey(Pool, null=True, blank=True, related_name='token',
-                             on_delete=models.SET_NULL, verbose_name="Tipo de proyecto")
-    owner = models.ForeignKey(User, null=True, blank=True, related_name='token',
-                              on_delete=models.SET_NULL, verbose_name="Dueño")
-"""
+class Network(HistoryBase):
+    url = models.CharField(max_length=50, null=True, blank=True,
+                           default='', verbose_name="Url")
+    port = models.CharField(max_length=50, null=True, blank=True,
+                            default='', verbose_name="Puerto")
+    connected = models.BooleanField(default=False, verbose_name='Conectado')

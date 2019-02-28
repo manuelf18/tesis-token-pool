@@ -1,10 +1,11 @@
 from django.urls import path
 
-from .views import BuyerTemplateView, BuyTokenView, TestHelloWorldFormView
+from .views import BuyerTemplateView, BuyTokenView, GetTokenView, StatusView, pay_view
 
 urlpatterns = [
-    path('buyers', (BuyerTemplateView.as_view()), name='buyer-template'),
+    path('buy/list', (BuyerTemplateView.as_view()), name='buyer-template'),
     path('buy/<int:pk>', (BuyTokenView.as_view()), name='buyer-create'),
-    path('test', (TestHelloWorldFormView.as_view()), name='test-hello-world'),
-
+    path('get/<int:pk>', (GetTokenView.as_view()), name='buyer-retrieve'),
+    path('status', (StatusView.as_view()), name='status'),
+    path('pay', pay_view, name='pay'),
 ]

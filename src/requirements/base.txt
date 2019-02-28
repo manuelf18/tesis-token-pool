@@ -30,6 +30,7 @@ requests==2.21.0
 rlp==1.1.0
 six==1.12.0
 sqlparse==0.2.4
+stripe==2.21.0
 toolz==0.9.0
 urllib3==1.24.1
 web3==4.8.2

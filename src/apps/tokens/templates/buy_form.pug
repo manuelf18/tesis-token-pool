@@ -1,0 +1,34 @@
+extends base_dark
+block title
+    title Deposito de Tokens
+block content
+    .login-content
+            .login-logo
+                a(href='index.html')
+                img.align-content(src='images/logo.png', alt='')
+                h1(style='color:white;') Deposito de Tokens
+            .login-form
+                    - csrf_token
+                    label Cantidad de Tokens a Depositar
+                    input#qty.form-control(type="number", name="")
+                    button.buy-btn.btn.btn-primary(type="button") Enviar
+
+block extra_js
+    script.
+        (async function($){
+            let poolObj = new PoolContract($);
+            await poolObj.setContract();
+            $(".buy-btn").click(async () => {
+                try{
+                    let url = $(location). attr("href");
+                    let index = substringAfter(url, '/', url.indexOf('buy'));
+                    let qty = $('#qty').val() * 100;
+                    await poolObj.addUserToPool(qty, 'UTPToken', index);
+                    alert(`Ha introducido ${qty / 100} tokens con exito`);
+                }
+                catch(e){
+                    alert(e);
+                    throw new Error(e);
+                }
+            }); 
+        })(jQuery);

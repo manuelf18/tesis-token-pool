@@ -1,0 +1,53 @@
+extends base
+-load static
+block title
+    title Pagina de Compradores
+//- mixin card(pk)
+//-   .card
+//-     .card-header
+//-         .stat-content.dib
+//-             .stat-text(style='font-size:25px;'){{pool.name}}
+//-     h4.card-body.pt-5.text-justify Tipo del Token: {{pool.token_name}}
+//-     if user.is_anonymous == False
+//-         a(href="{% url 'tokens:buyer-create' pk %}").btn.btn-success Participar
+
+block content
+    h1.title.text-center Estos son los pozos disponibles
+    h4.subtitle.text-center.font-weight-light.font-italic  Este es tu portal para el cambio de tokens de ETH a $
+    .row.mt-4
+        .container
+            table.pools.table
+                thead
+                    tr
+                        th(scope="col") #        
+                        th(scope="col") Nombre del Pozo
+                        th(scope="col") Nombre del Token
+                        th(scope="col") Cantidad Disponible
+                        th(scope="col") Unirse        
+                tbody
+
+block extra_js
+    script(src='{% static "js/Contract.js" %}')
+    script.
+        (async function($){
+            try{
+                let poolObj = new PoolContract($);
+                await poolObj.setContract();
+                const amount = await poolObj.getPoolsLength();
+                const pools = await poolObj.getAllPools(amount);  
+                for ( let [index, pool] of pools.entries() ){
+                    $('.pools').find('tbody').append(
+                        `<tr>
+                            <th scope='row'>${index}</th>
+                            <td>${pool[1]}</td>
+                            <td>${pool[0]}</td>
+                            <td>${pool[2] / 100}</td>
+                            <td><a href='/tokens/buy/${index}' class='btn btn-success'>Depositar Tokens</button>
+                                <a href='/tokens/get/${index}' style='margin-left:5px' class='btn btn-danger'>Retirar Tokens</button></td>
+                        </tr>`);
+                }
+            }
+            catch(e){
+                console.log('error drawing the pool: '+ e);
+            }
+        })(jQuery);

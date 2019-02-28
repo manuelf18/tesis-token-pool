@@ -2,10 +2,10 @@
 !!!5
 html.no-js(lang="en")
 head
-
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
-    title Login
+    block title
+      title Pagina Principal
     meta(name='description', content='Sufee Admin - HTML5 Admin Template')
     meta(name='viewport', content='width=device-width, initial-scale=1')
     link(rel='apple-touch-icon', href='apple-icon.png')
@@ -21,6 +21,7 @@ head
     link(rel='stylesheet', href='{% static "assets/css/style.css" %}')
     link(rel='stylesheet', href='{% static "assets/css/style2.css" %}')
     link(href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,800', rel='stylesheet', type='text/css')
+    block extra_css
 
 
 body.bg-dark
@@ -32,3 +33,8 @@ body.bg-dark
     script(src='{% static "vendors/popper.js/dist/umd/popper.min.js" %}')
     script(src='{% static "vendors/bootstrap/dist/js/bootstrap.min.js" %}')
     script(src='{% static "assets/js/main.js" %}')
+    script(src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js")
+    script(src='{% static "js/utils.js" %}')
+    script(src='{% static "js/Contract.js" %}')
+
+block extra_js
