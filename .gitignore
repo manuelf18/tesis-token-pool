@@ -15,7 +15,7 @@ db.sqlite3
 vendors
 bower_components
 src/static/json/
-src/static/css/
+src/static/assets/css/
 
 ## python virtualenv
 .env

@@ -2,8 +2,7 @@
   "name": "sufee-admin-dashboard",
   "homepage": "https://colorlib.com/polygon/sufee/index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "sass assets/scss/style.scss assets/css/style.css"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Aigars Silkalns",
   "license": "MIT",
