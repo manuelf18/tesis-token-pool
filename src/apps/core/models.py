@@ -1,13 +1,15 @@
 from django.db import models
 
+from .managers import BaseManager
 
-class HistoryBase(models.Model):
-    """
-    An abstract model that allows future audit
-    """
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de creación')
-    updated_at = models.DateTimeField(auto_now=True, verbose_name='Fecha de actualización')
+
+class AbstractHistory(models.Model):
+    created_at = models.DateTimeField(
+        auto_now_add=True, verbose_name='Fecha de creación')
+    updated_at = models.DateTimeField(
+        auto_now=True, verbose_name='Fecha de actualización')
     active = models.BooleanField(verbose_name='activo', default=True)
+    objects = BaseManager()
 
     class Meta:
         abstract = True

@@ -1,11 +1,11 @@
 from django.db import models
 from django.utils import timezone
 
-from apps.core.models import HistoryBase
-from apps.profiles.models import User
+from ..core.models import AbstractHistory
+from ..profiles.models import User
 
 
-class Pool(HistoryBase):
+class Pool(AbstractHistory):
     name = models.CharField(max_length=50, null=True, blank=True,
                             default='', verbose_name="Nombre")
     token_name = models.CharField(max_length=50, null=True, blank=True,
@@ -18,7 +18,7 @@ class Pool(HistoryBase):
     admin = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
 
 
-class Network(HistoryBase):
+class Network(AbstractHistory):
     url = models.CharField(max_length=50, null=True, blank=True,
                            default='', verbose_name="Url")
     port = models.CharField(max_length=50, null=True, blank=True,

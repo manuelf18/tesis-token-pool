@@ -1,0 +1,13 @@
+[
+    {
+        "model": "tokens.Network",
+        "pk": 1,
+        "fields": {
+            "url": "localhost:8000",
+            "port": "5777",
+            "connected": true,
+            "created_at": "2018-08-01 00:00:00",
+            "updated_at": "2018-08-01 00:00:00"
+        }
+    }
+]
