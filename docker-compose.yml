@@ -6,10 +6,8 @@ services:
       context: .
       dockerfile: ./docker/postgres/Dockerfile
     container_name: tesis_ps01
-    environment:
-      - POSTGRES_PASSWORD=1029jdsdlaksmdpowj1309u12plmsd
-      - POSTGRES_USER=django
-      - POSTGRES_DB=django
+    env_file:
+      - ./.env
     expose:
       - 5432
     hostname: tesis_ps01
@@ -25,13 +23,8 @@ services:
     depends_on:
       - db
       - ganache
-    environment:
-      - DB_PASSWORD=1029jdsdlaksmdpowj1309u12plmsd
-      - DB_USER=django
-      - DB_NAME=django
-      - DB_HOST=db
-      - DB_PORT=5432
-      - IN_DOCKER=1
+    env_file:
+      - ./.env
     hostname: tesis_dj01
     ports:
       - "8000:8000"
@@ -52,8 +45,8 @@ services:
       - --networkId
       - '5777'
       - -q
-      - --hostname
-      - '0.0.0.0'
+      - -m
+      - 'allow deputy violin final decide tray mule wolf pledge inject clay spike'
     hostname: tesis_ganache_cli
     expose:
       - 8545

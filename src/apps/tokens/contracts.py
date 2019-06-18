@@ -6,7 +6,10 @@ from .models import Network
 
 class Contract:
     def __init__(self, contract_name, *args, **kwargs):
-        self.network_id = Network.objects.get(connected=True).port
+        try:
+            self.network_id = Network.objects.get(connected=True).port
+        except Network.DoesNotExist:
+            self.network_id = '5777'
         self.web3 = Web3(HTTPProvider('http://ganache:8545'))
         self.web3.eth.defaultAccount = self.web3.eth.accounts[0]
         json_data = self.get_contract_json(contract_name)
