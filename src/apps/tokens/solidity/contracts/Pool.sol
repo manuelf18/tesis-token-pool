@@ -10,7 +10,7 @@ contract PoolManager{
     mapping(uint => mapping(address => uint) ) userIndex;
 
     struct Pool {
-        string poolName; string tokenName; address tokenAddress; uint amount; uint value; 
+        string poolName; string tokenName; address tokenAddress; uint amount; uint value;
         mapping(uint => User) Users; uint usersLength;
     }
     Pool[] PoolsArr;
@@ -73,7 +73,7 @@ contract PoolManager{
         Pool memory pool = PoolsArr[index];
         return (pool.tokenName, pool.poolName, pool.amount, pool.tokenAddress, pool.value);
     }
-    
+
     function getAmountOfUsersInPool(uint _poolIndex) public view returns (uint){
         return PoolsArr[_poolIndex].usersLength;
     }
