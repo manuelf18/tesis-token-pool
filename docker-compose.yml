@@ -19,7 +19,7 @@ services:
       context: .
       dockerfile: ./docker/django/Dockerfile
     container_name: tesis_dj01
-    command: bash -c "/code/utils/wait-for-it.sh postgres:5432 && python manage.py migrate && python manage.py loaddata initial && python manage.py runserver 0.0.0.0:8000"
+    command: bash -c "/code/utils/migrate.sh && /code/utils/wait-for-it.sh postgres:5432 && python manage.py migrate && python manage.py loaddata initial && python manage.py runserver 0.0.0.0:8000"
     depends_on:
       - db
       - ganache

@@ -9,6 +9,10 @@ from .forms import HelloWorldTestForm, TokenBuyClass
 from .models import Pool
 
 
+class TokensListView(TemplateView):
+    template_name = 'clients/tokens_list.pug'
+
+
 class BuyerTemplateView(TemplateView):
     template_name = 'buy_list.pug'
 

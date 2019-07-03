@@ -1,32 +1,89 @@
-extends base
+extends base_landing
 -load static
-block content
-  h1.title.text-center Bienvenido a la pagina de cambio de monedas
-  h4.subtitle.text-center.font-weight-light.font-italic  Este es tu portal para el cambio de tokens de ETH a $
-  .row.mt-4
-    .col-5.offset-1.col-xl-4.offset-xl-2
-      .card
-        .card-header(style='background-color:white')
-          .stat-widget-one
-            .stat-icon.dib
-              i.ti-money.text-success.border-success(style='font-size:20px;')
-            .stat-content.dib
-              .stat-text(style='font-size:25px;') Precio del Token
-        h2.card-body.py-5.text-center(style='font-size:50px;') $49.99
-    .col-5.col-xl-4
-      .card
-        .card-header(style='background-color:white')
-          .stat-widget-one
-            .stat-icon.dib
-              i.ti-link.text-success.border-success(style='font-size:20px;')
-            .stat-content.dib
-              .stat-text(style='font-size:25px;') Cantidad de Tokens
-        h2.card-body.py-5.text-center(style='font-size:50px;') 22000
-  .row
-    .col-8.offset-2
-      .card.bg-flat-color-5.text-light
-        .card-body
-          .h4.m-0 Por que comprar?
-          .progress-bar.bg-light.mt-2.mb-2(role='progressbar', style='width: 20%; height: 5px;', aria-valuenow='20', aria-valuemin='0', aria-valuemax='100')
-          p.text-light Comprar es tu mejor opcion, ya que puedes entrar al gran mundo del tokens de ETH con un gran precio.<br>
-          button.btn.btn-light Comprar ya!
+  block content
+    header.masthead.bg-primary.text-white.text-center
+      .container.d-flex.align-items-center.flex-column
+        h1.masthead-heading.mb-5 Conseguir tokens sin tener que moverse
+        img.masthead-avatar.mb-5(src=' {% static "landing/img/money-ico.png" %}', alt='')
+        p(style='font-size:20px')
+          | "No me digas cuales son tus prioridades. Muestrame en que gastas tu dinero y te diré cuales son"
+          br
+          | —James W. Frick
+      .divider-custom.divider-light
+        a.btn.btn-xl.btn-outline-light.mt-4(href='{% url "tokens:tokens-list" %}')
+          | Ver lista de tokens
+    // Portfolio Section
+    section#about.page-section
+      .container
+        // About Section Heading
+        h2.page-section-heading.text-center.text-uppercase Sobre nosotros
+        // Icon Divider
+        .divider-custom
+          .divider-custom-line
+          .divider-custom-icon
+            i.fas.fa-star
+          .divider-custom-line
+        // About Section Content
+        .row
+          .col-lg-4(style='margin-left:15%')
+            h2 Inversiones
+            p.lead Inverta sus tokens con el proposito de poder ganar dinero
+          .col-lg-4(style='margin-left:10%')
+            h2 Compras
+            p.lead
+              | You can create your own custom avatar for the masthead, change the icon in the dividers, and add your email address to the contact form to make it fully functional!
+    // About Section
+    section#portfolio.page-section.portfolio.bg-primary.text-white.mb-0
+      .container
+        // Portfolio Section Heading
+        h2.page-section-heading.text-center.text-uppercase.text-secondary.mb-0 Portfolio
+        // Icon Divider
+        .divider-custom
+          .divider-custom-line
+          .divider-custom-icon
+            i.fas.fa-star
+          .divider-custom-line
+        // Portfolio Grid Items
+        .row
+          // Portfolio Item 1
+          .col-md-6.col-lg-4
+            .portfolio-item.mx-auto
+              .portfolio-item-caption.d-flex.align-items-center.justify-content-center.h-100.w-100
+                .portfolio-item-caption-content.text-center.text-white
+                  p Facilidad de Diseño
+              img.img-fluid(src='{% static "landing/img/portfolio/cabin.png" %}', alt='')
+          // Portfolio Item 2
+          .col-md-6.col-lg-4
+            .portfolio-item.mx-auto(data-toggle='modal', data-target='#portfolioModal2')
+              .portfolio-item-caption.d-flex.align-items-center.justify-content-center.h-100.w-100
+                .portfolio-item-caption-content.text-center.text-white
+                  i.fas.fa-plus.fa-3x
+              img.img-fluid(src='{% static "landing/img/portfolio/cake.png" %}', alt='')
+          // Portfolio Item 3
+          .col-md-6.col-lg-4
+            .portfolio-item.mx-auto(data-toggle='modal', data-target='#portfolioModal3')
+              .portfolio-item-caption.d-flex.align-items-center.justify-content-center.h-100.w-100
+                .portfolio-item-caption-content.text-center.text-white
+                  i.fas.fa-plus.fa-3x
+              img.img-fluid(src='{% static "landing/img/portfolio/circus.png" %}', alt='')
+        // /.row
+        // Footer
+    footer.footer.text-center
+      .container
+        .row
+          // Footer Location
+          .col-lg-6.mb-5.mb-lg-0
+            h4.text-uppercase.mb-4 Ubicación
+            p.lead.mb-0
+              | Plaza Centennial
+              br
+              | Local B32
+          // Footer Social Icons
+          .col-lg-6.mb-5.mb-lg-0
+            h4.text-uppercase.mb-4 Alrededor de la Web
+            a.btn.btn-outline-light.btn-social.mx-1(href='#')
+              i.fab.fa-fw.fa-facebook-f
+            a.btn.btn-outline-light.btn-social.mx-1(href='#')
+              i.fab.fa-fw.fa-twitter
+            a.btn.btn-outline-light.btn-social.mx-1(href='#')
+              i.fab.fa-fw.fa-instagram

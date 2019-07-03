@@ -1,0 +1,87 @@
+extends base_landing
+-load static
+
+block extra_css
+    link(href="{% static 'pages/plugins/Datatables/datatables.min.css' %}", rel='stylesheet', type='text/css')
+
+
+block content
+    section#about.page-section(style='padding: 0 10rem; margin: 11rem 0 20rem 0')
+        table#tableWithSearch.table.table-hover.demo-table-search.table-responsive-block.dataTable.no-footer(role='grid')
+            thead
+                tr(role='row')
+                    th Nombre del Token
+                    th Valor
+            tbody
+                tr(role='row', style='cursor:pointer')
+                    td.v-align-middle.tbody-td-js hh
+                    td.v-align-middle.tbody-td-js hh
+
+block extra_js
+    script(src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js")
+    script(src='{% static "js/Contract.js" %}')
+    script(src="{% static 'pages/plugins/Datatables/datatables.min.js' %}", type='text/javascript')
+    script(src='https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.js')
+    script.
+        (function (){
+            var App = {
+                Controls: {
+                    table: $('#tableWithSearch'),
+                },
+                init: function(){
+                    App.Methods.initTable();
+                    App.Methods.setDataToTable();
+                    App.bindEvents();
+                },
+                bindEvents: function(){
+
+                },
+                Methods: {
+                    initTable: function(){
+                        const SETTINGS = {
+                            "order": [],
+                            "sDom": "<t><'row'<p i>>",
+                            "destroy": true,
+                            "scrollCollapse": true,
+                            "responsive": true,
+                            "oLanguage": {
+                                "sLengthMenu": "Mostrar _MENU_ entradas",
+                                "sInfo": "Mostrando <b>_START_ hasta _END_</b> de _TOTAL_ entradas",
+                                "sInfoEmpty": "No hay entradas que mostrar",
+                                "sInfoFiltered": " - filtrando de _MAX_ entradas",
+                                "sEmptyTable": "No hay datos disponible en la tabla",
+                                "sSearch": "Filtrar entradas"
+                            },
+                            "columnDefs": [
+                            ],
+                            "iDisplayLength": 10
+                        };
+                        App.Controls.table.DataTable(SETTINGS);
+                    },
+                    setDataToTable: async function(){
+                        try {
+                            let networkId = 5777;
+                            let resp = await App.Requests.getContractJSON();
+                            const { abi } = resp
+                            const { address } = resp['networks'][networkId];
+                            const contract = new PoolContract(abi, networkId, address);
+                            await contract.setContract();
+                            console.log(await contract.getPoolsLength());
+                        }
+                        catch(e){
+                            console.log(e);
+                            return;
+                        }
+                    },
+                },
+                Requests: {
+                    getContractJSON: function(){
+                        return $.ajax({
+                            method: 'GET',
+                            url: '/static/json/PoolManager.json'
+                        });
+                    },
+                },
+            }
+            App.init();
+        })()
