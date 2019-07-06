@@ -2,25 +2,41 @@ extends base_landing
 -load static
 
 block extra_css
-    link(href="{% static 'pages/plugins/Datatables/datatables.min.css' %}", rel='stylesheet', type='text/css')
+    // link(href="{% static 'pages/plugins/Datatables/datatables.min.css' %}", rel='stylesheet', type='text/css')
+    link(href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.css", rel='stylesheet', type='text/css')
+    link(href="https://cdn.datatables.net/1.10.19/css/dataTables.semanticui.min.css", rel='stylesheet', type='text/css')
+
+    style.
+        body{
+            height:100%;
+        }
+        tr{
+            cursor: pointer;
+        }
+        tr:hover{
+            background-color: #1abc9c;
+        }
 
 
 block content
-    section#about.page-section(style='padding: 0 10rem; margin: 11rem 0 20rem 0')
-        table#tableWithSearch.table.table-hover.demo-table-search.table-responsive-block.dataTable.no-footer(role='grid')
-            thead
-                tr(role='row')
-                    th Nombre del Token
-                    th Valor
-            tbody
-                tr(role='row', style='cursor:pointer')
-                    td.v-align-middle.tbody-td-js hh
-                    td.v-align-middle.tbody-td-js hh
+    .container.d-flex.flex-column
+        section#about.page-section
+            table#tableWithSearch(class='ui celled table', style='width:100%')
+                thead
+                    tr(role='row')
+                        th Nombre del Pozo
+                        th Nombre del Token
+                        th Cantidad de Tokens actuales
+                        th Valor
+                        th Dirección del Token
+                tbody
 
 block extra_js
     script(src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js")
     script(src='{% static "js/Contract.js" %}')
     script(src="{% static 'pages/plugins/Datatables/datatables.min.js' %}", type='text/javascript')
+    script(src='https://cdn.datatables.net/1.10.19/js/dataTables.semanticui.min.js')   
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.js')    
     script(src='https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.js')
     script.
         (function (){
@@ -66,7 +82,19 @@ block extra_js
                             const { address } = resp['networks'][networkId];
                             const contract = new PoolContract(abi, networkId, address);
                             await contract.setContract();
-                            console.log(await contract.getPoolsLength());
+                            const pools = await contract.getAllPools();
+                            const table = App.Controls.table.DataTable();
+                            for (const pool of pools){
+                                if(pool['5'] === false){
+                                    table.row.add( [
+                                    pool['1'],
+                                    pool['0'],
+                                    pool['2'],
+                                    pool['4'],
+                                    pool['3'],
+                                    ] ).draw( false );
+                                }
+                            }
                         }
                         catch(e){
                             console.log(e);

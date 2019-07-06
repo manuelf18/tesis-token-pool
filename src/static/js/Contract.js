@@ -73,21 +73,19 @@ class PoolContract extends Contract {
         }
     }
     getPoolsLength(){
-            return this.contract.methods.getPoolsLength().call({from:this.accounts[0]});
+        return this.contract.methods.getPoolsLength().call({from:this.accounts[0]});
     }
-    async getPool(index){
-        try{
-            return await this.contract.methods.getPoolByIndex(index).call({from:this.accounts[0]});
-        }
-        catch(e){
-            console.log('error in method getPool: '+ e);
-            throw new Error(e);
-        }
+
+    getPool(index){
+        return this.contract.methods.getPoolByIndex(index).call({from:this.accounts[0]});
     }
-    async getAllPools(amount){
+
+    async getAllPools(){
         try{
+            const poolAmount = await this.getPoolsLength();
+            if ( poolAmount < 1 ) throw new Error(`There aren't any pools`);
             let pools = [], i;
-            for(i=0; i < amount; i++)
+            for(i=0; i < poolAmount; i++)
                 pools.push(await this.getPool(i));
             return pools;
         }

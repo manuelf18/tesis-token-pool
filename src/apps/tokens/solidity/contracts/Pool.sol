@@ -10,7 +10,7 @@ contract PoolManager{
     mapping(uint => mapping(address => uint) ) userIndex;
 
     struct Pool {
-        string poolName; string tokenName; address tokenAddress; uint amount; uint value;
+        string poolName; string tokenName; address tokenAddress; uint amount; uint value; bool closed;
         mapping(uint => User) Users; uint usersLength;
     }
     Pool[] PoolsArr;
@@ -32,6 +32,7 @@ contract PoolManager{
         pool.tokenName = _tokenName;
         pool.tokenAddress = _tokenAddress;
         pool.value = _value;
+        pool.closed = false;
         PoolsArr.push(pool);
     }
 
@@ -69,9 +70,9 @@ contract PoolManager{
         return PoolsArr.length;
     }
 
-    function getPoolByIndex(uint index) public view returns(string memory, string memory, uint, address, uint) {
+    function getPoolByIndex(uint index) public view returns(string memory, string memory, uint, address, uint, bool) {
         Pool memory pool = PoolsArr[index];
-        return (pool.tokenName, pool.poolName, pool.amount, pool.tokenAddress, pool.value);
+        return (pool.tokenName, pool.poolName, pool.amount, pool.tokenAddress, pool.value, pool.closed);
     }
 
     function getAmountOfUsersInPool(uint _poolIndex) public view returns (uint){
@@ -96,6 +97,11 @@ contract PoolManager{
             user.amount -= _amount;
         emit superAmount(user.amount);
         PoolsArr[_poolIndex].Users[_userIndex] = user;
+    }
+
+    function closePool(uint _poolIndex) public ownable(){
+        Pool storage pool = PoolsArr[_poolIndex];
+        pool.closed = true;
     }
 
     function payUser(address _tokenAddress, address _userAddress, uint _amount) public ownable(){

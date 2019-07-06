@@ -1,11 +1,11 @@
 import json
 import os
 from web3 import Web3, HTTPProvider
-from .models import Network
 
 
 class Contract:
     def __init__(self, contract_name, *args, **kwargs):
+        from .models import Network
         try:
             self.network_id = Network.objects.get(connected=True).port
         except Network.DoesNotExist:
@@ -60,10 +60,7 @@ class PoolContract(Contract):
     def create_pool(self, pool_name, token_name, token_value):
         json_data = self.get_contract_json(token_name)
         token_address = self.get_address_from_json(json_data)
-        try:
-            return self.contract.functions.addPool(pool_name, token_name, token_address, token_value).transact()
-        except Exception as e:
-            print(e)
+        return self.contract.functions.addPool(pool_name, token_name, token_address, token_value).transact()
 
     def pay(self, pool_index, tokens_qty):
         try:
