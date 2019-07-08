@@ -21,8 +21,8 @@ class Contract {
 }
 
 class TokenContract extends Contract {
-    constructor($, nameOfTokenContract ,networkId){
-        super($, nameOfTokenContract, networkId);
+    constructor(abi, networkId, address){
+        super(abi, networkId, address);
     }
     async approve(address, amount){
         try{
@@ -60,17 +60,8 @@ class PoolContract extends Contract {
             throw new Error(e);
         }
     }
-    async addUserToPool(amount, tokenName, tokenIndex){
-        try{
-            const tokenContractObj = new TokenContract(this.$, tokenName || 'StandardToken', this.networkId);
-            await tokenContractObj.setContract();
-            await tokenContractObj.approve(this.address, amount);
-            await this.contract.methods.addUserToPool(amount, tokenIndex).send({from:this.accounts[0]});
-        }
-        catch(e){
-            console.log('error in method addUserToToken: ' + e);
-            throw Error(e);
-        }
+    addUserToPool(amount, tokenIndex){
+        return this.contract.methods.addUserToPool(amount, tokenIndex).send({from:this.accounts[0]});
     }
     getPoolsLength(){
         return this.contract.methods.getPoolsLength().call({from:this.accounts[0]});

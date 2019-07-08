@@ -2,7 +2,6 @@ extends base_landing
 -load static
 
 block extra_css
-    // link(href="{% static 'pages/plugins/Datatables/datatables.min.css' %}", rel='stylesheet', type='text/css')
     link(href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.3.1/semantic.min.css", rel='stylesheet', type='text/css')
     link(href="https://cdn.datatables.net/1.10.19/css/dataTables.semanticui.min.css", rel='stylesheet', type='text/css')
 
@@ -28,7 +27,6 @@ block content
                         th Nombre del Token
                         th Cantidad de Tokens actuales
                         th Valor
-                        th Dirección del Token
                 tbody
 
 block extra_js
@@ -44,13 +42,23 @@ block extra_js
                 Controls: {
                     table: $('#tableWithSearch'),
                 },
-                init: function(){
+                init: async function(){
                     App.Methods.initTable();
-                    App.Methods.setDataToTable();
+                    await App.Methods.setDataToTable();
                     App.bindEvents();
                 },
                 bindEvents: function(){
-
+                    $('tbody > tr').on('click', App.eventListeners.onRowClick);
+                },
+                eventListeners:{
+                    onRowClick: function(ev){
+                        const id = $(this).data('id');
+                        if(id === undefined){
+                            Swal.fire({type:'error', title:'id no definido'});
+                            return;
+                        }
+                        window.location.replace(`pools/${id}`);
+                    },
                 },
                 Methods: {
                     initTable: function(){
@@ -60,6 +68,9 @@ block extra_js
                             "destroy": true,
                             "scrollCollapse": true,
                             "responsive": true,
+                            "createdRow": function( row, data, dataIndex){
+                                $(row).attr('data-id', dataIndex + 1);
+                            },
                             "oLanguage": {
                                 "sLengthMenu": "Mostrar _MENU_ entradas",
                                 "sInfo": "Mostrando <b>_START_ hasta _END_</b> de _TOTAL_ entradas",
@@ -91,7 +102,6 @@ block extra_js
                                     pool['0'],
                                     pool['2'],
                                     pool['4'],
-                                    pool['3'],
                                     ] ).draw( false );
                                 }
                             }

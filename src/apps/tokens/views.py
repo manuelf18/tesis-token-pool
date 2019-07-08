@@ -9,8 +9,17 @@ from .forms import HelloWorldTestForm, TokenBuyClass
 from .models import Pool
 
 
-class TokensListView(TemplateView):
-    template_name = 'clients/tokens_list.pug'
+class PoolsListView(TemplateView):
+    template_name = 'clients/pools_list.pug'
+
+
+class PoolsDetailView(TemplateView):
+    template_name = 'clients/pools_detail.pug'
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['id'] = kwargs['id']
+        return ctx
 
 
 class BuyerTemplateView(TemplateView):

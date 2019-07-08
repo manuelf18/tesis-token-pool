@@ -9,8 +9,8 @@ html(lang='en')
     title Trys
     // Custom fonts for this theme
     link(href='{% static "landing/vendor/fontawesome-free/css/all.min.css" %}', rel='stylesheet', type='text/css')
-    link(href='https://fonts.googleapis.com/css?family=Montserrat:400,700', rel='stylesheet', type='text/css')
-    link(href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic', rel='stylesheet', type='text/css')
+    link(href='https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,700', rel='stylesheet', type='text/css')
+    link(href='https://fonts.googleapis.com/css?family=Lato:100,200,400,700,400italic,700italic', rel='stylesheet', type='text/css')
     // Theme CSS
     link(href='{% static "landing/css/freelancer.min.css" %}', rel='stylesheet')
     block extra_css
@@ -42,4 +42,5 @@ html(lang='en')
     script(src=' {% static "landing/js/contact_me.js" %}')
     // Custom scripts for this template
     script(src=' {% static "landing/js/freelancer.min.js" %}')
+    script(src='https://cdn.jsdelivr.net/npm/sweetalert2@8')
     block extra_js

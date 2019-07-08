@@ -1,5 +1,6 @@
 // Import variables (overrides Bootstrap defaults)
 @import "base/variables.scss";
+@import "_mixins";
 
 // Import Bootstrap
 @import "bootstrap/scss/bootstrap.scss";
@@ -10,6 +11,8 @@
 // Import components styles
 @import "components/divider.scss";
 @import "components/buttons.scss";
+@import "components/cards.scss";
+@import "components/tabs_accordian";
 
 // Import layout styles
 @import "layout/navbar.scss";
