@@ -1,7 +1,8 @@
 from django.urls import path
 
-from .views import (BuyerTemplateView, BuyTokenView, GetTokenView, StatusView,
-                    PoolsListView, PoolsDetailView, pay_view)
+from .views import (BuyerTemplateView, BuyTokenView, GetTokenView,
+                    PoolsDetailView, PoolsListView, StatusView,
+                    pay_deposit_view, pay_withdraw_view)
 
 urlpatterns = [
     path('pools', PoolsListView.as_view(), name='pools-list'),
@@ -10,5 +11,10 @@ urlpatterns = [
     path('buy/<int:pk>', (BuyTokenView.as_view()), name='buyer-create'),
     path('get/<int:pk>', (GetTokenView.as_view()), name='buyer-retrieve'),
     path('status', (StatusView.as_view()), name='status'),
-    path('pay', pay_view, name='pay'),
+
+
+
+    # AJAX views
+    path('pay/deposit', pay_deposit_view, name='pay-deposit'),
+    path('pay/withdraw', pay_withdraw_view, name='pay-withdraw'),
 ]

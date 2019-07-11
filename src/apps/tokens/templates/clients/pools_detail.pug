@@ -36,7 +36,8 @@ block content
                     .card.card-default(style='width: 100%')
                         .card-body
                             h2 Datos del Pozo
-                            span.label.label-success abierto
+                            .labels
+                                span.label.label-success abierto
                             hr
                             span.title Nombre del Pozo:
                             span.subtitle.subtitle-name 
@@ -52,27 +53,27 @@ block content
                 .col-sm-12.col-lg-6
                     .card.card-default
                         ul.nav.nav-tabs.nav-tabs-simple.d-none.d-md-flex.d-lg-flex.d-xl-flex(role='tablist', data-init-reponsive-tabs='dropdownfx')
-                            li.nav-item
-                                a.active.show(data-toggle='tab', role='tab', data-target='#tab2buy', href='#', aria-selected='true') Compras
-                            li.nav-item
-                                a(href='#', data-toggle='tab', role='tab', data-target='#tab2sell', aria-selected='false') Ventas 
+                            li.nav-item.nav-item-buy
+                                a.active.show(data-toggle='tab', role='tab', data-target='#tab2buy', href='#', aria-selected='true') Depositar
+                            li.nav-item.nav-item-sell
+                                a(href='#', data-toggle='tab', role='tab', data-target='#tab2sell', aria-selected='false') Retirar 
                         .tab-content
                             #tab2buy.tab-pane.active.show
                                 p
-                                | En este panel puede adquirir una cantidad de tokens dentro del pozo
+                                | En este panel puede depositar una cantidad de tokens dentro del pozo
                                 .form-group.mt-2
                                     label(for='qty') Cantidad
-                                    input#qty.form-control(type="number", name="qty")
+                                    input#qty_deposit.form-control(type="number", name="qty")
                                 .form-group.float-right
-                                    button.btn.btn-success.btn-js-buy(type='button') Adquirir
+                                    button.btn.btn-success.btn-js-deposit(type='button') Depositar
                             #tab2sell.tab-pane
                                 p
-                                | En este panel puede insertar una cantidad de tokens dentro del pozo
+                                | En este panel puede retirar una cantidad de tokens dentro del pozo
                                 .form-group.mt-2
                                     label(for='qty') Cantidad
-                                    input#qty.form-control(type="number", name="qty")
+                                    input#qty_withdraw.form-control(type="number", name="qty")
                                 .form-group.float-right
-                                    button.btn.btn-success.btn-js-buy(type='button') Depositar
+                                    button.btn.btn-success.btn-js-withdraw(type='button') Retirar
 
 
 block extra_js
@@ -102,17 +103,17 @@ block extra_js
                     }
                 },
                 bindEvents: function(){
-                    $('.btn-js-buy').on('click', App.eventListeners.onBtnBuyClick);
+                    $('.btn-js-deposit').on('click', App.eventListeners.onBtnDepositClick);
+                    $('.btn-js-withdraw').on('click', App.eventListeners.onBtnWithdrawClick);
                 },
                 eventListeners: {
-                    onBtnBuyClick: async function(ev){
+                    onBtnDepositClick: async function(ev){
                         try{
-                            const index = {{id}} - 1;
-                            const qty = $('#qty').val();
+                            const index = parseInt(`${ {{id}} }`) - 1;
+                            const qty = $('#qty_deposit').val();
                             const tokenName = $('.subtitle-token-name').text();
                             const networkId = 5777;
                             const poolAddress = App.Controls.contract.address;
-                            console.log(poolAddress);
                             let resp = await App.Requests.getContractJSON(tokenName);
                             const { abi } = resp
                             const { address } = resp['networks'][networkId];
@@ -120,11 +121,30 @@ block extra_js
                             await contract.setContract();
                             await contract.approve(poolAddress, qty);
                             await App.Controls.contract.addUserToPool(qty, index);
+                            await App.Requests.payUserForPool({qty, user_address: App.Controls.contract.accounts[0]});
+                            Swal.fire({type:'success', title: `Ha depositado ${qty} tokens, y ha recibido su pago`});
                         }
                         catch(e){
                             throw e;
                         }
-                    }
+                    },
+                    onBtnWithdrawClick: async function(ev){
+                        try{
+                            await App.Controls.contract.setContract()
+                            const address = App.Controls.contract.accounts[0];
+                            const data = {
+                                pool_index: `${ {{id}} - 1 }`,
+                                token_qty: $('#qty_withdraw').val(),
+                                user_address: address
+                            };
+                            const resp = await App.Requests.sendWithdrawRequest(data);
+                            console.log(resp);
+                        }
+                        catch(e){
+                            console.log(e);
+                            Swal.fire({type: 'error', title: e});
+                        }
+                    },
                 },
                 Events:{
                     initContract: async function(){
@@ -146,10 +166,15 @@ block extra_js
                             const poolData = await App.Methods.getPool({{id}});
                             $('.subtitle-name').text(poolData[1]);
                             $('.subtitle-token-name').text(poolData[0]);
-                            $('.subtitle-address').text(poolData[3]);
                             const value = parseFloat(poolData[4]).toFixed(2);
                             $('.subtitle-value').text(value);
-                            $('.subtitle-qty').text(poolData[2])
+                            $('.subtitle-qty').text(poolData[2]);
+                            if (poolData['6'])
+                                $('.labels').append('<span class="label label-success">Introdujo</span>');
+                            if (poolData['2'] <= 0 /* || poolData['6'] */){
+                                console.log('hola');
+                                $('.nav-item-sell').hide();
+                            }
                         }
                         catch(e){
                             console.log('There was an error');
@@ -168,6 +193,20 @@ block extra_js
                             url: `/static/json/${contractName}.json`
                         });
                     },
+                    sendWithdrawRequest: function(data){
+                        return $.ajax({
+                            method: 'POST',
+                            url: '{% url "tokens:pay-withdraw" %}',
+                            data
+                        });
+                    },
+                    payUserForPool: function(data){
+                        return $.ajax({
+                            method: 'POST',
+                            url: '{% url "tokens:pay-deposit" %}',
+                            data
+                        });  
+                    }
                 },
             }
             App.init();

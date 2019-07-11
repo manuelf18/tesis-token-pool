@@ -1,8 +1,10 @@
-from django.http import HttpResponse
-from django.shortcuts import redirect, render
-from django.views.generic import CreateView, TemplateView
+import os
 
 import stripe
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import redirect, render
+from django.views.decorators.http import require_http_methods
+from django.views.generic import CreateView, TemplateView
 
 from .contracts import PoolContract
 from .forms import HelloWorldTestForm, TokenBuyClass
@@ -54,29 +56,43 @@ class StatusView(TemplateView):
     because it's only goal is to comunicate with the Contract class """
 
 
-def pay_view(request):
-    if request.method == 'POST':
-        token_qty = request.POST.get('qty', None)
-        pool_index = request.POST.get('pool_index', None)
-        if (token_qty is None or pool_index is None):
-            response = HttpResponse('Failure')
-            response.status_code = 400
-            return response
-        try:
-            token_qty = int(token_qty)
-            pool_index = int(pool_index)
-            stripe.api_key = "sk_test_KuzPN3hC3fKgYD8KljCMkZ2F"
-            stripe.Charge.create(
-                amount=token_qty,
-                currency="usd",
-                description="Cargo de compra de {} tokens".format(token_qty / 100),
-                source="tok_amex",
+@require_http_methods(["POST", ])
+def pay_withdraw_view(request):
+    if not request.is_ajax():
+        return JsonResponse({'message': 'Error handler content'}, status=403)
+    try:
+        token_qty = int(request.POST['token_qty'])
+        pool_index = int(request.POST['pool_index'])
+        user_address = request.POST['user_address']
+        pool = PoolContract()
+        stripe.api_key = os.environ.get('STRIPE_API_KEY')
+        stripe.Charge.create(
+            amount=token_qty,
+            currency="usd",
+            description="Cargo de compra de {} tokens".format(token_qty / 100),
+            source="tok_amex",
             )
-            pool = PoolContract()
-            pool.pay(pool_index, token_qty)
-            response = HttpResponse('Success')
-            response.status_code = 200
-            return response
-        except:
-            raise Exception('Hubo un error')
-    return HttpResponse('Wrong Method').status_code(405)
+        pool.pay_user_for_withdrawing_pool(pool_index, token_qty, user_address)
+        response = HttpResponse('Success')
+        response.status_code = 200
+        return response
+    except Exception as e:
+        print(e)
+        return JsonResponse({'message': 'There was an error'}, status=500)
+
+
+@require_http_methods(["POST", ])
+def pay_deposit_view(request):
+    if not request.is_ajax():
+        return JsonResponse({'message': 'Error handler content'}, status=403)
+    try:
+        print(request.POST)
+        token_qty = int(request.POST['qty'])
+        user_address = request.POST['user_address']
+        pool = PoolContract()
+        pool.pay_user_for_joining_pool(user_address, token_qty)
+        response = HttpResponse('Success')
+        response.status_code = 200
+        return response
+    except:
+        return JsonResponse({'message': 'There was an error'}, status=500)

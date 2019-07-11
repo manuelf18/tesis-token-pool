@@ -36,13 +36,20 @@ contract PoolManager{
         PoolsArr.push(pool);
     }
 
+    function userIsInPool(uint _poolIndex) public view returns (bool){
+        if (userIndex[_poolIndex][msg.sender] == 0){
+            return false;
+        }
+        return true;
+    }
+
     function addUserToPool(uint _amount, uint _poolIndex) public {
         User memory user;
         Pool storage pool = PoolsArr[_poolIndex];
         address tokenContract = pool.tokenAddress;
         ERC20(tokenContract).transferFrom(msg.sender, address(this), _amount);
         pool.amount += _amount;
-        if (userIndex[_poolIndex][msg.sender] == 0) {
+        if (!userIsInPool(_poolIndex)) {
             user.userAddress = msg.sender;
             user.amount = _amount;
             pool.usersLength++;
@@ -70,9 +77,10 @@ contract PoolManager{
         return PoolsArr.length;
     }
 
-    function getPoolByIndex(uint index) public view returns(string memory, string memory, uint, address, uint, bool) {
+    function getPoolByIndex(uint index) public view returns(string memory, string memory, uint, address, uint, bool, bool) {
         Pool memory pool = PoolsArr[index];
-        return (pool.tokenName, pool.poolName, pool.amount, pool.tokenAddress, pool.value, pool.closed);
+        bool _userInPool = userIsInPool(index);
+        return (pool.tokenName, pool.poolName, pool.amount, pool.tokenAddress, pool.value, pool.closed, _userInPool);
     }
 
     function getAmountOfUsersInPool(uint _poolIndex) public view returns (uint){
@@ -105,7 +113,18 @@ contract PoolManager{
     }
 
     function payUser(address _tokenAddress, address _userAddress, uint _amount) public ownable(){
-        address tokenContract = _tokenAddress;
-        ERC20(tokenContract).transfer(_userAddress, _amount);
+        ERC20(_tokenAddress).transfer(_userAddress, _amount);
+    }
+
+    function payUserFromPool(uint _poolIndex, address _userAddress, uint _amount) public ownable(){
+        Pool storage pool = PoolsArr[_poolIndex];
+        require(pool.amount >= _amount, 'Not enough tokens');
+        address tokenAddress = pool.tokenAddress;
+        ERC20(tokenAddress).transfer(_userAddress, _amount);
+        pool.amount -= _amount;
+    }
+
+    function getBalanceOf(address _tokenAddress) public view ownable() returns (uint){
+        return ERC20(_tokenAddress).balanceOf(address(this));
     }
 }

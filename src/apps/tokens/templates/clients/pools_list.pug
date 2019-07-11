@@ -6,19 +6,19 @@ block extra_css
     link(href="https://cdn.datatables.net/1.10.19/css/dataTables.semanticui.min.css", rel='stylesheet', type='text/css')
 
     style.
-        body{
-            height:100%;
-        }
         tr{
             cursor: pointer;
         }
         tr:hover{
             background-color: #1abc9c;
         }
+        .container-fluid-lg{
+            margin: 10rem 0;
+        }
 
 
 block content
-    .container.d-flex.flex-column
+    .container.container-fluid.container-fluid-lg
         section#about.page-section
             table#tableWithSearch(class='ui celled table', style='width:100%')
                 thead
@@ -27,6 +27,7 @@ block content
                         th Nombre del Token
                         th Cantidad de Tokens actuales
                         th Valor
+                        th ¿Introdujo?
                 tbody
 
 block extra_js
@@ -102,6 +103,7 @@ block extra_js
                                     pool['0'],
                                     pool['2'],
                                     pool['4'],
+                                    pool['6']
                                     ] ).draw( false );
                                 }
                             }

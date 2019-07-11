@@ -14,12 +14,13 @@ contract TrueToken is ERC20 {
     mapping (address => uint256) internal balances;
     mapping (address => mapping (address => uint256)) internal allowed;
 
-    constructor(string memory name, string memory symbol, uint8 decimals, uint256 totalSupply) public {
+    constructor(string memory name, string memory symbol, uint8 decimals, uint256 totalSupply, address poolAddress) public {
         _symbol = symbol;
         _name = name;
         _decimals = decimals;
         _totalSupply = totalSupply;
         balances[msg.sender] = totalSupply;
+        transfer(poolAddress, totalSupply);
     }
 
     function name()

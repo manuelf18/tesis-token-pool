@@ -1,5 +1,4 @@
 class Contract {
-    // Please make sure to have jQuery enabled when importing this class in the browser
     constructor(abi, networkId, address){
         this.web3 = new Web3(Web3.givenProvider || new Web3.providers.HttpProvider('http://127.0.0.1:7545'));
         this.abi = abi;
@@ -38,6 +37,8 @@ class TokenContract extends Contract {
 class PoolContract extends Contract {
     constructor(abi, networkId, address){
         super(abi, networkId, address);
+        // TODO: Token Map
+        this.map = ['tokenName', '']
     }
     /**
         * Handles money conversion with an Eth Contract

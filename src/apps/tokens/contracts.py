@@ -54,6 +54,15 @@ class TokenContract(Contract):
 
 
 class PoolContract(Contract):
+    """
+    Index map:
+    0 -> Token name
+    1 -> Pool name
+    2 -> Amount of tokens in pool
+    3 -> Token address
+    4 -> Token value
+    5 -> Pool is closed
+    """
     def __init__(self):
         super().__init__('PoolManager')
 
@@ -62,17 +71,23 @@ class PoolContract(Contract):
         token_address = self.get_address_from_json(json_data)
         return self.contract.functions.addPool(pool_name, token_name, token_address, token_value).transact()
 
-    def pay(self, pool_index, tokens_qty):
+    def pay_user_for_withdrawing_pool(self, pool_index, tokens_qty, user_address):
         try:
-            total = self.contract.functions.getPoolByIndex(pool_index).call()[2] + tokens_qty
-            amount = self.contract.functions.getAmountOfUsersInPool(pool_index).call()
-            json_data = self.get_contract_json('TrueToken')
-            token_address = self.get_address_from_json(json_data)
-            tc = TokenContract('TrueToken')
-            for i in range(amount):
-                [user_address, user_amount] = self.contract.functions.getUserFromPool(pool_index, i).call()
-                to_pay = int((user_amount / total) * tokens_qty)
-                self.contract.functions.updateUserAmount(pool_index, i, to_pay, False).transact()
-                self.contract.functions.payUser(token_address, user_address, to_pay).transact()
+            resp = self.contract.functions.payUserFromPool(pool_index, user_address, tokens_qty).transact()
         except Exception as e:
             print(e)
+            raise e
+
+    def pay_user_for_joining_pool(self, user_address, tokens_qty):
+        try:
+            token_address = self.get_address_from_json(self.get_contract_json('TrueToken'))
+            resp = self.contract.functions.payUser(token_address, user_address, tokens_qty).transact()
+            print(self.get_balance_of('TrueToken'))
+        except Exception as e:
+            print(e)
+            raise e
+
+    def get_balance_of(self, token_name):
+        json_data = self.get_contract_json(token_name)
+        token_address = self.get_address_from_json(json_data)
+        return self.contract.functions.getBalanceOf(token_address).call()
