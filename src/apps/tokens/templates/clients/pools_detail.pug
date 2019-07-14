@@ -26,8 +26,6 @@ block extra_css
         }
 
 
-
-
 block content
     .container.container-fluid.container-fluid-lg
         section#about.page-section.offset-lg-2
@@ -166,7 +164,7 @@ block extra_js
                             const poolData = await App.Methods.getPool({{id}});
                             $('.subtitle-name').text(poolData[1]);
                             $('.subtitle-token-name').text(poolData[0]);
-                            const value = parseFloat(poolData[4]).toFixed(2);
+                            const value = `$${parseFloat(poolData[4]).toFixed(2)}`;
                             $('.subtitle-value').text(value);
                             $('.subtitle-qty').text(poolData[2]);
                             if (poolData['6'])

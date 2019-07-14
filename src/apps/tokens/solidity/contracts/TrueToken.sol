@@ -19,8 +19,7 @@ contract TrueToken is ERC20 {
         _name = name;
         _decimals = decimals;
         _totalSupply = totalSupply;
-        balances[msg.sender] = totalSupply;
-        transfer(poolAddress, totalSupply);
+        balances[poolAddress] = totalSupply;
     }
 
     function name()

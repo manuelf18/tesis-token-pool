@@ -16,7 +16,6 @@ class Contract {
             throw new Error(e);
         }
     }
-
 }
 
 class TokenContract extends Contract {
@@ -25,7 +24,7 @@ class TokenContract extends Contract {
     }
     async approve(address, amount){
         try{
-            return await this.contract.methods.approve(address, amount).send({from:this.accounts[0]});
+            return await this.contract.methods.approve(address, amount * 100).send({from:this.accounts[0]});
         }
         catch(e){
             console.log('error in approve: ' + e);
@@ -83,7 +82,7 @@ class PoolContract extends Contract {
         }
         catch(e){
             console.log('error in method getAllPools: '+ e);
-            throw new Error(e);
+            throw e;
         }
     }
     async getTokens(amount, poolIndex){

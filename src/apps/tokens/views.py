@@ -69,7 +69,7 @@ def pay_withdraw_view(request):
         stripe.Charge.create(
             amount=token_qty,
             currency="usd",
-            description="Cargo de compra de {} tokens".format(token_qty / 100),
+            description="Cargo de compra de {} tokens".format(token_qty),
             source="tok_amex",
             )
         pool.pay_user_for_withdrawing_pool(pool_index, token_qty, user_address)
