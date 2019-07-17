@@ -3,8 +3,6 @@ extends base_landing
 
 block extra_css
     link(href='{% static "pages/plugins/pace/pace-theme-flash.css" %}', rel='stylesheet', type='text/css')
-    //link(href='{% static "pages/css/pages.css" %}', rel='stylesheet', type='text/css')
-    //link(href='{% static "pages/css/themes/light.min.css" %}', rel='stylesheet', type='text/css')
     link(href='{% static "pages/css/pages-icons.css" %}', rel='stylesheet', type='text/css')
 
     style.
@@ -21,34 +19,36 @@ block extra_css
             margin-left: 5px;
             color: green;
         }
-        .container-fluid-lg{
-            margin: 5rem 0;
+        .main-cont{
+            margin-top: 5rem;
+            margin-bottom: 10rem;
         }
 
 
 block content
-    .container.container-fluid.container-fluid-lg
-        section#about.page-section.offset-lg-2
-            .row
-                .col-sm-12.col-lg-6
-                    .card.card-default(style='width: 100%')
-                        .card-body
-                            h2 Datos del Pozo
-                            .labels
-                                span.label.label-success abierto
-                            hr
-                            span.title Nombre del Pozo:
-                            span.subtitle.subtitle-name 
-                            br
-                            span.title Nombre del Token
-                            span.subtitle.subtitle-token-name
-                            br
-                            span.title Valor:
-                            span.subtitle.subtitle-value
-                            br
-                            span.title Cantidad de Tokens en el Pozo:
-                            span.subtitle.subtitle-qty
-                .col-sm-12.col-lg-6
+    .container.h-100.main-cont
+        .row
+            .col-12
+                .text-center
+                    h1 Datos del Pozo
+        .row.mt-4
+            .col-sm-12.col-lg-6
+                .card.card-default(style='width: 100%')
+                    .card-body
+                        h2
+                            .pool-name
+                        .labels
+                            span.label.label-success abierto
+                        hr
+                        span.title Nombre del Token
+                        span.subtitle.subtitle-token-name
+                        br
+                        span.title Valor:
+                        span.subtitle.subtitle-value
+                        br
+                        span.title Cantidad de Tokens en el Pozo:
+                        span.subtitle.subtitle-qty
+            .col-sm-12.col-lg-6
                     .card.card-default
                         ul.nav.nav-tabs.nav-tabs-simple.d-none.d-md-flex.d-lg-flex.d-xl-flex(role='tablist', data-init-reponsive-tabs='dropdownfx')
                             li.nav-item.nav-item-buy
@@ -162,7 +162,7 @@ block extra_js
                     initData: async function(){
                         try{
                             const poolData = await App.Methods.getPool({{id}});
-                            $('.subtitle-name').text(poolData[1]);
+                            $('.pool-name').text(poolData[1]);
                             $('.subtitle-token-name').text(poolData[0]);
                             const value = `$${parseFloat(poolData[4]).toFixed(2)}`;
                             $('.subtitle-value').text(value);

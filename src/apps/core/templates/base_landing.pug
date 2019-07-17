@@ -11,15 +11,19 @@ html(lang='en')
     link(href='{% static "landing/vendor/fontawesome-free/css/all.min.css" %}', rel='stylesheet', type='text/css')
     link(href='https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,700', rel='stylesheet', type='text/css')
     link(href='https://fonts.googleapis.com/css?family=Lato:100,200,400,700,400italic,700italic', rel='stylesheet', type='text/css')
-    // Theme CSS
     link(href='{% static "landing/css/freelancer.min.css" %}', rel='stylesheet')
+    style.
+    .main-link{
+      underline: none;
+    }
     block extra_css
   body#page-top
     // Masthead
     nav#mainNav.navbar.navbar-expand-lg.bg-secondary.text-uppercase.fixed-top
       .container
         #navbarResponsive.collapse.navbar-collapse
-          h2.text-white TRYS
+          h2.text-white 
+            a.main-link(href='/') TRYS
           ul.navbar-nav.ml-auto
             a.btn.btn-outline-light(href='{% url "profiles:login" %}')
               i.fas.fa-user.mr-2
