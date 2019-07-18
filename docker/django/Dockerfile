@@ -1,5 +1,5 @@
 FROM python:3.6.3-stretch
-LABEL MAINTAINER="Balboa developers development group"
+LABEL MAINTAINER="Manuel Fernandez manuel.fernandez@balboadevelopers.com"
 ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update

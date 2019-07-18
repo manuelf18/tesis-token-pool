@@ -1,4 +1,4 @@
-version: '3'
+version: '3.1'
 
 services:
   db:
@@ -19,7 +19,9 @@ services:
       context: .
       dockerfile: ./docker/django/Dockerfile
     container_name: tesis_dj01
-    command: bash -c "/code/utils/migrate.sh && /code/utils/wait-for-it.sh postgres:5432 && python manage.py migrate && python manage.py loaddata initial && python manage.py runserver 0.0.0.0:8000"
+    command: bash -c "/code/utils/wait-for-it.sh postgres:5432 && python manage.py migrate && python manage.py loaddata initial && python manage.py runserver 0.0.0.0:8000"
+    links:
+      - ganache
     depends_on:
       - db
       - ganache
@@ -31,25 +33,22 @@ services:
     user: root
     volumes:
       - ./src:/code
-      - ./src/media:/code/media
       - ./utils:/code/utils
+      - contracts:/code/static/json
     restart: always
   ganache:
     build:
       context: .
-      dockerfile: ./docker/ganache-cli/Dockerfile
-    container_name: tesis_ganache_cli
-    entrypoint:
-      - node
-      - /app/ganache-core.docker.cli.js
-      - --networkId
-      - '5777'
-      - -q
-      - -m
-      - 'allow deputy violin final decide tray mule wolf pledge inject clay spike'
-    hostname: tesis_ganache_cli
-    expose:
-      - 8545
+      dockerfile: ./docker/ganache/Dockerfile
     ports:
       - "8545:8545"
+    volumes:
+      - ./src/apps/tokens/solidity:/code
+      - contracts:/code/build/contracts
+    container_name: tesis_ganache
+    hostname: tesis_ganache
+    command: sh -c "concurrently 'npm run start-ganache' 'npm run compile' "
     restart: always
+
+volumes:
+  contracts: 

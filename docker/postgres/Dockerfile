@@ -1,2 +1,2 @@
 FROM postgres:9.6.6
-LABEL MAINTAINER="Balboa developers development group"
+LABEL MAINTAINER="Manuel Fernandez manuel.fernandez@balboadevelopers.com"
