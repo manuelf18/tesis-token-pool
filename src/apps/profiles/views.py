@@ -12,7 +12,6 @@ class HomeView(TemplateView):
 
 class LoginView(DjangoLoginView):
     template_name = 'login.pug'
-    success_url = '/'
 
 
 class SignUpView(CreateView):
@@ -28,5 +27,5 @@ class SignUpView(CreateView):
         return redirect(self.success_url)
 
 
-def CustomNotFoundView(TemplateView):
-    template_name = '404.pug'
+class DashboardView(TemplateView):
+    template_name = 'dashboard.pug'

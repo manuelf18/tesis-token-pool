@@ -10,7 +10,7 @@ contract PoolManager{
     mapping(uint => mapping(address => uint) ) userIndex;
 
     struct Pool {
-        string poolName; string tokenName; address tokenAddress; uint amount; uint value; bool closed;
+        string poolName; string tokenName; address tokenAddress; uint amount; uint value; bool closed; uint soldAmount;
         mapping(uint => User) Users; uint usersLength;
     }
     Pool[] PoolsArr;
@@ -32,6 +32,7 @@ contract PoolManager{
         pool.tokenName = _tokenName;
         pool.tokenAddress = _tokenAddress;
         pool.value = _value;
+        pool.soldAmount = 0;
         pool.closed = false;
         PoolsArr.push(pool);
     }
@@ -77,10 +78,10 @@ contract PoolManager{
         return PoolsArr.length;
     }
 
-    function getPoolByIndex(uint index) public view returns(string memory, string memory, uint, address, uint, bool, bool) {
+    function getPoolByIndex(uint index) public view returns(string memory, string memory, uint, address, uint, bool, bool, uint) {
         Pool memory pool = PoolsArr[index];
         bool _userInPool = userIsInPool(index);
-        return (pool.tokenName, pool.poolName, pool.amount, pool.tokenAddress, pool.value, pool.closed, _userInPool);
+        return (pool.tokenName, pool.poolName, pool.amount, pool.tokenAddress, pool.value, pool.closed, _userInPool, pool.soldAmount);
     }
 
     function getAmountOfUsersInPool(uint _poolIndex) public view returns (uint){
@@ -122,6 +123,7 @@ contract PoolManager{
         address tokenAddress = pool.tokenAddress;
         ERC20(tokenAddress).transfer(_userAddress, _amount);
         pool.amount -= _amount;
+        pool.soldAmount = _amount;
     }
 
     function getBalanceOf(address _tokenAddress) public view ownable() returns (uint){

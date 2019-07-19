@@ -34,6 +34,17 @@ class TokenContract extends Contract {
 
 
 class PoolContract extends Contract {
+    /*
+    Index map:
+    0 -> Token name
+    1 -> Pool name
+    2 -> Amount of tokens in pool
+    3 -> Token address
+    4 -> Token value
+    5 -> Pool is closed
+    6 -> User (msg.sender) has tokens in pool
+    7 -> Sold tokens
+    */
     constructor(abi, networkId, address){
         super(abi, networkId, address);
         // TODO: Token Map

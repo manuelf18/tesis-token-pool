@@ -1,0 +1,180 @@
+extends base_admin
+- load static
+
+block extra_css
+    link(href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css", rel='stylesheet', type='text/css')
+
+
+block content
+
+    .row
+        h1.m-l-20 Dashboard
+    .row
+        .col-lg-6.m-b-10.d-flex
+            // START WIDGET widget_pendingComments.tpl
+            .card.no-border.card-condensed.no-margin.align-self-stretch.d-flex.flex-column
+                .padding-25
+                    .pull-left
+                        h2.text-success.no-margin Información
+                        p.no-margin Bienvenido 
+                            span(style='font-weight:bold;') #{user.name}
+                            |. Aquí tienes todos los reportes disponibles:
+                    .clearfix
+                .p-l-25.p-r-25.p-t-10
+                    h3 Ventas:
+                    h4 (Meta Actual: 100 tokens)
+                    .m-t-15
+                        .m-l-10
+                            span.total-sales(style='font-size:15px;')
+                            .progress.progress-small.m-b-15.m-t-10
+                                .progress-bar.progress-bar-info.total-sales-bar(style='width:0%')
+                            .progress-info-text.hint-text.small
+                            br
+                            span.top-pool(style='font-size:15px;')
+
+        .col-lg-6.m-b-10.d-flex
+            // START WIDGET widget_pendingComments.tpl
+            .card.no-border.card-condensed.no-margin.align-self-stretch.d-flex.flex-column
+                .padding-25
+                    .pull-left
+                        h2.text-success.no-margin Pozos
+                        p.no-margin Aquí tienes todos los pozos disponibles:
+                        table#tableWithSearch.cell-border(style='width:100%; margin-top: 1rem;')
+                            thead
+                                tr(role='row')
+                                    th Nombre del Pozo
+                                    th Nombre del Token
+                                    th Tokens Disponibles
+                                    th Tokens Vendidos
+                                    th Valor
+                                tbody
+                        button.btn.btn-primary.float-right.m-t-20(type='button') Nuevo Pozo
+
+
+
+block extra_js
+    script(src="{% static 'pages/plugins/Datatables/datatables.min.js' %}", type='text/javascript')
+    script(src='https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js')   
+    script(src='https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.js')
+    script(src='{% static "js/Contract.js" %}')
+    script.
+        (function(){
+            var App = {
+                Controls:{
+                    Contract: null,
+                    Table: $('table'),
+                },
+                init: function(){
+                    App.initEvents();
+                    App.bindEvents();
+                },
+                initEvents: async function(){
+                    try{
+                        await App.Events.initContract();
+                        await App.Events.initData();
+                    }
+                    catch(e){
+                        Swal.fire({type:'error', title:e});
+                    }
+                },
+                bindEvents: function(){
+                    $('.btn-js-deposit').on('click', App.eventListeners.onBtnDepositClick);
+                    $('.btn-js-withdraw').on('click', App.eventListeners.onBtnWithdrawClick);
+                },
+                eventListeners: {
+                },
+                Events:{
+                    initContract: async function(){
+                        try{
+                            const networkId = 5777;
+                            let resp = await App.Requests.getContractJSON('PoolManager');
+                            const { abi } = resp
+                            const { address } = resp['networks'][networkId];
+                            const contract = new PoolContract(abi, networkId, address);
+                            await contract.setContract();
+                            App.Controls.Contract = contract;
+                        }
+                        catch(e){
+                            throw e;
+                        }
+                    },
+                    initData: async function(){
+                        try{
+                            const pools = await App.Controls.Contract.getAllPools();
+                            App.Methods.initSalesBar(pools);
+                            App.Methods.setDataToTable(pools);
+                        } catch(e){
+                            console.log(e);
+                        }
+                    }
+                },
+                Methods: {
+                    initSalesBar: function(pools){
+                    },
+                    setDataToTable: function(pools){
+                        const table = App.Controls.Table.DataTable();
+                        for (const pool of pools){
+                            if(pool['5'] === false){
+                                table.row.add( [
+                                pool['1'],
+                                pool['0'],
+                                pool['2'],
+                                pool['7'],
+                                parseFloat(pool['4']).toFixed(2),
+                                ] ).draw( false );
+                            }
+                        }
+                    },
+                },
+                Requests: {
+                    getContractJSON: function(contractName){
+                        return $.ajax({
+                            method: 'GET',
+                            url: `/static/json/${contractName}.json`
+                        });
+                    },
+                },
+                Statistics: {
+                    getMostTokenSoldPool: function(pools){
+                        let amount = 0;
+                        const maxPool = { amount: 0 };
+                        for( const pool of pools ){
+                            // get amount of tokens sold and the pool that sold the most tokens
+                            let tokensInPool = parseInt(pool[7]);
+                            amount += tokensInPool;
+                            if ( tokensInPool > maxPool.amount ){
+                                maxPool.name = pool[1];
+                                maxPool.amount = tokensInPool;
+                            }
+                            else if(tokensInPool === maxPool.amount){
+                                maxPool.name += `, ${pool[1]}`;
+                            }
+                        }
+                        const goal = 200;
+                        const percentage = (amount / goal);
+                        if(amount <= 0) throw new Error({message:'No se han vendido tokens todavia'});
+                        $('.total-sales').text(`Cantidad de tokens vendidos: ${parseInt(amount)}`);
+                        $('.total-sales-bar').css('width', `${percentage * 100}%`);
+                        $('.top-pool').text(`El pozo que mas ha recaudado es: ${maxPool.name}, con: ${maxPool.amount} tokens`);
+                        $('.progress-info-text').text(`${percentage * 100}% del total`);
+                    },
+                    getLargestTokenPool: function(pools){
+                        let amount = 0;
+                        const maxPool = { amount: 0 };
+                        for( const pool of pools ){
+                            // get amount of tokens sold and the pool that sold the most tokens
+                            let tokensInPool = parseInt(pool[2]);
+                            amount += tokensInPool;
+                            if ( tokensInPool > maxPool.amount ){
+                                maxPool.name = pool[1];
+                                maxPool.amount = tokensInPool;
+                            }
+                            else if(tokensInPool === maxPool.amount){
+                                maxPool.name += `, ${pool[1]}`;
+                            }
+                        }
+                    }
+                }
+            }
+            App.init();
+        })()
