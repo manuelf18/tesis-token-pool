@@ -128,15 +128,15 @@ block extra_js
                     },
                     onBtnWithdrawClick: async function(ev){
                         try{
-                            await App.Controls.contract.setContract()
                             const address = App.Controls.contract.accounts[0];
+                            const token_qty = $('#qty_withdraw').val();
                             const data = {
                                 pool_index: `${ {{id}} - 1 }`,
-                                token_qty: $('#qty_withdraw').val(),
+                                token_qty,
                                 user_address: address
                             };
                             const resp = await App.Requests.sendWithdrawRequest(data);
-                            console.log(resp);
+                            Swal.fire({type:'success', title: `Ha retirado ${token_qty} tokens, y ha recibido su pago`});
                         }
                         catch(e){
                             console.log(e);

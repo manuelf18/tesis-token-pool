@@ -67,7 +67,7 @@ def pay_withdraw_view(request):
         pool = PoolContract()
         stripe.api_key = os.environ.get('STRIPE_API_KEY')
         stripe.Charge.create(
-            amount=token_qty,
+            amount=token_qty * 100,
             currency="usd",
             description="Cargo de compra de {} tokens".format(token_qty),
             source="tok_amex",

@@ -123,7 +123,7 @@ contract PoolManager{
         address tokenAddress = pool.tokenAddress;
         ERC20(tokenAddress).transfer(_userAddress, _amount);
         pool.amount -= _amount;
-        pool.soldAmount = _amount;
+        pool.soldAmount += _amount;
     }
 
     function getBalanceOf(address _tokenAddress) public view ownable() returns (uint){
