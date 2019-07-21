@@ -22,18 +22,23 @@ block content
                     .clearfix
                 .p-l-25.p-r-25.p-t-10
                     h3 Ventas:
-                    h4 (Meta Actual: 100 tokens)
                     .m-t-15
-                        .m-l-10
+                        .m-l-10.sold-tokens
+                            span.sales-goal.text-success(style='font-size:15px;') Meta actual: 200 tokens
+                            br                            
                             span.total-sales(style='font-size:15px;')
                             .progress.progress-small.m-b-15.m-t-10
                                 .progress-bar.progress-bar-info.total-sales-bar(style='width:0%')
                             .progress-info-text.hint-text.small
                             br
                             span.top-pool(style='font-size:15px;')
+                        .m-l-10.m-t-10.m-b-10.available-tokens
+                            span.total-available.text-success(style='font-size:15px;')
+                            br
+                            br
+                            span.total-available-for-paying.text-complete(style='font-size:15px;')
 
         .col-lg-6.m-b-10.d-flex
-            // START WIDGET widget_pendingComments.tpl
             .card.no-border.card-condensed.no-margin.align-self-stretch.d-flex.flex-column
                 .padding-25
                     .pull-left
@@ -70,13 +75,38 @@ block extra_js
                 },
                 initEvents: async function(){
                     try{
-                        await App.Events.initContract();
+                        App.Controls.Contract = await App.Events.initContract('PoolManager');
+                        await App.initTable();
                         await App.Events.initData();
                     }
                     catch(e){
                         Swal.fire({type:'error', title:e});
                     }
                 },
+                initTable: function(){
+                    const SETTINGS = {
+                        "order": [],
+                        "sDom": "<t><'row'<p i>>",
+                        "destroy": true,
+                        "scrollCollapse": true,
+                        "responsive": true,
+                        "createdRow": function( row, data, dataIndex){
+                            $(row).attr('data-id', dataIndex + 1);
+                        },
+                        "oLanguage": {
+                            "sLengthMenu": "Mostrar _MENU_ entradas",
+                            "sInfo": "Mostrando <b>_START_ hasta _END_</b> de _TOTAL_ entradas",
+                            "sInfoEmpty": "No hay entradas que mostrar",
+                            "sInfoFiltered": " - filtrando de _MAX_ entradas",
+                            "sEmptyTable": "No hay datos disponible en la tabla",
+                            "sSearch": "Filtrar entradas"
+                        },
+                        "columnDefs": [
+                        ],
+                        "iDisplayLength": 10
+                    };
+                    App.Controls.Table.DataTable(SETTINGS);
+                    },
                 bindEvents: function(){
                     $('.btn-js-deposit').on('click', App.eventListeners.onBtnDepositClick);
                     $('.btn-js-withdraw').on('click', App.eventListeners.onBtnWithdrawClick);
@@ -84,32 +114,37 @@ block extra_js
                 eventListeners: {
                 },
                 Events:{
-                    initContract: async function(){
+                    initContract: async function(contractName){
                         try{
                             const networkId = 5777;
-                            let resp = await App.Requests.getContractJSON('PoolManager');
+                            let resp = await App.Requests.getContractJSON(contractName);
                             const { abi } = resp
                             const { address } = resp['networks'][networkId];
                             const contract = new PoolContract(abi, networkId, address);
                             await contract.setContract();
-                            App.Controls.Contract = contract;
+                            return contract;
                         }
                         catch(e){
                             throw e;
                         }
                     },
                     initData: async function(){
+                        let pools = [];
                         try{
-                            const pools = await App.Controls.Contract.getAllPools();
-                            App.Methods.initSalesBar(pools);
-                            App.Methods.setDataToTable(pools);
+                            pools = await App.Controls.Contract.getAllPools();;
                         } catch(e){
                             console.log(e);
                         }
+                        App.Methods.initSalesInfo(pools);
+                        App.Methods.setDataToTable(pools);
                     }
                 },
                 Methods: {
-                    initSalesBar: function(pools){
+                    initSalesInfo: function(pools){
+                        App.Statistics.getMostTokenSoldPool(pools);
+                        App.Statistics.getLargestTokenPool(pools);
+                        App.Statistics.getAmountOfTrueTokens();
+
                     },
                     setDataToTable: function(pools){
                         const table = App.Controls.Table.DataTable();
@@ -152,28 +187,37 @@ block extra_js
                         }
                         const goal = 200;
                         const percentage = (amount / goal);
-                        if(amount <= 0) throw new Error({message:'No se han vendido tokens todavia'});
-                        $('.total-sales').text(`Cantidad de tokens vendidos: ${parseInt(amount)}`);
+                        
                         $('.total-sales-bar').css('width', `${percentage * 100}%`);
-                        $('.top-pool').text(`El pozo que mas ha recaudado es: ${maxPool.name}, con: ${maxPool.amount} tokens`);
-                        $('.progress-info-text').text(`${percentage * 100}% del total`);
+                        if(amount <= 0){
+                            $('.total-sales').text('No se han vendido tokens todavia');
+                        }
+                        else{
+                            $('.total-sales').text(`Cantidad de tokens vendidos: ${parseInt(amount)}`);
+                            $('.top-pool').text(`El pozo que mas ha recaudado es: ${maxPool.name}, con: ${maxPool.amount} tokens`);
+                            $('.progress-info-text').text(`${percentage * 100}% del total`);
+                        }
                     },
                     getLargestTokenPool: function(pools){
                         let amount = 0;
                         const maxPool = { amount: 0 };
                         for( const pool of pools ){
                             // get amount of tokens sold and the pool that sold the most tokens
-                            let tokensInPool = parseInt(pool[2]);
-                            amount += tokensInPool;
-                            if ( tokensInPool > maxPool.amount ){
-                                maxPool.name = pool[1];
-                                maxPool.amount = tokensInPool;
-                            }
-                            else if(tokensInPool === maxPool.amount){
-                                maxPool.name += `, ${pool[1]}`;
-                            }
+                            let availableTokens = parseInt(pool[2]);
+                            amount += availableTokens;
                         }
-                    }
+                        if (amount <= 0)
+                            $('.total-available').text('No hay tokens disponibles');
+                        else
+                            $('.total-available').text(`Tokens disponibles: ${amount}`);
+                    },
+                    getAmountOfTrueTokens: async function(){
+                        const serverPoolAmount = `{{token_amount}}`;
+                        if (!serverPoolAmount || serverPoolAmount <= 0)
+                            $('.total-available-for-paying').text('No hay tokens disponibles para pagar');
+                        else
+                            $('.total-available-for-paying').text(`Tokens disponibles para pagos: ${serverPoolAmount}`);
+                    },
                 }
             }
             App.init();

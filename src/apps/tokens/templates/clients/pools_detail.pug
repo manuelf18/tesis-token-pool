@@ -107,6 +107,11 @@ block extra_js
                 eventListeners: {
                     onBtnDepositClick: async function(ev){
                         try{
+                            Swal.fire( 
+                            {   title: 'Depositando Tokens', 
+                                onBeforeOpen: () => { 
+                                    Swal.showLoading();
+                            }});                           
                             const index = parseInt(`${ {{id}} }`) - 1;
                             const qty = $('#qty_deposit').val();
                             const tokenName = $('.subtitle-token-name').text();
@@ -120,7 +125,9 @@ block extra_js
                             await contract.approve(poolAddress, qty);
                             await App.Controls.contract.addUserToPool(qty, index);
                             await App.Requests.payUserForPool({qty, user_address: App.Controls.contract.accounts[0]});
+                            Swal.close();
                             Swal.fire({type:'success', title: `Ha depositado ${qty} tokens, y ha recibido su pago`});
+                            location.reload();
                         }
                         catch(e){
                             throw e;
@@ -128,6 +135,11 @@ block extra_js
                     },
                     onBtnWithdrawClick: async function(ev){
                         try{
+                            Swal.fire( 
+                            {   title: 'Obteniendo Tokens', 
+                                onBeforeOpen: () => { 
+                                    Swal.showLoading();
+                            }});
                             const address = App.Controls.contract.accounts[0];
                             const token_qty = $('#qty_withdraw').val();
                             const data = {
@@ -136,10 +148,13 @@ block extra_js
                                 user_address: address
                             };
                             const resp = await App.Requests.sendWithdrawRequest(data);
-                            Swal.fire({type:'success', title: `Ha retirado ${token_qty} tokens, y ha recibido su pago`});
+                            Swal.close();
+                            Swal.fire({type:'success', title: `Ha retirado ${token_qty} tokens, y ha recibido su pago`, timer:3000});
+                            location.reload();
                         }
                         catch(e){
                             console.log(e);
+                            Swal.close();
                             Swal.fire({type: 'error', title: e});
                         }
                     },

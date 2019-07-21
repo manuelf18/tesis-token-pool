@@ -22,13 +22,13 @@ class TokenContract extends Contract {
     constructor(abi, networkId, address){
         super(abi, networkId, address);
     }
-    async approve(address, amount){
-        try{
-            return await this.contract.methods.approve(address, amount * 100).send({from:this.accounts[0]});
-        }
-        catch(e){
-            console.log('error in approve: ' + e);
-        }
+    approve(address, amount){
+        return this.contract.methods.approve(address, amount * 100).send({from:this.accounts[0]});
+
+    }
+    balanceOf(address){
+        if(!address) address=this.accounts[0];
+        return this.contract.methods.balanceOf(address).call({from: this.accounts[0]});
     }
 }
 
