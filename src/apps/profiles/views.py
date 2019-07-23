@@ -31,7 +31,6 @@ class SignUpView(CreateView):
 class DashboardView(TemplateView):
     template_name = 'dashboard.pug'
 
-
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         pc = PoolContract()

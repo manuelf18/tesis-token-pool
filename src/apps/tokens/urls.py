@@ -1,18 +1,18 @@
+from django.contrib.auth.decorators import login_required
 from django.urls import path
 
-from .views import (BuyerTemplateView, BuyTokenView, GetTokenView,
-                    PoolsDetailView, PoolsListView, StatusView,
+from .views import (AdminPoolCreateView,  PoolsDetailView, PoolsListView,
                     pay_deposit_view, pay_withdraw_view)
+
+
+app_name = 'tokens'
 
 urlpatterns = [
     path('pools', PoolsListView.as_view(), name='pools-list'),
     path('pools/<int:id>', PoolsDetailView.as_view(), name='pools-detail'),
-    path('buy/list', (BuyerTemplateView.as_view()), name='buyer-template'),
-    path('buy/<int:pk>', (BuyTokenView.as_view()), name='buyer-create'),
-    path('get/<int:pk>', (GetTokenView.as_view()), name='buyer-retrieve'),
-    path('status', (StatusView.as_view()), name='status'),
 
-
+    # admin views
+    path('admin/pool/new', login_required(AdminPoolCreateView.as_view()), name='admin-create-pool'),
 
     # AJAX views
     path('pay/deposit', pay_deposit_view, name='pay-deposit'),

@@ -4,6 +4,8 @@ from django.urls import path
 
 from .views import DashboardView, HomeView, LoginView, SignUpView
 
+app_name = 'profiles'
+
 urlpatterns = [
     # client views
     path('', (HomeView.as_view()), name='home'),

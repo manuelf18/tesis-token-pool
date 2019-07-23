@@ -1,0 +1,116 @@
+extends base_admin
+- load static
+
+block extra_css
+    link(rel="stylesheet", href="{% static 'pages/plugins/select2/css/select2.min.css' %}")
+    link(rel="stylesheet", href="{% static 'pages/plugins/bootstrap-datepicker/css/datepicker3.css' %}")
+
+
+block content
+    //- .row
+    //-     h1.m-l-20 Crear nuevo pozo
+    .row
+        .col-lg-8.m-b-10.d-flex
+            .card.no-border.card-condensed.no-margin.align-self-stretch.d-flex.flex-column
+                .padding-25
+                    .pull-left
+                        h2.text-success.no-margin Formulario
+                        p.no-margin Aquí podrá abrir un nuevo pozo
+                .card-body.p-l-25
+                    form(action="", method="POST")
+                        - csrf_token
+                        p Información basica
+                        .form-group
+                            .row
+                                .col-sm-12.col-lg-6
+                                    .form-group.form-group-default.required(style='height: 70px;')
+                                        label(for='name') Nombre del pozo
+                                        input.form-control(type="text", name="name")
+                                .col-sm-12.col-lg-6
+                                    .form-group.form-group-default.required(style='height: 70px;')
+                                        label(for='token_name') Token del pozo
+                                        //- input.form-control(type="select", name="name")
+                                        select.full-width.select-init(name="token_name")
+                                            for token in available_tokens
+                                                option(value='{{token}}'){{token}}
+                        p.m-t-20 Rango de fechas
+                        .form-group
+                            .row
+                                #datepicker-range.input-daterange.input-group
+                                    .col-sm-12.col-lg-6
+                                        .form-group.form-group-default
+                                            label(for='start') Fecha de inicio
+                                            input.input-sm.form-control(type='text', name='start')
+                                    .col-sm-12.col-lg-6
+                                        .form-group.form-group-default
+                                            label(for='end') Fecha de cierre
+                                            input.input-sm.form-control(type='text', name='end')            
+                        .row.m-t-20
+                            .col-12
+                                input.float-right.btn.btn-primary(type="submit", value="Enviar")
+block extra_js
+    script(src='{% static "js/Contract.js" %}')
+    script(src="{% static 'pages/plugins/select2/js/select2.min.js' %}")
+    script(src="{% static 'pages/plugins/bootstrap-datepicker/js/bootstrap-datepicker.js' %}")
+
+
+
+    script.
+        (function(){
+            var App = {
+                Controls:{
+                    Contract: null,
+                },
+                init: function(){
+                    App.initEvents();
+                    App.bindEvents();
+                },
+                initEvents: async function(){
+                    try{
+                        App.Controls.Contract = await App.Events.initContract('PoolManager');
+                        App.Events.initSelects();
+                        App.Events.initDatePickers();
+                    }
+                    catch(e){
+                        Swal.fire({type:'error', title:e});
+                    }
+                },
+                bindEvents: function(){
+                },
+                eventListeners: {
+                },
+                Events:{
+                    initContract: async function(contractName){
+                        try{
+                            const networkId = 5777;
+                            let resp = await App.Requests.getContractJSON(contractName);
+                            const { abi } = resp
+                            const { address } = resp['networks'][networkId];
+                            const contract = new PoolContract(abi, networkId, address);
+                            await contract.setContract();
+                            return contract;
+                        }
+                        catch(e){
+                            throw e;
+                        }
+                    },
+                    initSelects: function(){
+                        $('.select-init').select2();
+                    },
+                    initDatePickers: function(){
+                        $('#datepicker-range').datepicker();
+                    }
+                },
+                Methods: {
+                },
+                Requests: {
+                    getContractJSON: function(contractName){
+                        return $.ajax({
+                            method: 'GET',
+                            url: `/static/json/${contractName}.json`
+                        });
+                    },
+                },
+            }
+            App.init();
+        })()

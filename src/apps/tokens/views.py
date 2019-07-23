@@ -3,12 +3,14 @@ import os
 import stripe
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, TemplateView
 
 from .contracts import PoolContract
-from .forms import HelloWorldTestForm, TokenBuyClass
+from .forms import PoolForm
 from .models import Pool
+from ..profiles.models import User
 
 
 class PoolsListView(TemplateView):
@@ -24,36 +26,27 @@ class PoolsDetailView(TemplateView):
         return ctx
 
 
-class BuyerTemplateView(TemplateView):
-    template_name = 'buy_list.pug'
+class AdminPoolCreateView(TemplateView):
+    template_name = 'admins/create_pool.pug'
 
-    def get_context_data(self, *args, **kwargs):
-        ctx = super().get_context_data(*args, **kwargs)
-        ctx['pools'] = Pool.objects.all()
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['available_tokens'] = ['UTPToken']
         return ctx
 
-
-class BuyTokenView(TemplateView):
-    template_name = 'buy_form.pug'
-
-
-class GetTokenView(TemplateView):
-    template_name = 'get_tokens_form.pug'
-
-
-class StatusView(TemplateView):
-    template_name = 'status_view.pug'
-
-
-# class PayView(TemplateView):
-
-#     def get_context_data(self, *args, **kwargs):
-#         print(self.request.POST)
-#         return super().get_context_data(kwargs)
-
-
-""" This is the only function based view in this project,
-    because it's only goal is to comunicate with the Contract class """
+    def post(self, request):
+        data = request.POST.copy()
+        data.pop('', None)
+        data['admin'] = self.request.user.pk
+        data['token_value'] = data.get('token_value', 1)
+        avoid_signals = False
+        form = PoolForm(data)
+        if form.is_valid():
+            pool = form.save(avoid_signals)
+            pool.save()
+            return redirect(reverse('profiles:home'))
+        print(form.errors)
+        return self.get(request)
 
 
 @require_http_methods(["POST", ])

@@ -1,13 +1,16 @@
 from django import forms
 
-from apps.core.forms import BootstrapForm, BootstrapModelForm
+from ..core.forms import BootstrapForm, BootstrapModelForm
 
 from .models import Pool
 
 
-class TokenBuyClass(BootstrapForm):
-    quantity = forms.DecimalField(label='Cantidad')
+class PoolForm(BootstrapModelForm):
+    class Meta:
+        model = Pool
+        fields = '__all__'
 
-
-class HelloWorldTestForm(BootstrapForm):
-    text = forms.CharField(label='Entrada', max_length=100)
+    def save(self, avoid_signals=False):
+        pool = super().save(commit=False)
+        pool._avoid_signals = avoid_signals
+        return pool
