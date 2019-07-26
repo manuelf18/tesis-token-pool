@@ -17,17 +17,20 @@ block extra_css
             margin-top: 5rem;
             margin-bottom: 16rem;
         }
+        #tableWithSearch{
+            border-collapse: collapse;
+        }
 
 
 block content
-    .container.main-cont
+    .container.main-cont.h-100
         .row
             .col-12
                 .text-center
                     h1 Lista de Pozos
         .row
             .col-12
-                table#tableWithSearch.cell-border(style='width:100%; margin-top: 1rem;')
+                table#tableWithSearch.table.table-bordered(style='width:100%; margin-top: 1rem;')
                     thead
                         tr(role='row')
                             th Nombre del Pozo

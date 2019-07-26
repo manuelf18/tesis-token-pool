@@ -1,0 +1,25 @@
+extends base_admin
+- load static
+
+
+block content
+    .row
+        .col-lg-8.m-b-10.d-flex
+            .card.no-border.card-condensed.no-margin.align-self-stretch.d-flex.flex-column
+                .padding-25
+                    .pull-left
+                        h2.text-success.no-margin Formulario
+                        p.no-margin Aquí podrá abrir un nuevo pozo
+                .card-body.p-l-25
+                    form(action="", method="POST")
+                        - csrf_token
+                        p Información basica
+                        .form-group
+                            .row
+                                .col-12
+                                    .form-group.form-group-default.required
+                                        label(for='name') Nombre del Token
+                                        input.form-control(type="text", name="name")
+                            .row.m-t-20
+                                .col-12
+                                    input.float-right.btn.btn-primary(type="submit", value="Enviar")

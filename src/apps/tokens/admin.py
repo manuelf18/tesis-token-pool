@@ -2,14 +2,23 @@ from django.contrib import admin
 from django.core.exceptions import MultipleObjectsReturned
 
 from .contracts import PoolContract
-from .models import Network, Pool
+from .models import Network, Pool, TokenType
 
 
 @admin.register(Pool)
 class PoolAdmin(admin.ModelAdmin):
-    list_display = ('name', 'token_name', 'admin')
+    list_display = ('name', 'token_type', 'admin')
     list_filter = ['name', ]
-    search_fields = ('token_name', 'name')
+    search_fields = ('name', )
+    actions_on_top = True
+    actions_on_bottom = True
+
+
+@admin.register(TokenType)
+class TokenTypeAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    list_filter = ['name', ]
+    search_fields = ('name', )
     actions_on_top = True
     actions_on_bottom = True
 

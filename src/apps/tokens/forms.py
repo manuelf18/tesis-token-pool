@@ -2,7 +2,7 @@ from django import forms
 
 from ..core.forms import BootstrapForm, BootstrapModelForm
 
-from .models import Pool
+from .models import Pool, TokenType
 
 
 class PoolForm(BootstrapModelForm):
@@ -14,3 +14,9 @@ class PoolForm(BootstrapModelForm):
         pool = super().save(commit=False)
         pool._avoid_signals = avoid_signals
         return pool
+
+
+class TokenTypeForm(BootstrapModelForm):
+    class Meta:
+        model = TokenType
+        fields = '__all__'

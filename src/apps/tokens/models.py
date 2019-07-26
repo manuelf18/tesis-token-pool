@@ -4,13 +4,25 @@ from django.utils import timezone
 from ..core.models import AbstractHistory
 from ..profiles.models import User
 from .signals import PoolSignals
+from .contracts import Contract
+
+
+class TokenType(AbstractHistory):
+    name = models.CharField(max_length=50, null=True, blank=True, unique=True,
+                            default='', verbose_name="Nombre")
+
+    def save(self, *args, **kwargs):
+        try:
+            generic_contract = Contract(self.name)
+            super().save(self, *args, **kwargs)
+        except Exception as e:
+            print('hubo un error {}'.format(e))
 
 
 class Pool(PoolSignals, AbstractHistory):
     name = models.CharField(max_length=50, null=True, blank=True,
                             default='', verbose_name="Nombre")
-    token_name = models.CharField(max_length=50, null=True, blank=True,
-                                  default='', verbose_name="Nombre del Token")
+    token_type = models.ForeignKey(TokenType, null=True, on_delete=models.SET_NULL)
     start_date = models.DateTimeField(null=True, blank=True, default=timezone.now,
                                       verbose_name='Fecha de inicio')
     end_date = models.DateTimeField(null=True, blank=True,
@@ -25,7 +37,7 @@ class Pool(PoolSignals, AbstractHistory):
         pools = cls.objects.filter(closed=False)
         pc = PoolContract()
         for pool in pools:
-            pc.create_pool(pool.name, pool.token_name, pool.token_value)
+            pc.create_pool(pool.name, pool.token_type.name, pool.token_value)
 
 
 class Network(AbstractHistory):

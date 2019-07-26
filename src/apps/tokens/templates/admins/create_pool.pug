@@ -28,11 +28,11 @@ block content
                                         input.form-control(type="text", name="name")
                                 .col-sm-12.col-lg-6
                                     .form-group.form-group-default.required(style='height: 70px;')
-                                        label(for='token_name') Token del pozo
+                                        label(for='token_type') Token del pozo
                                         //- input.form-control(type="select", name="name")
-                                        select.full-width.select-init(name="token_name")
+                                        select.full-width.select-init(name="token_type")
                                             for token in available_tokens
-                                                option(value='{{token}}'){{token}}
+                                                option(value='{{token.pk}}'){{token.name}}
                         p.m-t-20 Rango de fechas
                         .form-group
                             .row

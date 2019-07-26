@@ -3,6 +3,11 @@ extends base_admin
 
 block extra_css
     link(href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css", rel='stylesheet', type='text/css')
+    style.
+        #tableWithSearch{
+            border-collapse: collapse;
+
+        }
 
 
 block content
@@ -43,7 +48,7 @@ block content
                     .pull-left
                         h2.text-success.no-margin Pozos
                         p.no-margin Aquí tienes todos los pozos disponibles:
-                        table#tableWithSearch.cell-border(style='width:100%; margin-top: 1rem;')
+                        table#tableWithSearch.table.table-bordered(style='width:100%; margin-top: 1rem;')
                             thead
                                 tr(role='row')
                                     th Nombre del Pozo

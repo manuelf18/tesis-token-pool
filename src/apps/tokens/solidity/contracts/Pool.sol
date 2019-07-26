@@ -63,15 +63,13 @@ contract PoolManager{
         }
     }
 
-    function getTokens(uint _amount, uint _poolIndex /*, address _payTokenAddress */) public {
+    function getTokens(uint _amount, uint _poolIndex) public {
         Pool memory pool = PoolsArr[_poolIndex];
         require(pool.amount >= _amount, "No hay suficientes tokens");
         address tokenContract = pool.tokenAddress;
         ERC20(tokenContract).transfer(msg.sender, _amount);
-        // ERC20(_payTokenAddress).transferFrom(msg.sender, address(this), _amount);
         pool.amount -= _amount;
         PoolsArr[_poolIndex] = pool;
-        // TODO: implement payment to other users.
     }
 
     function getPoolsLength() public view returns (uint) {

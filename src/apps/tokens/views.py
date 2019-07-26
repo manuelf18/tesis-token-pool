@@ -7,10 +7,10 @@ from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 from django.views.generic import CreateView, TemplateView
 
-from .contracts import PoolContract
-from .forms import PoolForm
-from .models import Pool
 from ..profiles.models import User
+from .contracts import PoolContract
+from .forms import PoolForm, TokenTypeForm
+from .models import Pool, TokenType
 
 
 class PoolsListView(TemplateView):
@@ -31,7 +31,7 @@ class AdminPoolCreateView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['available_tokens'] = ['UTPToken']
+        ctx['available_tokens'] = TokenType.objects.all()
         return ctx
 
     def post(self, request):
@@ -46,7 +46,18 @@ class AdminPoolCreateView(TemplateView):
             pool.save()
             return redirect(reverse('profiles:home'))
         print(form.errors)
-        return self.get(request)
+
+
+class AdminTokenTypeCreateView(TemplateView):
+    template_name = 'admins/create_token_type.pug'
+
+    def post(self, request):
+        data = request.POST.copy()
+        form = TokenTypeForm(data)
+        if form.is_valid():
+            form.save()
+            return redirect(reverse('profiles:home'))
+        print(form.errors)
 
 
 @require_http_methods(["POST", ])
