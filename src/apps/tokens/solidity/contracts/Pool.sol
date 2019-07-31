@@ -4,17 +4,26 @@ import "./lib/ERC20.sol";
 contract PoolManager{
     // these are the structs
     address owner = msg.sender;
-    event createUserIndex (uint);
-    event superAmount(uint x);
-    struct User { address userAddress; uint amount; }
-    mapping(uint => mapping(address => uint) ) userIndex;
-
+    
     struct Pool {
-        string poolName; string tokenName; address tokenAddress; uint amount; uint value; bool closed; uint soldAmount;
-        mapping(uint => User) Users; uint usersLength;
+        string name; string tokenName; address tokenAddress;
     }
-    Pool[] PoolsArr;
-    mapping(address => uint) poolIndex;
+
+    struct UserReceipt {
+        // required
+        address userAddress;
+        string poolKey;
+        uint valueWhenAdded;
+        uint decimals;
+
+        // info purposes only
+        string userName;
+        string userEmail;
+    }
+
+    Pool[] pools;
+
+    mapping(string => uint) keyPool;
 
     modifier poolExists(address _tokenAddress){
         require(_tokenAddress != address(0x0), "Address already assigned");
@@ -26,105 +35,28 @@ contract PoolManager{
         _;
     }
 
-    function addPool(string memory _poolName, string memory _tokenName, address _tokenAddress, uint _value) public poolExists(_tokenAddress) {
-        Pool memory pool;
-        pool.poolName = _poolName;
-        pool.tokenName = _tokenName;
-        pool.tokenAddress = _tokenAddress;
-        pool.value = _value;
-        pool.soldAmount = 0;
-        pool.closed = false;
-        PoolsArr.push(pool);
-    }
-
-    function userIsInPool(uint _poolIndex) public view returns (bool){
-        if (userIndex[_poolIndex][msg.sender] == 0){
+    function verifyUniqueKey(string memory _key) public view {
+        if (keyPool[_key] != 0 || keyOffer[_key] != 0)
             return false;
-        }
         return true;
     }
 
-    function addUserToPool(uint _amount, uint _poolIndex) public {
-        User memory user;
-        Pool storage pool = PoolsArr[_poolIndex];
-        address tokenContract = pool.tokenAddress;
-        ERC20(tokenContract).transferFrom(msg.sender, address(this), _amount);
-        pool.amount += _amount;
-        if (!userIsInPool(_poolIndex)) {
-            user.userAddress = msg.sender;
-            user.amount = _amount;
-            pool.usersLength++;
-            pool.Users[pool.usersLength] = user;
-            userIndex[_poolIndex][msg.sender] = pool.usersLength;
-            emit createUserIndex(userIndex[_poolIndex][msg.sender]);
-        }
-        else {
-            pool.Users[userIndex[_poolIndex][msg.sender]].amount += _amount;
-        }
+    modifier keyIsUnique(string memory _key){
+        require(verifyUniqueKey(_key) == true, 'This key is already in use');
+        _;
     }
 
-    function getTokens(uint _amount, uint _poolIndex) public {
-        Pool memory pool = PoolsArr[_poolIndex];
-        require(pool.amount >= _amount, "No hay suficientes tokens");
-        address tokenContract = pool.tokenAddress;
-        ERC20(tokenContract).transfer(msg.sender, _amount);
-        pool.amount -= _amount;
-        PoolsArr[_poolIndex] = pool;
+    function createPool(string memory _poolName, string memory _tokenName, address _tokenAddress, string memory _key)
+        public
+        ownable()
+        keyIsUnique(_key)
+    {
+        Pool memory pool;
+        pool.name = _poolName;
+        pool.tokenName = _tokenName;
+        pool.tokenAddress = _tokenAddress;
+        pools.push(pool);
+        keyPool[_key] = pools.length - 1;
     }
 
-    function getPoolsLength() public view returns (uint) {
-        return PoolsArr.length;
-    }
-
-    function getPoolByIndex(uint index) public view returns(string memory, string memory, uint, address, uint, bool, bool, uint) {
-        Pool memory pool = PoolsArr[index];
-        bool _userInPool = userIsInPool(index);
-        return (pool.tokenName, pool.poolName, pool.amount, pool.tokenAddress, pool.value, pool.closed, _userInPool, pool.soldAmount);
-    }
-
-    function getAmountOfUsersInPool(uint _poolIndex) public view returns (uint){
-        return PoolsArr[_poolIndex].usersLength;
-    }
-
-    function getUserFromPool(uint _poolIndex) public view returns (address, uint) {
-        User memory user = PoolsArr[_poolIndex].Users[userIndex[_poolIndex][msg.sender]];
-        return (user.userAddress, user.amount);
-    }
-
-    function getUserFromPool(uint _poolIndex, uint _userIndex) public view returns (address, uint) {
-        User memory user = PoolsArr[_poolIndex].Users[_userIndex + 1];
-        return (user.userAddress, user.amount);
-    }
-
-    function updateUserAmount(uint _poolIndex, uint _userIndex, uint _amount, bool add) public ownable(){
-        User memory user = PoolsArr[_poolIndex].Users[_userIndex + 1];
-        if (add)
-            user.amount += _amount;
-        else
-            user.amount -= _amount;
-        emit superAmount(user.amount);
-        PoolsArr[_poolIndex].Users[_userIndex] = user;
-    }
-
-    function closePool(uint _poolIndex) public ownable(){
-        Pool storage pool = PoolsArr[_poolIndex];
-        pool.closed = true;
-    }
-
-    function payUser(address _tokenAddress, address _userAddress, uint _amount) public ownable(){
-        ERC20(_tokenAddress).transfer(_userAddress, _amount);
-    }
-
-    function payUserFromPool(uint _poolIndex, address _userAddress, uint _amount) public ownable(){
-        Pool storage pool = PoolsArr[_poolIndex];
-        require(pool.amount >= _amount, 'Not enough tokens');
-        address tokenAddress = pool.tokenAddress;
-        ERC20(tokenAddress).transfer(_userAddress, _amount);
-        pool.amount -= _amount;
-        pool.soldAmount += _amount;
-    }
-
-    function getBalanceOf(address _tokenAddress) public view ownable() returns (uint){
-        return ERC20(_tokenAddress).balanceOf(address(this));
-    }
-}
+    function addTokenToPool()

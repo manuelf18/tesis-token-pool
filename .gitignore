@@ -25,6 +25,7 @@ env
 
 ## postgres - data
 postgres-data
+postgres-data.bk
 
 ## node dependencies
 node_modules
