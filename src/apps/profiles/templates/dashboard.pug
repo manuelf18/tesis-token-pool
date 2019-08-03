@@ -6,58 +6,58 @@ block extra_css
     style.
         #tableWithSearch{
             border-collapse: collapse;
-
         }
 
 
 block content
-
     .row
         h1.m-l-20 Dashboard
     .row
-        .col-lg-6.m-b-10.d-flex
-            .card.no-border.card-condensed.no-margin.align-self-stretch.d-flex.flex-column
-                .padding-25
+        .col-lg-4.m-b-10
+            .card.card-default.bg-primary
+                .padding-20
                     .pull-left
-                        h2.text-success.no-margin Información
-                        p.no-margin Bienvenido 
-                            span(style='font-weight:bold;') #{user.name}
-                            |. Aquí tienes todos los reportes disponibles:
-                    .clearfix
-                .p-l-25.p-r-25.p-t-10
-                    h3 Ventas:
-                    .m-t-15
-                        .m-l-10.sold-tokens
-                            span.sales-goal.text-success(style='font-size:15px;') Meta actual: 200 tokens
-                            br                            
-                            span.total-sales(style='font-size:15px;')
-                            .progress.progress-small.m-b-15.m-t-10
-                                .progress-bar.progress-bar-info.total-sales-bar(style='width:0%')
-                            .progress-info-text.hint-text.small
-                            br
-                            span.top-pool(style='font-size:15px;')
-                        .m-l-10.m-t-10.m-b-10.available-tokens
-                            span.total-available.text-success(style='font-size:15px;')
-                            br
-                            br
-                            span.total-available-for-paying.text-complete(style='font-size:15px;')
+                        h2.text-white.no-margin Ventas
+                        p.no-margin.text-white Información de ventas:
+                    .clearfix                 
+                    h3.text-white.total-sales(style='font-size:15px;')
 
-        .col-lg-6.m-b-10.d-flex
+        .col-lg-4.m-b-10
+            .card.card-default.bg-complete
+                .padding-20
+                    .pull-left
+                        h2.text-white.no-margin Tokens disponibles
+                        p.no-margin.text-white Información de tokens
+                    .clearfix
+                    h3.total-available-for-paying.text-white(style='font-size:15px; font-weight:bold;')
+        .col-lg-4.m-b-10
+            .card.card-default.bg-info
+                .padding-20
+                    .pull-left
+                        h2.text-white.no-margin Tipos de Tokens Disponibles
+                        p.no-margin.text-white Información de tokens
+                    .clearfix
+                    ul
+                        each token in token_types
+                            li.text-white #{token.name}
+    .row
+        .col-lg-12.m-b-10.d-flex
             .card.no-border.card-condensed.no-margin.align-self-stretch.d-flex.flex-column
                 .padding-25
-                    .pull-left
-                        h2.text-success.no-margin Pozos
-                        p.no-margin Aquí tienes todos los pozos disponibles:
-                        table#tableWithSearch.table.table-bordered(style='width:100%; margin-top: 1rem;')
-                            thead
-                                tr(role='row')
-                                    th Nombre del Pozo
-                                    th Nombre del Token
-                                    th Tokens Disponibles
-                                    th Tokens Vendidos
-                                    th Valor
-                                tbody
-                        a(href='{% url "tokens:admin-create-pool" %}').btn.btn-primary.float-right.m-t-20 Nuevo Pozo
+                    h2.text-success.no-margin Pozos
+                    p.no-margin Aquí tienes todos los pozos disponibles:
+                    table#tableWithSearch.table.table-bordered(style='width:100%; margin-top: 1rem;')
+                        thead
+                            tr(role='row')
+                                th Nombre del Pozo
+                                th Nombre del Token
+                                th Tokens Disponibles
+                                th Tokens Vendidos
+                                th Valor
+                            tbody
+                    .float-right
+                        a(href='{% url "tokens:admin-create-pool" %}').btn.btn-primary.m-t-20.m-r-20 Nuevo Pozo
+                        a(href='{% url "tokens:admin-create-token-type" %}').btn.btn-info.m-t-20 Nuevo Tipo de Token
 
 
 
@@ -84,7 +84,7 @@ block extra_js
                         await App.Events.initData();
                     }
                     catch(e){
-                        Swal.fire({type:'error', title:e});
+                        console.log(e);
                     }
                 },
                 initTable: function(){
@@ -124,7 +124,7 @@ block extra_js
                             let resp = await App.Requests.getContractJSON(contractName);
                             const { abi } = resp
                             const { address } = resp['networks'][networkId];
-                            const contract = new PoolContract(abi, networkId, address);
+                            const contract = new PoolContractV2(abi, networkId, address);
                             await contract.setContract();
                             return contract;
                         }
@@ -133,9 +133,16 @@ block extra_js
                         }
                     },
                     initData: async function(){
+                        let keys = [];
+                        {% for key in keys %}
+                            keys.push('{{key}}');
+                        {% endfor %}
+                        if(!keys) return;
+                        console.log(keys);
                         let pools = [];
                         try{
-                            pools = await App.Controls.Contract.getAllPools();;
+                            console.log(await App.Controls.Contract.getAmountOfPools());
+                            pools = await App.Controls.Contract.getAllPools(keys);
                         } catch(e){
                             console.log(e);
                         }

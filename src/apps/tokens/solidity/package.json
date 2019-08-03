@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start-ganache": "ganache-cli -h 0.0.0.0 --networkId 5777 -q -m 'allow deputy violin final decide tray mule wolf pledge inject clay spike' ",
-    "compile": "truffle compile && truffle migrate --network development_local"
+    "compile": "truffle compile && truffle migrate --network development_local --reset"
   },
   "author": "",
   "license": "ISC",

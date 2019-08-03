@@ -125,3 +125,29 @@ class PoolContract extends Contract {
         }
     }
 }
+
+
+class PoolContractV2 extends Contract{
+    constructor(abi, networkId, address){
+        super(abi, networkId, address);
+    }
+
+    getAmountOfPools(){
+        return this.contract.methods.getAmountOfPools().call({from:this.accounts[0]});
+    }
+
+    async getAllPools(keys){
+        let poolsArr = [];
+        let pool;
+        for(const key of keys){
+            try {
+                pool = await this.contract.methods.getPoolByKey(key).call({from:this.accounts[0]});  
+            } catch (error) {
+                console.log(`There was an error getting the pool with key ${key}`);
+                pool = {};
+            }
+            poolsArr.push(pool);
+        }
+        return pool;
+    }
+}

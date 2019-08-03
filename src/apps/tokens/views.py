@@ -42,10 +42,14 @@ class AdminPoolCreateView(TemplateView):
         avoid_signals = False
         form = PoolForm(data)
         if form.is_valid():
-            pool = form.save(avoid_signals)
-            pool.save()
+            try:
+                pool = form.save()
+            except Exception as e:
+                print(e)
+                return render(request, self.template_name)
             return redirect(reverse('profiles:home'))
         print(form.errors)
+        return render(request, self.template_name)
 
 
 class AdminTokenTypeCreateView(TemplateView):

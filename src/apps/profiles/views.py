@@ -2,8 +2,9 @@ from django.contrib.auth.views import LoginView as DjangoLoginView
 from django.shortcuts import redirect, render, render_to_response
 from django.template import RequestContext
 from django.views.generic import CreateView, TemplateView
-from ..tokens.contracts import PoolContract
 
+from ..tokens.contracts import PoolContract, TokenContract
+from ..tokens.models import TokenType
 from .forms import UserModelForm
 
 
@@ -33,7 +34,9 @@ class DashboardView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+        tc = TokenContract('TrueToken')
         pc = PoolContract()
-        ctx['token_amount'] = pc.get_balance_of('TrueToken')
-        print(ctx)
+        ctx['token_amount'] = tc.balanceOf(pc.address)
+        ctx['token_types'] = TokenType.objects.all()
+        ctx['keys'] = pc.get_pool_keys()
         return ctx

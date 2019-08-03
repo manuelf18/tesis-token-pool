@@ -1,6 +1,10 @@
 import json
 import os
-from web3 import Web3, HTTPProvider
+import time
+
+from web3 import HTTPProvider, Web3
+
+from ..core.utils import create_hash
 
 
 class Contract:
@@ -10,10 +14,13 @@ class Contract:
             self.network_id = Network.objects.get(connected=True).port
         except Network.DoesNotExist:
             self.network_id = '5777'
-        self.web3 = Web3(HTTPProvider('http://ganache:8545'))
-        self.web3.eth.defaultAccount = self.web3.eth.accounts[0]
+        web3 = Web3(HTTPProvider('http://ganache:8545'))
+        web3.eth.defaultAccount = web3.eth.accounts[0]
         json_data = self.get_contract_json(contract_name)
-        self.contract = self.set_contract(json_data)
+        self.abi = json_data['abi']
+        self.address = json_data['networks'][self.network_id]['address']
+        self.bytecode = json_data['bytecode']
+        self.contract = web3.eth.contract(abi=self.abi, address=self.address, bytecode=self.bytecode)
 
     def get_contract_json(self, contract_name):
         where_am_i = os.path.dirname(os.path.realpath(__file__))
@@ -21,24 +28,16 @@ class Contract:
         data = open(fn).read()
         return json.loads(data)
 
-    def set_contract(self, json_data, *args, **kwargs):
-        """ sets the contract """
-        return self.web3.eth.contract(
-            abi=json_data['abi'],
-            address=self.get_address_from_json(json_data),
-            bytecode=json_data['bytecode']
-        )
-
-    def get_address_from_json(self, json_data):
-        return json_data['networks'][self.network_id]['address']
-
 
 class TokenContract(Contract):
     def __init__(self, token_name):
         super().__init__(token_name)
 
-    def balance(self):
-        return self.contract.functions.balanceOf(self.web3.eth.defaultAccount).call()
+    def balanceOf(self, address=None):
+        if not address:
+            address = self.account
+        print(self.address)
+        return self.contract.functions.balanceOf(address).call()
 
     def approve(self, user_address, amount):
         return self.contract.functions.approve(user_address, amount).transact()
@@ -47,7 +46,7 @@ class TokenContract(Contract):
         return self.contract.functions.transfer(user_address, amount).transact()
 
     def allowance(self, user_address):
-        return self.contract.functions.allowance(self.web3.eth.defaultAccount, user_address).call()
+        return self.contract.functions.allowance(self.account, user_address).call()
 
     def transferFrom(self, _from, to, amount):
         return self.contract.functions.transferFrom(_from, to, amount).transact()
@@ -66,26 +65,44 @@ class PoolContract(Contract):
     def __init__(self):
         super().__init__('PoolManager')
 
-    def create_pool(self, pool_name, token_name, token_value):
+    def __generateKey(self):
+        flag = True
+        while(flag):
+            try:
+                key = create_hash()
+                response = self.contract.functions.keyIsNotUsed(key).call()
+                if (response):
+                    return key
+            except Exception as e:
+                print(e)
+                raise e
+
+    def create_pool(self, pool_name, token_name):
+        key = self.__generateKey()
         json_data = self.get_contract_json(token_name)
-        token_address = self.get_address_from_json(json_data)
-        return self.contract.functions.addPool(pool_name, token_name, token_address, token_value).transact()
+        token_address = json_data['networks'][self.network_id]['address']
+        unix_time = int(time.time())
+        return self.contract.functions.createPool(pool_name, token_name, token_address, key, unix_time).transact()
 
-    def pay_user_for_withdrawing_pool(self, pool_index, tokens_qty, user_address):
-        try:
-            resp = self.contract.functions.payUserFromPool(pool_index, user_address, tokens_qty).transact()
-        except Exception as e:
-            print(e)
-            raise e
+    def get_pool_keys(self):
+        return self.contract.functions.getPoolKeys().call()
 
-    def pay_user_for_joining_pool(self, user_address, tokens_qty):
-        try:
-            token_address = self.get_address_from_json(self.get_contract_json('TrueToken'))
-            resp = self.contract.functions.payUser(token_address, user_address, tokens_qty).transact()
-            print(self.get_balance_of('TrueToken'))
-        except Exception as e:
-            print(e)
-            raise e
+
+    # def pay_user_for_withdrawing_pool(self, pool_index, tokens_qty, user_address):
+    #     try:
+    #         resp = self.contract.functions.payUserFromPool(pool_index, user_address, tokens_qty).transact()
+    #     except Exception as e:
+    #         print(e)
+    #         raise e
+
+    # def pay_user_for_joining_pool(self, user_address, tokens_qty):
+    #     try:
+    #         token_address = self.get_address_from_json(self.get_contract_json('TrueToken'))
+    #         resp = self.contract.functions.payUser(token_address, user_address, tokens_qty).transact()
+    #         print(self.get_balance_of('TrueToken'))
+    #     except Exception as e:
+    #         print(e)
+    #         raise e
 
     def get_balance_of(self, token_name):
         json_data = self.get_contract_json(token_name)

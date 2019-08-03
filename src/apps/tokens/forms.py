@@ -3,17 +3,28 @@ from django import forms
 from ..core.forms import BootstrapForm, BootstrapModelForm
 
 from .models import Pool, TokenType
+from .contracts import PoolContract
 
 
-class PoolForm(BootstrapModelForm):
-    class Meta:
-        model = Pool
-        fields = '__all__'
+class PoolForm(BootstrapForm):
+    name = forms.CharField()
+    token_type = forms.IntegerField()
 
-    def save(self, avoid_signals=False):
-        pool = super().save(commit=False)
-        pool._avoid_signals = avoid_signals
-        return pool
+    def clean_token_type(self, *args, **kwargs):
+        try:
+            tc = TokenType.objects.get(pk=self.cleaned_data.get('token_type'))
+            return tc
+        except tc.DoesNotExist:
+            raise ValueError('The token_type is invalid')
+        except Exception as e:
+            print(e)
+            raise e
+
+    def save(self):
+        pool_name = self.cleaned_data['name']
+        token_name = self.cleaned_data['token_type'].name
+        pc = PoolContract()
+        return pc.create_pool(pool_name, token_name)
 
 
 class TokenTypeForm(BootstrapModelForm):
