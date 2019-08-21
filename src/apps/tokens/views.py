@@ -39,7 +39,6 @@ class AdminPoolCreateView(TemplateView):
         data.pop('', None)
         data['admin'] = self.request.user.pk
         data['token_value'] = data.get('token_value', 1)
-        avoid_signals = False
         form = PoolForm(data)
         if form.is_valid():
             try:

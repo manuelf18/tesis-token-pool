@@ -8,7 +8,6 @@ block extra_css
             border-collapse: collapse;
         }
 
-
 block content
     .row
         h1.m-l-20 Dashboard
@@ -18,7 +17,7 @@ block content
                 .padding-20
                     .pull-left
                         h2.text-white.no-margin Ventas
-                        p.no-margin.text-white Información de ventas:
+                        hr
                     .clearfix                 
                     h3.text-white.total-sales(style='font-size:15px;')
 
@@ -27,15 +26,15 @@ block content
                 .padding-20
                     .pull-left
                         h2.text-white.no-margin Tokens disponibles
-                        p.no-margin.text-white Información de tokens
+                        hr
                     .clearfix
                     h3.total-available-for-paying.text-white(style='font-size:15px; font-weight:bold;')
         .col-lg-4.m-b-10
             .card.card-default.bg-info
                 .padding-20
                     .pull-left
-                        h2.text-white.no-margin Tipos de Tokens Disponibles
-                        p.no-margin.text-white Información de tokens
+                        h2.text-white.no-margin Tipos de tokens disponibles
+                        hr
                     .clearfix
                     ul
                         each token in token_types
@@ -51,9 +50,9 @@ block content
                             tr(role='row')
                                 th Nombre del Pozo
                                 th Nombre del Token
-                                th Tokens Disponibles
-                                th Tokens Vendidos
-                                th Valor
+                                th Dirección del Token
+                                th Cantidad de ofertas
+                                th Fecha de apertura
                             tbody
                     .float-right
                         a(href='{% url "tokens:admin-create-pool" %}').btn.btn-primary.m-t-20.m-r-20 Nuevo Pozo
@@ -94,7 +93,7 @@ block extra_js
                         "destroy": true,
                         "scrollCollapse": true,
                         "responsive": true,
-                        "createdRow": function( row, data, dataIndex){
+                        "createdRow": function(row, data, dataIndex){
                             $(row).attr('data-id', dataIndex + 1);
                         },
                         "oLanguage": {
@@ -138,10 +137,8 @@ block extra_js
                             keys.push('{{key}}');
                         {% endfor %}
                         if(!keys) return;
-                        console.log(keys);
                         let pools = [];
                         try{
-                            console.log(await App.Controls.Contract.getAmountOfPools());
                             pools = await App.Controls.Contract.getAllPools(keys);
                         } catch(e){
                             console.log(e);
@@ -160,13 +157,14 @@ block extra_js
                     setDataToTable: function(pools){
                         const table = App.Controls.Table.DataTable();
                         for (const pool of pools){
-                            if(pool['5'] === false){
+                            console.log(pool);
+                            if(pool['4'] === true){
                                 table.row.add( [
-                                pool['1'],
                                 pool['0'],
+                                pool['1'],
                                 pool['2'],
-                                pool['7'],
-                                parseFloat(pool['4']).toFixed(2),
+                                pool['offers'],
+                                new Date(pool['3']*1000),
                                 ] ).draw( false );
                             }
                         }

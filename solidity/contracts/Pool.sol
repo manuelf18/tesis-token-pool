@@ -31,6 +31,7 @@ contract PoolManager{
 
     string[] poolKeys;
 
+    mapping(string => bool) keyUsed;
     mapping(string => uint) keyPool;
     mapping(address => string) openContractForToken;
 
@@ -40,18 +41,16 @@ contract PoolManager{
     }
 
     function keyIsNotUsed(string memory _key) public view returns (bool){
-        if (keyPool[_key] != 0)
-            return false;
-        return true;
+        return keyUsed[_key];
     }
 
     modifier keyIsUnique(string memory _key){
-        require(keyIsNotUsed(_key) == true, 'This key is already in use');
+        require(keyIsNotUsed(_key) == false, 'This key is already in use');
         _;
     }
 
     modifier poolWithKeyExists(string memory _key){
-        require(keyIsNotUsed(_key) == false, 'Theres no pool with that key');
+        require(keyIsNotUsed(_key) == true, 'Theres no pool with that key');
         _;
     }
 
@@ -68,6 +67,7 @@ contract PoolManager{
         pool.open = true;
         pools.push(pool);
         keyPool[_key] = pools.length - 1;
+        keyUsed[_key] = true;
         poolKeys.push(_key);
     }
 
@@ -125,5 +125,29 @@ contract PoolManager{
         returns (string[] memory)
     {
         return poolKeys;
+    }
+
+    function getAmountOfOffers()
+        public
+        view
+        returns (uint)
+    {
+        return offers.length;
+    }
+
+    function getOfferByIndex(uint index)
+        public
+        view
+        returns (address, string memory, uint, uint, string memory, string memory)
+    {
+       Offer memory offer = offers[index];
+       return(
+            offer.userAddress,
+            offer.poolKey,
+            offer.value,
+            offer.decimals,
+            offer.userName,
+            offer.userEmail
+       );
     }
 }

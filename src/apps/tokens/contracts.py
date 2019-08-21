@@ -2,6 +2,7 @@ import json
 import os
 import time
 
+import requests
 from web3 import HTTPProvider, Web3
 
 from ..core.utils import create_hash
@@ -23,10 +24,8 @@ class Contract:
         self.contract = web3.eth.contract(abi=self.abi, address=self.address, bytecode=self.bytecode)
 
     def get_contract_json(self, contract_name):
-        where_am_i = os.path.dirname(os.path.realpath(__file__))
-        fn = '{}/solidity/build/contracts/{}.json'.format(where_am_i, contract_name)
-        data = open(fn).read()
-        return json.loads(data)
+        r = requests.get('http://localhost:8000/static/json/{}.json'.format(contract_name))
+        return r.json()
 
 
 class TokenContract(Contract):
@@ -36,7 +35,6 @@ class TokenContract(Contract):
     def balanceOf(self, address=None):
         if not address:
             address = self.account
-        print(self.address)
         return self.contract.functions.balanceOf(address).call()
 
     def approve(self, user_address, amount):
@@ -67,11 +65,15 @@ class PoolContract(Contract):
 
     def __generateKey(self):
         flag = True
+        tries = 0
         while(flag):
+            tries += 1
             try:
                 key = create_hash()
                 response = self.contract.functions.keyIsNotUsed(key).call()
-                if (response):
+                if tries >= 10:
+                    raise Exception('There was an error generating the key')
+                if (response is False):
                     return key
             except Exception as e:
                 print(e)
@@ -86,23 +88,6 @@ class PoolContract(Contract):
 
     def get_pool_keys(self):
         return self.contract.functions.getPoolKeys().call()
-
-
-    # def pay_user_for_withdrawing_pool(self, pool_index, tokens_qty, user_address):
-    #     try:
-    #         resp = self.contract.functions.payUserFromPool(pool_index, user_address, tokens_qty).transact()
-    #     except Exception as e:
-    #         print(e)
-    #         raise e
-
-    # def pay_user_for_joining_pool(self, user_address, tokens_qty):
-    #     try:
-    #         token_address = self.get_address_from_json(self.get_contract_json('TrueToken'))
-    #         resp = self.contract.functions.payUser(token_address, user_address, tokens_qty).transact()
-    #         print(self.get_balance_of('TrueToken'))
-    #     except Exception as e:
-    #         print(e)
-    #         raise e
 
     def get_balance_of(self, token_name):
         json_data = self.get_contract_json(token_name)

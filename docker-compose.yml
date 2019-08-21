@@ -34,8 +34,7 @@ services:
     volumes:
       - ./src:/code
       - ./utils:/code/utils
-      - contracts:/code/static/json
-      - contracts:/code/apps/tokens/solidity/build/contracts
+      - contracts:/src/static/json
     restart: always
   ganache:
     build:
@@ -44,6 +43,7 @@ services:
     ports:
       - "8545:8545"
     volumes:
+      - ./solidity:/code
       - contracts:/code/build/contracts
     container_name: tesis_ganache
     hostname: tesis_ganache

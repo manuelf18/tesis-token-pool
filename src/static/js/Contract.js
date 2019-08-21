@@ -136,18 +136,61 @@ class PoolContractV2 extends Contract{
         return this.contract.methods.getAmountOfPools().call({from:this.accounts[0]});
     }
 
+    getAmountOfOffers(){
+        return this.contract.methods.getAmountOfOffers().call({from:this.accounts[0]});
+    }
+
     async getAllPools(keys){
         let poolsArr = [];
         let pool;
         for(const key of keys){
             try {
-                pool = await this.contract.methods.getPoolByKey(key).call({from:this.accounts[0]});  
+                pool = await this.contract.methods.getPoolByKey(key).call({from:this.accounts[0]});
+                pool.offers = await this.getOffersByKey(key); 
             } catch (error) {
-                console.log(`There was an error getting the pool with key ${key}`);
+                console.log(`There was an error getting the pool with key ${key}: ${error}`);
                 pool = {};
             }
             poolsArr.push(pool);
         }
-        return pool;
+        return poolsArr;
     }
+
+    async getAllOffers(){
+        try {
+            const total = await this.getAmountOfOffers();
+            const offers = [];
+            for(let index=0; index < total; index++){
+                offers.push(await this.contract.methods.getOfferByIndex(index).call({from:this.accounts[0]}));
+            }
+            return offers;
+        } catch (error) {
+            console.log(error);
+            throw error;
+        }   
+    }
+
+
+    async getOffersByKey(key, offers=null){
+        try{
+            if(!offers)
+                offers = await this.getAllOffers();
+            if(offers.length === 0) return 0;
+            const offerArr = [];
+            for(const offer of offers){
+                if (offer[1] === key)
+                    offerArr.push(offer);
+            }
+            return offerArr;
+        } catch (error) {
+            throw error;
+        }   
+    }
+
+
+
+    getPoolByIndex(index){
+        return this.contract.methods.getPoolByIndex(index).call({from:this.accounts[0]});
+    }
+
 }
