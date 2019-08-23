@@ -157,7 +157,6 @@ block extra_js
                     setDataToTable: function(pools){
                         const table = App.Controls.Table.DataTable();
                         for (const pool of pools){
-                            console.log(pool);
                             if(pool['4'] === true){
                                 table.row.add( [
                                 pool['0'],

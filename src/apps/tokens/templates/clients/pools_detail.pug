@@ -29,8 +29,7 @@ block content
     .container.h-100.main-cont
         .row
             .col-12
-                .text-center
-                    h1 Datos del Pozo
+                h1 Datos del Pozo
         .row.mt-4
             .col-sm-12.col-lg-6
                 .card.card-default(style='width: 100%')
@@ -52,27 +51,16 @@ block content
                     .card.card-default
                         ul.nav.nav-tabs.nav-tabs-simple.d-none.d-md-flex.d-lg-flex.d-xl-flex(role='tablist', data-init-reponsive-tabs='dropdownfx')
                             li.nav-item.nav-item-buy
-                                a.active.show(data-toggle='tab', role='tab', data-target='#tab2buy', href='#', aria-selected='true') Depositar
-                            li.nav-item.nav-item-sell
-                                a(href='#', data-toggle='tab', role='tab', data-target='#tab2sell', aria-selected='false') Retirar 
+                                a.active.show(data-toggle='tab', role='tab', data-target='#tabOffers', href='#', aria-selected='true') Ofertas
                         .tab-content
-                            #tab2buy.tab-pane.active.show
+                            #tabOffers.tab-pane.active.show
                                 p
-                                | En este panel puede depositar una cantidad de tokens dentro del pozo
+                                | Aquí estan las ofertas
                                 .form-group.mt-2
                                     label(for='qty') Cantidad
                                     input#qty_deposit.form-control(type="number", name="qty")
                                 .form-group.float-right
                                     button.btn.btn-success.btn-js-deposit(type='button') Depositar
-                            #tab2sell.tab-pane
-                                p
-                                | En este panel puede retirar una cantidad de tokens dentro del pozo
-                                .form-group.mt-2
-                                    label(for='qty') Cantidad
-                                    input#qty_withdraw.form-control(type="number", name="qty")
-                                .form-group.float-right
-                                    button.btn.btn-success.btn-js-withdraw(type='button') Retirar
-
 
 block extra_js
     script(src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js")

@@ -26,8 +26,7 @@ block content
     .container.main-cont.h-100
         .row
             .col-12
-                .text-center
-                    h1 Lista de Pozos
+                h1 Lista de Pozos
         .row
             .col-12
                 table#tableWithSearch.table.table-bordered(style='width:100%; margin-top: 1rem;')
@@ -35,9 +34,8 @@ block content
                         tr(role='row')
                             th Nombre del Pozo
                             th Nombre del Token
-                            th Cantidad de Tokens actuales
-                            th Valor
-                            th ¿Introdujo?
+                            th Fecha de apertura
+                            th Cantidad de ofertas
                         tbody
 
 block extra_js
@@ -97,22 +95,26 @@ block extra_js
                     },
                     setDataToTable: async function(){
                         try {
+                            let keys = [];
+                            {% for key in keys %}
+                                keys.push('{{key}}');
+                            {% endfor %}
+                            if(!keys) return;
                             let networkId = 5777;
                             let resp = await App.Requests.getContractJSON();
                             const { abi } = resp
                             const { address } = resp['networks'][networkId];
-                            const contract = new PoolContract(abi, networkId, address);
+                            const contract = new PoolContractV2(abi, networkId, address);
                             await contract.setContract();
-                            const pools = await contract.getAllPools();
+                            const pools = await contract.getAllPools(keys);
                             const table = App.Controls.table.DataTable();
                             for (const pool of pools){
-                                if(pool['5'] === false){
+                                if(pool['4'] === true){
                                     table.row.add( [
-                                    pool['1'],
                                     pool['0'],
-                                    pool['2'],
-                                    pool['4'],
-                                    pool['6']
+                                    pool['1'],
+                                    new Date(pool['3']*1000),
+                                    pool['offers']
                                     ] ).draw( false );
                                 }
                             }

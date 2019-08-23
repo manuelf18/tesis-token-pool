@@ -16,6 +16,12 @@ from .models import Pool, TokenType
 class PoolsListView(TemplateView):
     template_name = 'clients/pools_list.pug'
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        pc = PoolContract()
+        ctx['keys'] = pc.get_pool_keys()
+        return ctx
+
 
 class PoolsDetailView(TemplateView):
     template_name = 'clients/pools_detail.pug'
