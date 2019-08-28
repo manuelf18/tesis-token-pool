@@ -1,87 +1,34 @@
 extends base_landing
--load static
-  block content
-    header.masthead.bg-primary.text-white.text-center
-      .container.d-flex.align-items-center.flex-column
-        h1.masthead-heading.mb-5 Conseguir tokens sin tener que moverse
-        img.masthead-avatar.mb-5(src=' {% static "landing/img/money-ico.png" %}', alt='')
-        p(style='font-size:20px')
-          | "No me digas cuales son tus prioridades. Muestrame en que gastas tu dinero y te diré cuales son"
-          br
-          | —James W. Frick
-      .divider-custom.divider-light
-        a.btn.btn-xl.btn-outline-light.mt-4(href='{% url "tokens:pools-list" %}')
-          | Ver lista de tokens
-    section#about.page-section
-      .container
-        // About Section Heading
-        h2.page-section-heading.text-center.text-uppercase Sobre nosotros
-        // Icon Divider
-        .divider-custom
-          .divider-custom-line
-          .divider-custom-icon
-            i.fas.fa-star
-          .divider-custom-line
-        // About Section Content
-        .row
-          .col-lg-4(style='margin-left:15%')
-            h2 Inversiones
-            p.lead Inverta sus tokens con el proposito de poder ganar dinero
-          .col-lg-4(style='margin-left:10%')
-            h2 Compras
-            p.lead
-              | You can create your own custom avatar for the masthead, change the icon in the dividers, and add your email address to the contact form to make it fully functional!
-    section#portfolio.page-section.portfolio.bg-primary.text-white.mb-0
-      .container
-        // Portfolio Section Heading
-        h2.page-section-heading.text-center.text-uppercase.text-secondary.mb-0 Portfolio
-        // Icon Divider
-        .divider-custom
-          .divider-custom-line
-          .divider-custom-icon
-            i.fas.fa-star
-          .divider-custom-line
-        // Portfolio Grid Items
-        .row
-          // Portfolio Item 1
-          .col-md-6.col-lg-4
-            .portfolio-item.mx-auto
-              .portfolio-item-caption.d-flex.align-items-center.justify-content-center.h-100.w-100
-                .portfolio-item-caption-content.text-center.text-white
-                  p Facilidad de Diseño
-              img.img-fluid(src='{% static "landing/img/portfolio/cabin.png" %}', alt='')
-          // Portfolio Item 2
-          .col-md-6.col-lg-4
-            .portfolio-item.mx-auto(data-toggle='modal', data-target='#portfolioModal2')
-              .portfolio-item-caption.d-flex.align-items-center.justify-content-center.h-100.w-100
-                .portfolio-item-caption-content.text-center.text-white
-                  i.fas.fa-plus.fa-3x
-              img.img-fluid(src='{% static "landing/img/portfolio/cake.png" %}', alt='')
-          // Portfolio Item 3
-          .col-md-6.col-lg-4
-            .portfolio-item.mx-auto(data-toggle='modal', data-target='#portfolioModal3')
-              .portfolio-item-caption.d-flex.align-items-center.justify-content-center.h-100.w-100
-                .portfolio-item-caption-content.text-center.text-white
-                  i.fas.fa-plus.fa-3x
-              img.img-fluid(src='{% static "landing/img/portfolio/circus.png" %}', alt='')
-        // /.row
-        // Footer
-    footer.footer.text-center
-      .container
-        .row
-          // Footer Location
-          .col-lg-6.mb-5.mb-lg-0
-            h4.text-uppercase.mb-4 Ubicación
-            p.lead.mb-0
-              | Plaza Centennial
-              br
-              | Local B32
-          // Footer Social Icons
-          .col-lg-6.mb-5.mb-lg-0
-            h4.text-uppercase.mb-4 Alrededor de la Web
-            a.btn.btn-outline-light.btn-social.mx-1(href='#')
-              i.fab.fa-fw.fa-facebook-f
-            a.btn.btn-outline-light.btn-social.mx-1(href='#')
-              i.fab.fa-fw.fa-twitter
-            a.btn.btn-outline-light.btn-social.mx-1(href='#')
-              i.fab.fa-fw.fa-instagram
+- load static
+
+block extra_css
+  link(href="{% static 'landing/css/landing-page.css' %}", rel='stylesheet', type='text/css')
+
+block content
+  .herotron
+    .row
+      .col-5
+        h1 Conseguir tokens al mejor precio ✨
+        p.m-t-15(style='font-size: 15px;')
+          | TRYS es una platafoma creada para el intercambio de tokens que siguien el standard ERC-20 de Ethereum.
+          | A través de un contrato inteligente permite el cambio de estos activos digitales con la mayor de las facilidades
+      .col-7
+        .float-right
+          img.contra-header(src="{% static 'landing/img/gold.jpg' %}", alt="")
+  section.about-section.bg-green.m-t-50
+    .section-content
+      .row
+        .col-6
+          .row.d-flex.justify-content-center
+            .card(style='width: 75%')
+              .card-body
+                h2 Invierte
+                p
+                  | Trys te la posibilidad de ofertar tus tokens con el fin de que estos sean comprados por personas con un interes.
+        .col-6
+          .row.d-flex.justify-content-center
+            .card(style='width: 75%')
+              .card-body
+                h2 Compra
+      .row.d-flex.justify-content-center
+        a.btn.btn-lg.btn-rounded.btn-danger.m-b-20(href="{% url 'tokens:pools-list' %}") Ver listas

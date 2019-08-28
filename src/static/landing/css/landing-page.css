@@ -1,0 +1,44 @@
+/* herotron */
+.herotron{
+    margin: 100px 100px 0;
+}
+
+.herotron h1{
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.herotron .contra-header{
+    width: 500px;
+    height: 300px;
+}
+
+/* section */
+.bg-green {
+    background-color: #46db68;
+    color: white;
+}
+
+.about-section .section-content {
+    margin: 0 100px;
+
+}
+
+.section-content .card{
+    margin: 100px 0;
+}
+
+.about-section h1 {
+    color: white;
+}
+
+.about-section .section-content h2{
+    font-size: 40px;
+    text-decoration: underline;
+    text-decoration-color: #e1153d;
+}
+
+.about-section .section-content p{
+    color: rgba(0,0,0,0.50);
+    font-size: 16px;
+}
