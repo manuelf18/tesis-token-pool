@@ -1,0 +1,37 @@
+/* tbody > tr{
+    cursor: pointer;
+}
+tbody > tr:hover{
+    background-color: #1abc9c !important;
+} 
+#tableWithSearch{
+    border-collapse: collapse;
+}
+*/
+
+
+/* containter */
+
+.main-cont{
+    margin: 0 100px;
+}
+
+.flex{
+    display:flex;
+}
+
+/* pool card */
+.pool-list .title{
+    font-size: 30px;
+    font-family: 'Montserrat', sans-serif;
+    color: black;
+}
+
+.pool-list .qty-offers{
+    font-size: 20px;
+}
+
+/* extra */
+#no-offers{
+    font-size: 40px;
+}

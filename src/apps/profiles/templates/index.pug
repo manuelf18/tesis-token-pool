@@ -12,6 +12,7 @@ block content
         p.m-t-15(style='font-size: 15px;')
           | TRYS es una platafoma creada para el intercambio de tokens que siguien el standard ERC-20 de Ethereum.
           | A través de un contrato inteligente permite el cambio de estos activos digitales con la mayor de las facilidades
+        a.btn.btn-lg.btn-rounded.btn-danger.m-b-20.float-right(href="{% url 'tokens:pools-list' %}") Conoce sobre nosotros      
       .col-7
         .float-right
           img.contra-header(src="{% static 'landing/img/gold.jpg' %}", alt="")
@@ -32,3 +33,13 @@ block content
                 h2 Compra
       .row.d-flex.justify-content-center
         a.btn.btn-lg.btn-rounded.btn-danger.m-b-20(href="{% url 'tokens:pools-list' %}") Ver listas
+  section.about-section.m-t-50
+    .section-content
+      .row
+        .col-6
+          .testimony
+            img(src="{% static '/landing/img/happy-woman.jpg' %}", alt="")
+        .col-6
+          .testimony
+            p
+              "Conseguí 700 tokens gracias a TRYS."

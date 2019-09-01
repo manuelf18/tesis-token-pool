@@ -20,6 +20,7 @@ class PoolsListView(TemplateView):
         ctx = super().get_context_data(**kwargs)
         pc = PoolContract()
         ctx['keys'] = pc.get_pool_keys()
+        ctx['pools'] = pc.get_all_pools()
         return ctx
 
 

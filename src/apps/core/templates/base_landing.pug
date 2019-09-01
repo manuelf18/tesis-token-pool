@@ -38,7 +38,7 @@ html
       .float-right
         a.m-r-50.navbar-item(href="{% url 'tokens:pools-list' %}") Lista de pozos
         a.m-r-50.navbar-item(href="/about-us") Sobre nosotros
-        a.m-r-50.btn.btn-green(href='') Login
+        a.m-r-50.btn.btn-green(href="{% url 'profiles:login' %}") Login
     block content
 
     script(src=" {% static 'pages/plugins/feather-icons/feather.min.js' %}", type='text/javascript')

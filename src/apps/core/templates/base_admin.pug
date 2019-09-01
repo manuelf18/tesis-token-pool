@@ -50,7 +50,7 @@ html
       h4.text-white 
         strong
           | TRYS
-      a.btn.btn-default Logout
+      a.btn.btn-default(href="{% url 'profiles:logout' %}") Logout
 
     .page-container(style='padding-left: 0px;')
       .page-content-wrapper

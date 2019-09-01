@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import datetime
 
 import requests
 from web3 import HTTPProvider, Web3
@@ -93,3 +94,45 @@ class PoolContract(Contract):
         json_data = self.get_contract_json(token_name)
         token_address = self.get_address_from_json(json_data)
         return self.contract.functions.getBalanceOf(token_address).call()
+
+    def get_amount_of_offers(self):
+        return self.contract.functions.getAmountOfOffers().call()
+
+    def get_all_offers(self):
+        amount = self.get_amount_of_offers()
+        offers = []
+        for i in range(amount):
+            offers.append(self.contract.functions.getOfferByIndex(i).call())
+        return offers
+
+    def get_offers_by_key(self, key):
+        offers = self.get_all_offers()
+        offers_for_key = []
+        if(len(offers) is 0):
+            return offers_for_key
+        # TODO: if offers is not 0
+        return offers_for_key
+
+    def get_all_pools(self):
+        keys = self.get_pool_keys()
+        pools = []
+        for key in keys:
+            pool = self.contract.functions.getPoolByKey(key).call()
+            pool.append(len(self.get_offers_by_key(key)))
+            pools.append(pool)
+        return self.pool_map(pools)
+
+    def pool_map(self, pools):
+        safe_pools = []
+        for pool in pools:
+            safe_pools.append(
+                {
+                    'poolName': pool[0],
+                    'tokenName': pool[1],
+                    'tokenAddress': pool[2],
+                    'startDate': datetime.datetime.fromtimestamp(pool[3]).strftime('%d/%m/%Y'),
+                    'open': pool[4],
+                    'amountOfOffers': pool[5],
+                }
+            )
+        return safe_pools

@@ -11,6 +11,10 @@
     text-transform: uppercase;
 }
 
+.navbar .title{
+    margin-left: 100px;
+}
+
 .navbar-item{
     color: black;
 }

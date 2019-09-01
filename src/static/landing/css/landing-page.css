@@ -1,6 +1,6 @@
 /* herotron */
 .herotron{
-    margin: 100px 100px 0;
+    margin: 70px 130px 0;
 }
 
 .herotron h1{
@@ -24,7 +24,7 @@
 
 }
 
-.section-content .card{
+.section-content .card, .testimony{
     margin: 100px 0;
 }
 
@@ -41,4 +41,10 @@
 .about-section .section-content p{
     color: rgba(0,0,0,0.50);
     font-size: 16px;
+}
+
+/* testimony */
+.testimony img{
+    width: 100%;
+    object-fit: cover;
 }
