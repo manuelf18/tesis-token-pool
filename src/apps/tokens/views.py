@@ -1,11 +1,11 @@
 import os
-
+import datetime
 import stripe
-from django.http import HttpResponse, JsonResponse
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView, DetailView, TemplateView
 
 from ..profiles.models import User
 from .contracts import PoolContract
@@ -30,6 +30,46 @@ class PoolsDetailView(TemplateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['id'] = kwargs['id']
+        return ctx
+
+
+class PoolOffersCreateView(DetailView):
+    template_name = 'clients/pools_offers_create.pug'
+
+    def get_object(self, queryset=None):
+        pc = PoolContract()
+        try:
+            pool = pc.get_pool_by_key(self.kwargs['key'], mapped=True)
+            return pool
+        except Exception:
+            raise Http404()
+
+    def get_context_data(self, **kwargs):
+        pc = PoolContract()
+        ctx = super().get_context_data(**kwargs)
+        ctx['poolContractAddress'] = pc.address
+        if ctx['object']['amountOfOffers'] > 0:
+            ctx['offerStats'] = pc.get_offer_statistics(key=ctx['object']['key'])
+        print(ctx)
+        return ctx
+
+
+class PoolOffersListView(DetailView):
+    template_name = 'clients/pools_offers_list.pug'
+
+    def get_object(self, queryset=None):
+        pc = PoolContract()
+        try:
+            pool = pc.get_pool_by_key(self.kwargs['key'], mapped=True)
+            return pool
+        except Exception:
+            raise Http404()
+
+    def get_context_data(self, **kwargs):
+        pc = PoolContract()
+        ctx = super().get_context_data(**kwargs)
+        ctx['offers'] = pc.get_offers_by_key(self.kwargs['key'])
+        ctx['pool'] = pc.get_pool_by_key(self.kwargs['key'], mapped=True)
         return ctx
 
 

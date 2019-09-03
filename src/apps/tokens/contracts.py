@@ -110,29 +110,65 @@ class PoolContract(Contract):
         offers_for_key = []
         if(len(offers) is 0):
             return offers_for_key
-        # TODO: if offers is not 0
+        for offer in offers:
+            offer_mapped = self.offer_map(offer)
+            if offer_mapped['poolKey'] == key:
+                offers_for_key.append(offer_mapped)
         return offers_for_key
 
     def get_all_pools(self):
         keys = self.get_pool_keys()
         pools = []
         for key in keys:
-            pool = self.contract.functions.getPoolByKey(key).call()
-            pool.append(len(self.get_offers_by_key(key)))
+            pool = self.get_pool_by_key(key, mapped=True)
             pools.append(pool)
-        return self.pool_map(pools)
+        return pools
 
-    def pool_map(self, pools):
-        safe_pools = []
-        for pool in pools:
-            safe_pools.append(
-                {
-                    'poolName': pool[0],
-                    'tokenName': pool[1],
-                    'tokenAddress': pool[2],
-                    'startDate': datetime.datetime.fromtimestamp(pool[3]).strftime('%d/%m/%Y'),
-                    'open': pool[4],
-                    'amountOfOffers': pool[5],
-                }
-            )
-        return safe_pools
+    def get_pool_by_key(self, key, mapped=False):
+        pool = self.contract.functions.getPoolByKey(key).call()
+        pool.append(key)
+        pool.append(len(self.get_offers_by_key(key)))
+        if mapped:
+            pool = self.pool_map(pool)
+        return pool
+
+    def pool_map(self, pool):
+        return {
+            'poolName': pool[0],
+            'tokenName': pool[1],
+            'tokenAddress': pool[2],
+            'startDate': datetime.datetime.fromtimestamp(pool[3]).strftime('%d/%m/%Y'),
+            'open': pool[4],
+            'key': pool[5],
+            'amountOfOffers': pool[6],
+        }
+
+    def offer_map(self, offer):
+        return {
+            'userAddress': offer[0],
+            'poolKey': offer[1],
+            'offeredAmount': int(offer[2]) * (10 ** -int(offer[3])),
+            'offeredValue': int(offer[4]) * 10 ** -2,
+            'userEmail': offer[5],
+            'createdAt': datetime.datetime.fromtimestamp(offer[6]).strftime('%d/%m/%Y'),
+            'recentlyCreated': True if int(datetime.datetime.now().strftime('%d')) - int(datetime.datetime.fromtimestamp(offer[3]).strftime('%d')) <= 1 else False
+        }
+
+    def get_offer_statistics(self, offers=[], key=None):
+        if len(offers) is 0 and key is None:
+            raise Exception('You have to provide the offers or a key')
+        elif len(offers) is 0 and key is not None:
+            offers = self.get_offers_by_key(key)
+
+        lowest_offer = {'value': offers[0]['offeredValue'], 'qty': offers[0]['offeredAmount']}
+        total = 0
+        for offer in offers:
+            value = offer['offeredValue']
+            if value < lowest_offer['value']:
+                lowest_offer['value'] = value
+                lowest_offer['qty'] = offer['offeredAmount']
+            total += value
+        return {
+            'lowest_offer': lowest_offer,
+            'average': total/len(offers),
+        }

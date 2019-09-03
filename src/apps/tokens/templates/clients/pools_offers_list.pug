@@ -1,0 +1,188 @@
+extends base_landing
+-load static utils
+
+block extra_css
+    link(href='{% static "pages/plugins/pace/pace-theme-flash.css" %}', rel='stylesheet', type='text/css')
+    link(href='{% static "pages/css/pages-icons.css" %}', rel='stylesheet', type='text/css')
+    link(href='{% static "css/pools/list.css" %}', rel='stylesheet', type='text/css')
+    link(href='https://fonts.googleapis.com/css?family=Montserrat:300,400&display=swap', rel='stylesheet')
+
+
+block content
+    .main-cont.h-100
+        .row
+            .col-12
+                h1 Ofertas de #{pool.tokenName}s
+        .row
+            .col-12
+                if offers|length is 0
+                    span#no-offers.m-t-30 No hay pozos disponibles
+                #{offers}
+                #{pool}
+                each offer in offers
+                    if offer.offeredAmount > 0
+                        .flex.pool-list
+                            .card.col-8.flex-horizontal-center
+                                .card-body
+                                    .row
+                                        .col-sm-12.col-md-7.text-justify
+                                            .row
+                                                .title
+                                                    span Oferta
+                                            .row
+                                                .sub-title
+                                                    if offer.recentlyCreated
+                                                        span.label.label-danger.m-r-10 Nueva oferta
+                                                    span.label.label-info Creada: #{offer.createdAt}
+                                        .col-sm-12.col-md-5.text-right
+                                            span.qty-offers Precio: #{offer.offeredValue|currency}
+                                            br
+                                            span.qty-offers Cantidad de tokens: #{offer.offeredAmount}
+                                            button.btn.btn-block.btn-warning.js-btn-getTokens(type='button', data-key='{{offer.poolKey}}', data-maxamount='{{offer.offeredAmount}}' data-value='{{offer.offeredValue}}') Obtener tokens
+
+    #modalSlideUp.modal.fade.slide-up.disable-scroll(tabindex="-1" role="dialog" aria-hidden="false")
+        .modal-dialog
+            .modal-content-wrapper
+                .modal-content
+                    .modal-header.clearfix.text-left
+                        button.close(type="button" data-dismiss="modal" aria-hidden="true")
+                            i.pg-close.fs-14
+                        span.title Información adicional
+                    .modal-body
+                        form(role="form")
+                            .form-group-attached
+                                .row
+                                    .col-md-12
+                                        .form-group.form-group-default
+                                            label Cantidad de tokens a retirar
+                                            input#inputValue(type="hidden", name="value")
+                                            input#inputAmount.form-control(type="number", value=1)
+                                .row
+                                    .col-md-8
+                                        .form-group.form-group-default
+                                            label Número de tarjeta
+                                            input.form-control(type="text", placeholder='0000-0000-0000-0000')
+                                    .col-md-4
+                                        .form-group.form-group-default
+                                            label Codigo de seguridad
+                                            input.form-control(type="number", placeholder='123')
+                        .row
+                            .col-md-8
+                                .p-t-20.clearfix.p-l-10.p-r-10
+                                    .pull-left
+                                        p.bold.font-montserrat.text-uppercase TOTAL
+                                    .pull-right
+                                        p.bold.font-montserrat.text-uppercase.text-total $20.00
+                            .col-md-4.m-t-10.sm-m-t-10
+                                button.btn.btn-primary.btn-block.m-t-5(type="button") Pay Now
+block extra_js
+    script(src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js")
+    script(src='{% static "js/Contract.js" %}')
+    script(src="{% static 'pages/plugins/sweetalert/sweetalert.min.js' %}")
+
+    script.
+        (function (){
+            var App = {
+                Controls: {
+                    getTokensBtn: $('.js-btn-getTokens'),
+                    inputModal: $('#modalSlideUp'),
+                    inputValue: $('#inputValue'),
+                    inputAmount: $('#inputAmount'),
+                    totalText: $('.text-total'),
+                },
+                Methods: {
+                    init: function(){
+                        App.Methods.bindEvents();
+                    },
+                    bindEvents: function(){
+                        App.Controls.getTokensBtn.on('click', App.Events.onGetTokensBtnClick);
+                        App.Controls.inputModal.on('shown.bs.modal', App.Events.onInputModalShow);
+                        App.Controls.inputAmount.on('change', App.Events.calculateTotal);
+                    }
+                },
+                Events: {
+                    onGetTokensBtnClick: async function(){
+                        try {
+                            const key = $(this).data('key');
+                            const value = $(this).data('value');
+                            const maxAmount = $(this).data('maxamount');
+                            App.Controls.inputValue.val(value);
+                            App.Controls.inputModal.modal('show');
+                            //- const amount = await App.Events.getTokenAmount(maxAmount);
+                            //- const ccNumber = await App.Events.getCreditCardNumber();
+                            //- console.log(amount);
+                            //- console.log(number);
+                        } catch(e){
+                            console.error(e);
+                        }
+                        //- if(amount){
+                        //-     Swal.fire({type:'warning', title: `¿Está seguro que desea iniciar el proceso de obtener ${amount} tokens?`, showCancelButton: true})
+                        //-         .then( async (result) => {
+                        //-             if(result.value){
+                        //-                 try{
+                        //-                     await App.Requests.getTokens(key, amount);
+                        //-                 } catch(e){
+                        //-                     console.error(e);
+                        //-                     Swal.fire({type: 'error', title: e.toString()});
+                        //-                 }
+                        //-             }
+                        //-         })
+                        //- }
+                    },
+                    onInputModalShow: function(e){
+                        App.Controls.inputAmount.val(1);
+                        App.Events.calculateTotal(e);
+                    },
+                    calculateTotal: function(e){
+                        const value = parseFloat(App.Controls.inputValue.val());
+                        const amount = parseFloat(App.Controls.inputAmount.val());
+                        console.log(value);
+                        App.Controls.totalText.text(`B/.${(value * amount).toFixed(2)}`);
+                    },
+                    getTokenAmount: async function(maxAmount){
+                        const { value: amount } = await Swal.fire({
+                            title: '¿Cuantos tokens desea?',
+                            input: 'number',
+                            showCancelButton: true,
+                            inputValidator: (value) => App.Validations.validateAmount(value, maxAmount),
+                        });
+                        return amount
+                    },
+                    getCreditCardNumber: async function(){
+                        const { value: ccNumber } = await Swal.fire({
+                            title: 'Por favor ingrese un numero de tarjeta de credito',
+                            input: 'text',
+                            showCancelButton: true,
+                            inputValidator: App.Validations.validateCCNumber,
+                        });
+                        return ccNumber; 
+                    },
+                },
+                Requests: {
+                    getTokens: function(key, amount){
+                        const data = { key, amount };
+                        return $.ajax({
+                            method: 'POST',
+                            url: '{% url "tokens:pay-withdraw" %}',
+                            data
+                        });
+                    }
+                },
+                Validations: {
+                    validateAmount: function(value, maxAmount){
+                        if(!value || !maxAmount)
+                            return 'Error en valores';
+                        else if(value > maxAmount)
+                            return 'Está intentando obtener más tokens de lo permitido';
+                    },
+                    validateCCNumber: function(value){
+                        if(!value)
+                            return 'Error en valor';
+                        const reg = /^(\d{4}[- ]){3}\d{4}|\d{16}$/;
+                        if(!reg.test(value))
+                            return 'No es número valido de tarjeta';
+                    },
+                },
+            }
+            App.Methods.init();
+        })()

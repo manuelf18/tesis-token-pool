@@ -18,12 +18,13 @@ contract PoolManager{
         // required
         address userAddress;
         string poolKey;
-        uint value;
+        uint amount;
         uint decimals;
+        uint value;
 
         // info purposes only
-        string userName;
         string userEmail;
+        uint createdAt;
     }
 
     Pool[] pools;
@@ -71,17 +72,20 @@ contract PoolManager{
         poolKeys.push(_key);
     }
 
-    function createOffer(address _uAdd, string memory _pKey, uint _value, uint _decimals, string memory _uName, string memory _uEmail)
+    function createOffer(string memory _pKey, uint _amount, uint _decimals, uint _value, string memory _uEmail,
+                         uint _cAt, address tokenContract)
         public
         poolWithKeyExists(_pKey)
     {
+        ERC20(tokenContract).transferFrom(msg.sender, address(this), _amount);
         Offer memory offer;
-        offer.userAddress = _uAdd;
+        offer.userAddress = msg.sender;
         offer.poolKey = _pKey;
-        offer.value = _value;
+        offer.amount = _amount;
         offer.decimals = _decimals;
-        offer.userName = _uName;
+        offer.value = _value;
         offer.userEmail = _uEmail;
+        offer.createdAt = _cAt;
         offers.push(offer);
     }
 
@@ -138,16 +142,17 @@ contract PoolManager{
     function getOfferByIndex(uint index)
         public
         view
-        returns (address, string memory, uint, uint, string memory, string memory)
+        returns (address, string memory, uint, uint, uint, string memory, uint)
     {
        Offer memory offer = offers[index];
        return(
             offer.userAddress,
             offer.poolKey,
-            offer.value,
+            offer.amount,
             offer.decimals,
-            offer.userName,
-            offer.userEmail
+            offer.value,
+            offer.userEmail,
+            offer.createdAt
        );
     }
 }

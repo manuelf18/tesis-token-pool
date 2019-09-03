@@ -131,17 +131,18 @@ block extra_js
                         }
                     },
                     initData: async function(){
-                        let keys = [];
-                        {% for key in keys %}
-                            keys.push('{{key}}');
+                        const pools = [];
+                        {% for pool in pools %}
+                            pools.push({
+                                poolName: '{{pool.poolName}}',
+                                tokenName: '{{pool.tokenName}}',
+                                tokenAddress: '{{pool.tokenAddress}}',
+                                startDate: '{{pool.startDate}}',
+                                open: '{{pool.open}}',
+                                key: '{{pool.key}}',
+                                amountOfOffers: '{{pool.amountOfOffers}}',
+                            });
                         {% endfor %}
-                        if(!keys) return;
-                        let pools = [];
-                        try{
-                            pools = await App.Controls.Contract.getAllPools(keys);
-                        } catch(e){
-                            console.log(e);
-                        }
                         App.Methods.initSalesInfo(pools);
                         App.Methods.setDataToTable(pools);
                     }
@@ -156,13 +157,13 @@ block extra_js
                     setDataToTable: function(pools){
                         const table = App.Controls.Table.DataTable();
                         for (const pool of pools){
-                            if(pool['4'] === true){
+                            if(pool.open === 'True'){
                                 table.row.add( [
-                                pool['0'],
-                                pool['1'],
-                                pool['2'],
-                                pool['offers'],
-                                new Date(pool['3']*1000),
+                                pool.poolName,
+                                pool.tokenName,
+                                pool.tokenAddress,
+                                pool.amountOfOffers,
+                                pool.startDate,
                                 ] ).draw( false );
                             }
                         }

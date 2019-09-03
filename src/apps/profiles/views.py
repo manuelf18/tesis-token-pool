@@ -39,4 +39,5 @@ class DashboardView(TemplateView):
         ctx['token_amount'] = tc.balanceOf(pc.address)
         ctx['token_types'] = TokenType.objects.all()
         ctx['keys'] = pc.get_pool_keys()
+        ctx['pools'] = pc.get_all_pools()
         return ctx

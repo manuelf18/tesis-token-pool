@@ -23,8 +23,7 @@ class TokenContract extends Contract {
         super(abi, networkId, address);
     }
     approve(address, amount){
-        return this.contract.methods.approve(address, amount * 100).send({from:this.accounts[0]});
-
+        return this.contract.methods.approve(address, amount).send({from:this.accounts[0]});
     }
     balanceOf(address){
         if(!address) address=this.accounts[0];
@@ -187,7 +186,14 @@ class PoolContractV2 extends Contract{
         }   
     }
 
-
+    async createOffer(poolKey, amount, decimals, value, email, tokenAddress){
+        try {
+            const now = Math.floor(Date.now() / 1000);
+            return this.contract.methods.createOffer(poolKey, amount, decimals, value, email, now ,tokenAddress).send({from:this.accounts[0]});
+        } catch (error) {
+            throw error;
+        }
+    }
 
     getPoolByIndex(index){
         return this.contract.methods.getPoolByIndex(index).call({from:this.accounts[0]});

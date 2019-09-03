@@ -34,7 +34,7 @@ services:
     volumes:
       - ./src:/code
       - ./utils:/code/utils
-      - contracts:/src/static/json
+      - contracts:/code/static/json
     restart: always
   ganache:
     build:

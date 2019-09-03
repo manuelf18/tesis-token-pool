@@ -9,7 +9,7 @@ block extra_css
 
 
 block content
-    .main-cont
+    .main-cont.h-100
         .row
             .col-12
                 h1 Lista de pozos
@@ -23,8 +23,8 @@ block content
                 //-             th Fecha de apertura
                 //-             th Cantidad de ofertas
                 //-         tbody
-                if pools.length is 0
-                    span#no-offers No hay ofertas disponibles
+                if pools|length is 0
+                    span#no-offers.m-t-30 No hay pozos disponibles
                 each pool in pools
                     #{pool}
                     if pool.open
@@ -42,8 +42,9 @@ block content
                                             .row.m-t-20.pr-md-3
                                                 span.qty-offers Cantidad de ofertas: #{pool.amountOfOffers}
                                         .col-sm-12.col-md-5.text-right
-                                            button.btn.btn-green.btn-block.m-t-20(type="button") Ver ofertas
-                                            a.btn.btn-danger.btn-block.m-t-20(href="{% url '' %}") Crear nueva oferta
+                                            if pool.amountOfOffers > 0
+                                                a.btn.btn-green.btn-block.m-t-20(href="{% url 'tokens:pools-offers-list' key=pool.key %}") Ver ofertas
+                                            a.btn.btn-danger.btn-block.m-t-20(href="{% url 'tokens:pools-offers-create' key=pool.key %}") Crear nueva oferta
 
 
 block extra_js

@@ -1,0 +1,158 @@
+extends base_landing
+-load static utils
+
+
+block extra_css
+    link(href='{% static "pages/plugins/pace/pace-theme-flash.css" %}', rel='stylesheet', type='text/css')
+    link(href='{% static "pages/css/pages-icons.css" %}', rel='stylesheet', type='text/css')
+    link(href='{% static "css/pools/list.css" %}', rel='stylesheet', type='text/css')
+    link(href='https://fonts.googleapis.com/css?family=Montserrat:300,400&display=swap', rel='stylesheet')
+
+block content
+    .main-cont.h-100
+        .row
+            .col-12
+                h1 Crear nueva oferta
+        .row
+            .col-8
+                .card.card-default
+                    .card-header
+                        span Por favor ingrese los siguientes datos
+                    .card-body
+                        .row
+                            .col-6
+                                .form-group.form-group-default
+                                    label(for="value") Valor de los tokens
+                                    input#value.form-control(type="number", name="value")
+                            .col-6
+                                .form-group.form-group-default
+                                    label(for="amount") Cantidad de tokens
+                                    input#amount.form-control(type="number", name="amount")
+                        .row
+                            .col-12
+                                .form-group.form-group-default
+                                    label(for="email") Correo
+                                    input#email.form-control(type="email", name="email")
+                        .row.m-t-20
+                            .col-12
+                                .float-right
+                                    button.btn.btn-green.js-create-offer-btn(type='button') Crear nueva oferta
+                
+            .col-4
+                .card.card-default.bg-warning
+                    .card-header
+                        h2 Mejor oferta
+                    .card-body
+                        if offerStats
+                            p #{offerStats.lowest_offer.qty} tokens por #{offerStats.lowest_offer.value|currency}
+                        else
+                            p No existen ofertas todavía.
+
+
+block extra_js
+    script(src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js")
+    script(src='{% static "js/Contract.js" %}')
+    script(src="{% static 'pages/plugins/sweetalert/sweetalert.min.js' %}")
+    script.
+        (function(){
+            var App = {
+                Controls: {
+                    createOfferBtn: $('.js-create-offer-btn'),
+                    poolContract: null,
+                },
+                Methods:  {
+                    init: async function(){
+                        try{
+                            await App.Methods.initContract();
+                            App.Methods.bindEvents();
+                        }catch(e){
+                            console.log(e);
+                        }
+                    },
+                    initContract: async function(){
+                        try{
+                            let networkId = 5777;
+                            let resp = await App.Requests.getContractJSON('PoolManager');
+                            const { abi } = resp
+                            const { address } = resp['networks'][networkId];
+                            App.Controls.poolContract = new PoolContractV2(abi, networkId, address);
+                            await App.Controls.poolContract.setContract();
+                        }catch(e){
+                            console.log(e);
+                        }
+                    },
+                    bindEvents: function(){
+                        App.Controls.createOfferBtn.on('click', App.Events.onCreateOfferBtnClick);
+                    },
+                    createNewOffer: async function(){
+                        try {
+                            const networkId = 5777;
+                            const { amount, decimals, email, value } = App.Validations.getCleanedOfferData();
+                            let resp = await App.Requests.getContractJSON('#{object.tokenName}');
+                            const { abi } = resp;
+                            const { address } = resp['networks'][networkId];
+                            const tc = new TokenContract(abi, networkId, address);
+                            await tc.setContract();
+                            await tc.approve('#{poolContractAddress}', amount);
+                            await App.Controls.poolContract.createOffer('#{object.key}', amount, decimals, value, email, '#{object.tokenAddress}');
+                        } catch(e){
+                            throw e;
+                        }
+                    },
+                },
+                Events: {
+                    onCreateOfferBtnClick: function(e){
+                        const options = {
+                            title: '¿Está seguro que desea enviar estos datos?',
+                            type: 'warning',
+                            showCancelButton: true,
+                        };
+                        Swal.fire(options)
+                            .then( async (result) => {
+                                if(result.value){
+                                    try{
+                                        await App.Methods.createNewOffer();
+                                        window.location.replace("{% url 'tokens:pools-list' %}");
+                                    }catch(e){
+                                        console.log(e);
+                                        Swal.fire({type:'warning', title: e.toString()});
+                                    }
+                                }
+                            });
+                    }
+                },
+                Requests:{
+                    getContractJSON: function(contractName){
+                        return $.ajax({
+                            method: 'GET',
+                            url: `/static/json/${contractName}.json`
+                        });
+                    },
+                },
+                Validations: {
+                    getCleanedOfferData: function(){
+                        const email = $('#email').val();
+                        const unsafeValue = $('#value').val();
+                        if (App.Utils.countDecimals(unsafeValue) > 2) throw Error('Error en valor de la oferta')
+                        const unsafeAmount = $('#amount').val();
+                        const decimals = App.Utils.countDecimals(unsafeAmount);
+                        const amount = parseFloat(unsafeAmount * 100);
+                        const value = unsafeValue * 100;
+                        return { amount, decimals, email, value };
+                    },
+                },
+                Utils: {
+                    countDecimals: function (value) {
+                        if(!value || value === '') throw Error('Error en cantidad');
+                        if(Math.floor(value.valueOf()) === value.valueOf()) return 0;
+                        try {
+                            const decimals = value.toString().split(".")[1].length;
+                            return decimals;
+                        } catch(e){
+                            return 0;
+                        } 
+                    },
+                },
+            };
+            App.Methods.init();
+        })()

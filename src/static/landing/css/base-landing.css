@@ -18,3 +18,11 @@
 .navbar-item{
     color: black;
 }
+
+.footer{
+    /* margin-left:1%; */
+    overflow: hidden;
+    padding: 1%;
+    background-color: #373F51;
+    color: white;
+}
