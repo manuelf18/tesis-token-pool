@@ -52,15 +52,6 @@ class TokenContract(Contract):
 
 
 class PoolContract(Contract):
-    """
-    Index map:
-    0 -> Token name
-    1 -> Pool name
-    2 -> Amount of tokens in pool
-    3 -> Token address
-    4 -> Token value
-    5 -> Pool is closed
-    """
     def __init__(self):
         super().__init__('PoolManager')
 
@@ -145,13 +136,14 @@ class PoolContract(Contract):
 
     def offer_map(self, offer):
         return {
-            'userAddress': offer[0],
-            'poolKey': offer[1],
-            'offeredAmount': int(offer[2]) * (10 ** -int(offer[3])),
-            'offeredValue': int(offer[4]) * 10 ** -2,
-            'userEmail': offer[5],
-            'createdAt': datetime.datetime.fromtimestamp(offer[6]).strftime('%d/%m/%Y'),
-            'recentlyCreated': True if int(datetime.datetime.now().strftime('%d')) - int(datetime.datetime.fromtimestamp(offer[3]).strftime('%d')) <= 1 else False
+            'index': offer[0],
+            'userAddress': offer[1],
+            'poolKey': offer[2],
+            'offeredAmount': int(offer[3]) * (10 ** -int(offer[4])),
+            'offeredValue': int(offer[5]) * 10 ** -2,
+            'userEmail': offer[6],
+            'createdAt': datetime.datetime.fromtimestamp(offer[7]).strftime('%d/%m/%Y'),
+            'recentlyCreated': True if int(datetime.datetime.now().strftime('%d')) - int(datetime.datetime.fromtimestamp(offer[7]).strftime('%d')) <= 1 else False
         }
 
     def get_offer_statistics(self, offers=[], key=None):
@@ -172,3 +164,6 @@ class PoolContract(Contract):
             'lowest_offer': lowest_offer,
             'average': total/len(offers),
         }
+
+    def withdraw_from_offer(self, offer_id, amount, token_address, user_address):
+        return self.contract.functions.withdrawFromOffer(offer_id, amount, token_address, user_address).transact()

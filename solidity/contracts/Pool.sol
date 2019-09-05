@@ -142,10 +142,11 @@ contract PoolManager{
     function getOfferByIndex(uint index)
         public
         view
-        returns (address, string memory, uint, uint, uint, string memory, uint)
+        returns (uint, address, string memory, uint, uint, uint, string memory, uint)
     {
        Offer memory offer = offers[index];
        return(
+            index,
             offer.userAddress,
             offer.poolKey,
             offer.amount,
@@ -154,5 +155,18 @@ contract PoolManager{
             offer.userEmail,
             offer.createdAt
        );
+    }
+
+    function withdrawFromOffer(uint _id, uint _amount, address _tokenAddress, address _userAddress)
+        public
+        ownable()
+        returns (bool)
+    {
+        Offer storage offer = offers[_id];
+        if (offer.amount < _amount)
+            return false;
+        offer.amount -= _amount;
+        ERC20(_tokenAddress).transferFrom(address(this), _userAddress, _amount);
+        return true;
     }
 }

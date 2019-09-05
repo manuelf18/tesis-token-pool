@@ -115,18 +115,27 @@ def pay_withdraw_view(request):
     if not request.is_ajax():
         return JsonResponse({'message': 'Error handler content'}, status=403)
     try:
-        token_qty = int(request.POST['token_qty'])
-        pool_index = int(request.POST['pool_index'])
-        user_address = request.POST['user_address']
-        pool = PoolContract()
+        token_qty = int(request.POST['amount'])
+        key = request.POST['key']
+        user_address = request.POST['account']
+        index = int(request.POST['id'])
+        # Credit card info
+        cc_name = request.POST['ccName']
+        cc_number = request.POST['ccNumber']
+        cvc = request.POST['cvc']
+        pc = PoolContract()
+        pool = pc.get_pool_by_key(request.POST['key'], mapped=True)
+        offers = pc.get_offers_by_key(request.POST['key'])
         stripe.api_key = os.environ.get('STRIPE_API_KEY')
         stripe.Charge.create(
-            amount=token_qty * 100,
+            amount=token_qty * float(offers[]['offeredValue']),
             currency="usd",
             description="Cargo de compra de {} tokens".format(token_qty),
             source="tok_amex",
-            )
-        pool.pay_user_for_withdrawing_pool(pool_index, token_qty, user_address)
+        )
+        print(offer)
+        print(pool)
+        pc.get_tokens_from_offer(offer['id'], token_qty, pool['tokenAddress'], user_address)
         response = HttpResponse('Success')
         response.status_code = 200
         return response

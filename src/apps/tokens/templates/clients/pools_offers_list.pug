@@ -9,6 +9,7 @@ block extra_css
 
 
 block content
+    - csrf_token
     .main-cont.h-100
         .row
             .col-12
@@ -21,7 +22,7 @@ block content
                 #{pool}
                 each offer in offers
                     if offer.offeredAmount > 0
-                        .flex.pool-list
+                        .flex.offer-card
                             .card.col-8.flex-horizontal-center
                                 .card-body
                                     .row
@@ -38,7 +39,8 @@ block content
                                             span.qty-offers Precio: #{offer.offeredValue|currency}
                                             br
                                             span.qty-offers Cantidad de tokens: #{offer.offeredAmount}
-                                            button.btn.btn-block.btn-warning.js-btn-getTokens(type='button', data-key='{{offer.poolKey}}', data-maxamount='{{offer.offeredAmount}}' data-value='{{offer.offeredValue}}') Obtener tokens
+                                            input.maxAmount(type="hidden", value='{{offer.offeredAmount}}')
+                                            button.btn.btn-block.btn-warning.js-btn-getTokens(type='button', data-id='{{offer.id}}' data-key='{{offer.poolKey}}', data-value='{{offer.offeredValue}}', data-max-amount='{{offer.offeredAmount}}') Obtener tokens
 
     #modalSlideUp.modal.fade.slide-up.disable-scroll(tabindex="-1" role="dialog" aria-hidden="false")
         .modal-dialog
@@ -55,26 +57,34 @@ block content
                                     .col-md-12
                                         .form-group.form-group-default
                                             label Cantidad de tokens a retirar
-                                            input#inputValue(type="hidden", name="value")
+                                            input#inputId(type="hidden",)
+                                            input#inputValue(type="hidden",)
+                                            input#maxAmount(type="hidden",)
+                                            input#inputKey(type="hidden",)
                                             input#inputAmount.form-control(type="number", value=1)
+                                .row
+                                    .col-md-12
+                                        .form-group.form-group-default
+                                            label Nombre de la tarjeta
+                                            input#ccName.form-control(type="text", placeholder='Juan Pérez')                                        
                                 .row
                                     .col-md-8
                                         .form-group.form-group-default
                                             label Número de tarjeta
-                                            input.form-control(type="text", placeholder='0000-0000-0000-0000')
+                                            input#ccNumber.form-control(type="text", placeholder='0000-0000-0000-0000')
                                     .col-md-4
                                         .form-group.form-group-default
                                             label Codigo de seguridad
-                                            input.form-control(type="number", placeholder='123')
+                                            input#cvc.form-control(type="number", placeholder='123')
                         .row
                             .col-md-8
                                 .p-t-20.clearfix.p-l-10.p-r-10
                                     .pull-left
                                         p.bold.font-montserrat.text-uppercase TOTAL
                                     .pull-right
-                                        p.bold.font-montserrat.text-uppercase.text-total $20.00
+                                        p.bold.font-montserrat.text-uppercase.text-total $0.00
                             .col-md-4.m-t-10.sm-m-t-10
-                                button.btn.btn-primary.btn-block.m-t-5(type="button") Pay Now
+                                button.btn.btn-primary.btn-block.js-btn-pay.m-t-5(type="button") Pagar
 block extra_js
     script(src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js")
     script(src='{% static "js/Contract.js" %}')
@@ -85,9 +95,12 @@ block extra_js
             var App = {
                 Controls: {
                     getTokensBtn: $('.js-btn-getTokens'),
+                    btnPay: $('.js-btn-pay'),
                     inputModal: $('#modalSlideUp'),
                     inputValue: $('#inputValue'),
                     inputAmount: $('#inputAmount'),
+                    maxAmount: $('#maxAmount'),
+                    inputKey: $('#inputKey'),
                     totalText: $('.text-total'),
                 },
                 Methods: {
@@ -98,36 +111,22 @@ block extra_js
                         App.Controls.getTokensBtn.on('click', App.Events.onGetTokensBtnClick);
                         App.Controls.inputModal.on('shown.bs.modal', App.Events.onInputModalShow);
                         App.Controls.inputAmount.on('change', App.Events.calculateTotal);
-                    }
+                        App.Controls.btnPay.on('click', App.Events.onBtnPayClick);
+                    },
                 },
                 Events: {
                     onGetTokensBtnClick: async function(){
                         try {
                             const key = $(this).data('key');
                             const value = $(this).data('value');
-                            const maxAmount = $(this).data('maxamount');
+                            const maxAmount = $(this).data('max-amount');
                             App.Controls.inputValue.val(value);
+                            App.Controls.inputKey.val(key);
+                            App.Controls.maxAmount.val(maxAmount);
                             App.Controls.inputModal.modal('show');
-                            //- const amount = await App.Events.getTokenAmount(maxAmount);
-                            //- const ccNumber = await App.Events.getCreditCardNumber();
-                            //- console.log(amount);
-                            //- console.log(number);
                         } catch(e){
                             console.error(e);
                         }
-                        //- if(amount){
-                        //-     Swal.fire({type:'warning', title: `¿Está seguro que desea iniciar el proceso de obtener ${amount} tokens?`, showCancelButton: true})
-                        //-         .then( async (result) => {
-                        //-             if(result.value){
-                        //-                 try{
-                        //-                     await App.Requests.getTokens(key, amount);
-                        //-                 } catch(e){
-                        //-                     console.error(e);
-                        //-                     Swal.fire({type: 'error', title: e.toString()});
-                        //-                 }
-                        //-             }
-                        //-         })
-                        //- }
                     },
                     onInputModalShow: function(e){
                         App.Controls.inputAmount.val(1);
@@ -136,51 +135,53 @@ block extra_js
                     calculateTotal: function(e){
                         const value = parseFloat(App.Controls.inputValue.val());
                         const amount = parseFloat(App.Controls.inputAmount.val());
-                        console.log(value);
                         App.Controls.totalText.text(`B/.${(value * amount).toFixed(2)}`);
                     },
-                    getTokenAmount: async function(maxAmount){
-                        const { value: amount } = await Swal.fire({
-                            title: '¿Cuantos tokens desea?',
-                            input: 'number',
-                            showCancelButton: true,
-                            inputValidator: (value) => App.Validations.validateAmount(value, maxAmount),
-                        });
-                        return amount
-                    },
-                    getCreditCardNumber: async function(){
-                        const { value: ccNumber } = await Swal.fire({
-                            title: 'Por favor ingrese un numero de tarjeta de credito',
-                            input: 'text',
-                            showCancelButton: true,
-                            inputValidator: App.Validations.validateCCNumber,
-                        });
-                        return ccNumber; 
+                    onBtnPayClick: async function(e){
+                        const value = App.Controls.inputValue.val();
+                        const key = App.Controls.inputKey.val();
+                        const amount = App.Controls.inputAmount.val();
+                        const maxAmount = $('#maxAmount').val();
+                        const ccName = $('#ccName').val();
+                        const ccNumber = $('#ccNumber').val();
+                        const cvc = $('#cvc').val();
+                        try{
+                            App.Validations.validateAmount(amount, maxAmount);
+                            App.Validations.validateCCInfo(ccName, ccNumber, cvc);
+                            const web3 = new Web3(Web3.givenProvider || new Web3.providers.HttpProvider('http://127.0.0.1:7545'));
+                            const accounts = await web3.eth.getAccounts();
+                            const account = accounts[0];
+                            App.Requests.getTokens({amount, key, ccName, ccNumber, cvc, account});
+                        } catch(e){
+                            console.error(e);
+                            Swal.fire({type: 'error', title: e.toString()})
+                        }
                     },
                 },
                 Requests: {
-                    getTokens: function(key, amount){
-                        const data = { key, amount };
+                    getTokens: function(data){
                         return $.ajax({
                             method: 'POST',
                             url: '{% url "tokens:pay-withdraw" %}',
                             data
                         });
-                    }
+                    },
                 },
                 Validations: {
                     validateAmount: function(value, maxAmount){
                         if(!value || !maxAmount)
-                            return 'Error en valores';
+                            throw Error('Datos imcompletos');
                         else if(value > maxAmount)
-                            return 'Está intentando obtener más tokens de lo permitido';
+                            throw Error('No es número valido de tarjeta');
                     },
-                    validateCCNumber: function(value){
-                        if(!value)
-                            return 'Error en valor';
+                    validateCCInfo: function(ccName, ccNumber, cvc){
+                        if(!ccName || !ccNumber || !cvc)
+                            throw Error('Datos imcompletos');
                         const reg = /^(\d{4}[- ]){3}\d{4}|\d{16}$/;
-                        if(!reg.test(value))
-                            return 'No es número valido de tarjeta';
+                        if(!reg.test(ccNumber))
+                            throw Error('No es número valido de tarjeta');
+                        else if(cvc.length > 3 || cvc.length <= 0)
+                            throw Error('No es un codigo de seguridad valido');
                     },
                 },
             }
