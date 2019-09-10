@@ -2,8 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import path
 
 from .views import (AdminPoolCreateView, AdminTokenTypeCreateView, PoolOffersCreateView, PoolOffersListView,
-                    PoolsDetailView, PoolsListView, pay_deposit_view,
-                    pay_withdraw_view)
+                    PoolsDetailView, PoolsListView, pay_withdraw_view)
 
 app_name = 'tokens'
 
@@ -21,6 +20,5 @@ urlpatterns = [
 
 
     # AJAX views
-    path('pay/deposit', pay_deposit_view, name='pay-deposit'),
     path('pay/withdraw', pay_withdraw_view, name='pay-withdraw'),
 ]
