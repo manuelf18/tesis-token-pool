@@ -1,0 +1,16 @@
+/* containter */
+
+.main-cont{
+    margin: 0 100px;
+}
+
+.flex{
+    display:flex;
+}
+
+/* subtitles */
+
+.subtitles span{
+    font-size: 16px;
+    color: black;
+}

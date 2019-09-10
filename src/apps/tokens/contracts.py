@@ -107,6 +107,10 @@ class PoolContract(Contract):
                 offers_for_key.append(offer_mapped)
         return offers_for_key
 
+    def get_offer_by_index(self, index):
+        offers = self.get_all_offers()
+        return self.offer_map(offers[index])
+
     def get_all_pools(self):
         keys = self.get_pool_keys()
         pools = []
@@ -140,6 +144,7 @@ class PoolContract(Contract):
             'userAddress': offer[1],
             'poolKey': offer[2],
             'offeredAmount': int(offer[3]) * (10 ** -int(offer[4])),
+            'offeredDecimals': int(offer[4]),
             'offeredValue': int(offer[5]) * 10 ** -2,
             'userEmail': offer[6],
             'createdAt': datetime.datetime.fromtimestamp(offer[7]).strftime('%d/%m/%Y'),

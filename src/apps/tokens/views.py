@@ -70,6 +70,7 @@ class PoolOffersListView(DetailView):
         ctx = super().get_context_data(**kwargs)
         ctx['offers'] = pc.get_offers_by_key(self.kwargs['key'])
         ctx['pool'] = pc.get_pool_by_key(self.kwargs['key'], mapped=True)
+        ctx['stripeKey'] = os.environ.get('STRIPE_TEST_KEY')
         return ctx
 
 
@@ -78,7 +79,11 @@ class AdminPoolCreateView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
+        pc = PoolContract()
         ctx['available_tokens'] = TokenType.objects.all()
+        pools = pc.get_all_pools()
+        ctx['used_tokens'] = [pool['tokenName'] for pool in pools]
+        print(ctx)
         return ctx
 
     def post(self, request):
@@ -115,47 +120,28 @@ def pay_withdraw_view(request):
     if not request.is_ajax():
         return JsonResponse({'message': 'Error handler content'}, status=403)
     try:
+        print(request.POST)
+        index = int(request.POST['index'])
         token_qty = int(request.POST['amount'])
         key = request.POST['key']
         user_address = request.POST['account']
-        index = int(request.POST['id'])
+        token = request.POST['token']
+
         # Credit card info
-        cc_name = request.POST['ccName']
-        cc_number = request.POST['ccNumber']
-        cvc = request.POST['cvc']
         pc = PoolContract()
         pool = pc.get_pool_by_key(request.POST['key'], mapped=True)
-        offers = pc.get_offers_by_key(request.POST['key'])
+        offer = pc.get_offer_by_index(index)
         stripe.api_key = os.environ.get('STRIPE_API_KEY')
         stripe.Charge.create(
-            amount=token_qty * float(offers[]['offeredValue']),
+            amount=token_qty * int(float(offer['offeredValue']) * 100),
             currency="usd",
             description="Cargo de compra de {} tokens".format(token_qty),
-            source="tok_amex",
+            source=token,
         )
-        print(offer)
-        print(pool)
-        pc.get_tokens_from_offer(offer['id'], token_qty, pool['tokenAddress'], user_address)
+        pc.withdraw_from_offer(index, token_qty * (10 ** int(offer['offeredDecimals'])), pool['tokenAddress'], user_address)
         response = HttpResponse('Success')
         response.status_code = 200
         return response
     except Exception as e:
         print(e)
-        return JsonResponse({'message': 'There was an error'}, status=500)
-
-
-@require_http_methods(["POST", ])
-def pay_deposit_view(request):
-    if not request.is_ajax():
-        return JsonResponse({'message': 'Error handler content'}, status=403)
-    try:
-        print(request.POST)
-        token_qty = int(request.POST['qty'])
-        user_address = request.POST['user_address']
-        pool = PoolContract()
-        pool.pay_user_for_joining_pool(user_address, token_qty)
-        response = HttpResponse('Success')
-        response.status_code = 200
-        return response
-    except:
         return JsonResponse({'message': 'There was an error'}, status=500)

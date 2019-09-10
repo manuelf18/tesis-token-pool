@@ -166,7 +166,7 @@ contract PoolManager{
         if (offer.amount < _amount)
             return false;
         offer.amount -= _amount;
-        ERC20(_tokenAddress).transferFrom(address(this), _userAddress, _amount);
+        ERC20(_tokenAddress).transfer(_userAddress, _amount);
         return true;
     }
 }

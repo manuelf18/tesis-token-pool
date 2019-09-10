@@ -27,7 +27,11 @@ class TokenContract extends Contract {
     }
     balanceOf(address){
         if(!address) address=this.accounts[0];
+        console.log(address);
         return this.contract.methods.balanceOf(address).call({from: this.accounts[0]});
+    }
+    getDecimals(){
+        return this.contract.methods.decimals().call({from: this.accounts[0]});
     }
 }
 
@@ -189,7 +193,7 @@ class PoolContractV2 extends Contract{
     async createOffer(poolKey, amount, decimals, value, email, tokenAddress){
         try {
             const now = Math.floor(Date.now() / 1000);
-            return this.contract.methods.createOffer(poolKey, amount, decimals, value, email, now ,tokenAddress).send({from:this.accounts[0]});
+            return this.contract.methods.createOffer(poolKey, amount, decimals, value, email, now, tokenAddress).send({from:this.accounts[0]});
         } catch (error) {
             throw error;
         }

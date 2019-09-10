@@ -5,19 +5,26 @@ extends base_landing
 block extra_css
     link(href='{% static "pages/plugins/pace/pace-theme-flash.css" %}', rel='stylesheet', type='text/css')
     link(href='{% static "pages/css/pages-icons.css" %}', rel='stylesheet', type='text/css')
-    link(href='{% static "css/pools/list.css" %}', rel='stylesheet', type='text/css')
+    link(href='{% static "css/pools/offer-create.css" %}', rel='stylesheet', type='text/css')
     link(href='https://fonts.googleapis.com/css?family=Montserrat:300,400&display=swap', rel='stylesheet')
 
 block content
     .main-cont.h-100
         .row
             .col-12
-                h1 Crear nueva oferta
+                .title
+                    h1 Crear nueva oferta
+                .subtitles
+                    span Actualmente conectado desde:
+                    span#userAddress(style='color:green')
+                    br
+                    span Cantidad #{object.tokenName}s disponible:
+                    span#amountOfTokensAvailable(style='color:green')
         .row
             .col-8
-                .card.card-default
+                .card.card-default(style='border:2px solid lightgray;')
                     .card-header
-                        span Por favor ingrese los siguientes datos
+                        span Ingrese los siguientes datos:
                     .card-body
                         .row
                             .col-6
@@ -39,14 +46,26 @@ block content
                                     button.btn.btn-green.js-create-offer-btn(type='button') Crear nueva oferta
                 
             .col-4
-                .card.card-default.bg-warning
+                .card.card-default(style='border:2px solid lightgray;')
                     .card-header
-                        h2 Mejor oferta
+                        h3 Consejos para una buena oferta
                     .card-body
-                        if offerStats
-                            p #{offerStats.lowest_offer.qty} tokens por #{offerStats.lowest_offer.value|currency}
-                        else
-                            p No existen ofertas todavía.
+                        ol
+                            li Mira los precios de las otras ofertas
+                            li 
+
+
+
+
+
+
+
+                    //-     h2 Mejor oferta
+                    //- .card-body
+                    //-     if offerStats
+                    //-         p(style='color:black') #{offerStats.lowest_offer.qty} tokens por #{offerStats.lowest_offer.value|currency}
+                    //-     else
+                    //-         p(style='color:black') No existen ofertas todavía.
 
 
 block extra_js
@@ -58,12 +77,16 @@ block extra_js
             var App = {
                 Controls: {
                     createOfferBtn: $('.js-create-offer-btn'),
+                    userAddress: $('#userAddress'),
+                    userTokensAvailable: $('#amountOfTokensAvailable'),
                     poolContract: null,
+                    tokenContract: null,
                 },
                 Methods:  {
                     init: async function(){
                         try{
                             await App.Methods.initContract();
+                            await App.Methods.initNetworkData();
                             App.Methods.bindEvents();
                         }catch(e){
                             console.log(e);
@@ -72,13 +95,31 @@ block extra_js
                     initContract: async function(){
                         try{
                             let networkId = 5777;
-                            let resp = await App.Requests.getContractJSON('PoolManager');
-                            const { abi } = resp
-                            const { address } = resp['networks'][networkId];
+                            let poolContractJSON = await App.Requests.getContractJSON('PoolManager');
+                            let abi = poolContractJSON.abi;
+                            let address = poolContractJSON['networks'][networkId].address;
                             App.Controls.poolContract = new PoolContractV2(abi, networkId, address);
+                            let tokenContractJSON = await App.Requests.getContractJSON('#{object.tokenName}');
+                            abi = tokenContractJSON.abi;
+                            address = tokenContractJSON['networks'][networkId].address;                            
+                            App.Controls.tokenContract = new TokenContract(abi, networkId, address);
                             await App.Controls.poolContract.setContract();
+                            await App.Controls.tokenContract.setContract();
                         }catch(e){
-                            console.log(e);
+                            console.error(e);
+                            throw e;
+                        }
+                    },
+                    initNetworkData: async function(){
+                        try{
+                            const address = App.Controls.poolContract.accounts[0];
+                            const balance = await App.Controls.tokenContract.balanceOf();
+                            App.Controls.userAddress.text(address);
+                            App.Controls.userTokensAvailable.text(balance);
+                            
+                        } catch(e){
+                            console.error(e);
+                            throw e;
                         }
                     },
                     bindEvents: function(){
@@ -86,16 +127,11 @@ block extra_js
                     },
                     createNewOffer: async function(){
                         try {
-                            const networkId = 5777;
-                            const { amount, decimals, email, value } = App.Validations.getCleanedOfferData();
-                            let resp = await App.Requests.getContractJSON('#{object.tokenName}');
-                            const { abi } = resp;
-                            const { address } = resp['networks'][networkId];
-                            const tc = new TokenContract(abi, networkId, address);
-                            await tc.setContract();
-                            await tc.approve('#{poolContractAddress}', amount);
+                            const { amount, decimals, email, value } = await App.Validations.getCleanedOfferData();
+                            await App.Controls.tokenContract.approve('#{poolContractAddress}', amount);
                             await App.Controls.poolContract.createOffer('#{object.key}', amount, decimals, value, email, '#{object.tokenAddress}');
                         } catch(e){
+                            console.error(e);
                             throw e;
                         }
                     },
@@ -130,21 +166,21 @@ block extra_js
                     },
                 },
                 Validations: {
-                    getCleanedOfferData: function(){
-                        const email = $('#email').val();
-                        const unsafeValue = $('#value').val();
-                        if (App.Utils.countDecimals(unsafeValue) > 2) throw Error('Error en valor de la oferta')
-                        const unsafeAmount = $('#amount').val();
-                        const decimals = App.Utils.countDecimals(unsafeAmount);
-                        const amount = parseFloat(unsafeAmount * 100);
-                        const value = unsafeValue * 100;
-                        return { amount, decimals, email, value };
+                    getCleanedOfferData: async function(){
+                        try{
+                            const email = $('#email').val();
+                            const value = parseFloat($('#value').val()) * 100;
+                            if (App.Utils.countDecimals(value) > 2) throw Error('Error en valor de la oferta');
+                            const { amount, decimals } = await App.Utils.transformToTokenAmount($('#amount').val());
+                            return { amount, decimals, email, value };
+                        } catch(e) {
+                            console.error(e);
+                            throw e;
+                        }
                     },
                 },
                 Utils: {
                     countDecimals: function (value) {
-                        if(!value || value === '') throw Error('Error en cantidad');
-                        if(Math.floor(value.valueOf()) === value.valueOf()) return 0;
                         try {
                             const decimals = value.toString().split(".")[1].length;
                             return decimals;
@@ -152,6 +188,22 @@ block extra_js
                             return 0;
                         } 
                     },
+                    transformToTokenAmount: async function(value){
+                        try{
+                            let decimals;
+                            try{
+                                decimals = await App.Controls.tokenContract.getDecimals();
+                            } catch(e){
+                                console.error(e);
+                                decimals = 0;
+                            }
+                            const amount = parseFloat(value) * Math.pow(10, decimals);
+                            return { amount, decimals };
+                        } catch(e){
+                            console.error(e);
+                            throw e;
+                        } 
+                    }
                 },
             };
             App.Methods.init();

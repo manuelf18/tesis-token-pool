@@ -40,7 +40,7 @@ block content
                                             br
                                             span.qty-offers Cantidad de tokens: #{offer.offeredAmount}
                                             input.maxAmount(type="hidden", value='{{offer.offeredAmount}}')
-                                            button.btn.btn-block.btn-warning.js-btn-getTokens(type='button', data-id='{{offer.id}}' data-key='{{offer.poolKey}}', data-value='{{offer.offeredValue}}', data-max-amount='{{offer.offeredAmount}}') Obtener tokens
+                                            button.btn.btn-block.btn-warning.js-btn-getTokens(type='button', data-id='{{offer.id}}' data-key='{{offer.poolKey}}', data-value='{{offer.offeredValue}}', data-max-amount='{{offer.offeredAmount}}' data-index='{{offer.index}}') Obtener tokens
 
     #modalSlideUp.modal.fade.slide-up.disable-scroll(tabindex="-1" role="dialog" aria-hidden="false")
         .modal-dialog
@@ -57,25 +57,12 @@ block content
                                     .col-md-12
                                         .form-group.form-group-default
                                             label Cantidad de tokens a retirar
-                                            input#inputId(type="hidden",)
-                                            input#inputValue(type="hidden",)
-                                            input#maxAmount(type="hidden",)
-                                            input#inputKey(type="hidden",)
                                             input#inputAmount.form-control(type="number", value=1)
                                 .row
                                     .col-md-12
                                         .form-group.form-group-default
                                             label Nombre de la tarjeta
-                                            input#ccName.form-control(type="text", placeholder='Juan Pérez')                                        
-                                .row
-                                    .col-md-8
-                                        .form-group.form-group-default
-                                            label Número de tarjeta
-                                            input#ccNumber.form-control(type="text", placeholder='0000-0000-0000-0000')
-                                    .col-md-4
-                                        .form-group.form-group-default
-                                            label Codigo de seguridad
-                                            input#cvc.form-control(type="number", placeholder='123')
+                                            #supercardInput
                         .row
                             .col-md-8
                                 .p-t-20.clearfix.p-l-10.p-r-10
@@ -87,6 +74,7 @@ block content
                                 button.btn.btn-primary.btn-block.js-btn-pay.m-t-5(type="button") Pagar
 block extra_js
     script(src="https://cdn.jsdelivr.net/gh/ethereum/web3.js@1.0.0-beta.34/dist/web3.min.js")
+    script(src='https://js.stripe.com/v3/')
     script(src='{% static "js/Contract.js" %}')
     script(src="{% static 'pages/plugins/sweetalert/sweetalert.min.js' %}")
 
@@ -96,16 +84,22 @@ block extra_js
                 Controls: {
                     getTokensBtn: $('.js-btn-getTokens'),
                     btnPay: $('.js-btn-pay'),
-                    inputModal: $('#modalSlideUp'),
-                    inputValue: $('#inputValue'),
                     inputAmount: $('#inputAmount'),
-                    maxAmount: $('#maxAmount'),
-                    inputKey: $('#inputKey'),
+                    inputModal: $('#modalSlideUp'),
                     totalText: $('.text-total'),
+
+                    inputValue: null,
+                    maxAmount: null,
+                    inputKey: null,
+                    offerIndex: null,
+
+                    stripeInstance: null,
+                    cardElement: null,
                 },
                 Methods: {
                     init: function(){
                         App.Methods.bindEvents();
+                        App.Requests.Stripe.createStripeCreditCard();
                     },
                     bindEvents: function(){
                         App.Controls.getTokensBtn.on('click', App.Events.onGetTokensBtnClick);
@@ -113,16 +107,18 @@ block extra_js
                         App.Controls.inputAmount.on('change', App.Events.calculateTotal);
                         App.Controls.btnPay.on('click', App.Events.onBtnPayClick);
                     },
+                    getAccounts: async function(){
+                        const web3 = new Web3(Web3.givenProvider || new Web3.providers.HttpProvider('http://127.0.0.1:7545'));
+                        return web3.eth.getAccounts();
+                    }
                 },
                 Events: {
                     onGetTokensBtnClick: async function(){
                         try {
-                            const key = $(this).data('key');
-                            const value = $(this).data('value');
-                            const maxAmount = $(this).data('max-amount');
-                            App.Controls.inputValue.val(value);
-                            App.Controls.inputKey.val(key);
-                            App.Controls.maxAmount.val(maxAmount);
+                            App.Controls.inputValue = $(this).data('value');
+                            App.Controls.inputKey = $(this).data('key');
+                            App.Controls.maxAmount = $(this).data('max-amount');
+                            App.Controls.offerIndex = $(this).data('index');
                             App.Controls.inputModal.modal('show');
                         } catch(e){
                             console.error(e);
@@ -133,25 +129,22 @@ block extra_js
                         App.Events.calculateTotal(e);
                     },
                     calculateTotal: function(e){
-                        const value = parseFloat(App.Controls.inputValue.val());
+                        const value = parseFloat(App.Controls.inputValue);
                         const amount = parseFloat(App.Controls.inputAmount.val());
                         App.Controls.totalText.text(`B/.${(value * amount).toFixed(2)}`);
                     },
                     onBtnPayClick: async function(e){
-                        const value = App.Controls.inputValue.val();
-                        const key = App.Controls.inputKey.val();
+                        const { maxAmount } = App.Controls;
+                        const index = App.Controls.offerIndex;
+                        const key = App.Controls.inputKey;
                         const amount = App.Controls.inputAmount.val();
-                        const maxAmount = $('#maxAmount').val();
-                        const ccName = $('#ccName').val();
-                        const ccNumber = $('#ccNumber').val();
-                        const cvc = $('#cvc').val();
                         try{
                             App.Validations.validateAmount(amount, maxAmount);
-                            App.Validations.validateCCInfo(ccName, ccNumber, cvc);
-                            const web3 = new Web3(Web3.givenProvider || new Web3.providers.HttpProvider('http://127.0.0.1:7545'));
-                            const accounts = await web3.eth.getAccounts();
+                            const accounts = await App.Methods.getAccounts();
                             const account = accounts[0];
-                            App.Requests.getTokens({amount, key, ccName, ccNumber, cvc, account});
+                            const tk = await App.Controls.stripeInstance.createToken(App.Controls.cardElement);
+                            const token = tk.token.id;
+                            App.Requests.getTokens({amount, index, token, key, account});
                         } catch(e){
                             console.error(e);
                             Swal.fire({type: 'error', title: e.toString()})
@@ -166,13 +159,24 @@ block extra_js
                             data
                         });
                     },
+                    Stripe: {
+                        createStripeCreditCard: function(){
+                            App.Controls.stripeInstance = Stripe('{{stripeKey}}');
+                            const elements = App.Controls.stripeInstance.elements();
+                            App.Controls.cardElement = elements.create('card');
+                            App.Controls.cardElement.mount('#supercardInput');
+                        },
+                        generateToken: function(){
+
+                        },
+                    },
                 },
                 Validations: {
                     validateAmount: function(value, maxAmount){
                         if(!value || !maxAmount)
                             throw Error('Datos imcompletos');
-                        else if(value > maxAmount)
-                            throw Error('No es número valido de tarjeta');
+                        else if(value > parseFloat(maxAmount))
+                            throw Error('No puede retirar una cantidad mayor de tokens a la disponible');
                     },
                     validateCCInfo: function(ccName, ccNumber, cvc){
                         if(!ccName || !ccNumber || !cvc)

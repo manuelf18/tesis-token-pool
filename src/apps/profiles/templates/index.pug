@@ -24,13 +24,17 @@ block content
             .card(style='width: 75%')
               .card-body
                 h2 Invierte
-                p
-                  | Trys te la posibilidad de ofertar tus tokens con el fin de que estos sean comprados por personas con un interes.
+                p.
+                  Trys te da la posibilidad de poner tus tokens en el mercado, puedes crear una oferta de tus tokens para buscar compradores
+                  que deseen adquirir tus tokens al precio establecido.
         .col-6
           .row.d-flex.justify-content-center
             .card(style='width: 75%')
               .card-body
                 h2 Compra
+                p.
+                  ¿Deseas adquirir tokens? Trys te permite ver ofertas de acuerdo al tipo de token que quieras
+                  y adquirir la que más te guste.
       .row.d-flex.justify-content-center
         a.btn.btn-lg.btn-rounded.btn-danger.m-b-20(href="{% url 'tokens:pools-list' %}") Ver listas
   section.about-section.m-t-50
