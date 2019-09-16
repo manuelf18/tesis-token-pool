@@ -17,7 +17,7 @@ block content
         .row
             .col-12
                 if offers|length is 0
-                    span#no-offers.m-t-30 No hay pozos disponibles
+                    span#no-offers.m-t-30 No hay ofertas disponibles
                 #{offers}
                 #{pool}
                 each offer in offers
@@ -29,7 +29,7 @@ block content
                                         .col-sm-12.col-md-7.text-justify
                                             .row
                                                 .title
-                                                    span Oferta
+                                                    span Oferta ##{forloop.counter}
                                             .row
                                                 .sub-title
                                                     if offer.recentlyCreated
@@ -144,7 +144,10 @@ block extra_js
                             const account = accounts[0];
                             const tk = await App.Controls.stripeInstance.createToken(App.Controls.cardElement);
                             const token = tk.token.id;
-                            App.Requests.getTokens({amount, index, token, key, account});
+                            await App.Requests.getTokens({amount, index, token, key, account});
+                            $('#modalSlideUp').modal('hide');
+                            Swal.fire({title: 'Exito'});
+                            location.reload();
                         } catch(e){
                             console.error(e);
                             Swal.fire({type: 'error', title: e.toString()})

@@ -1,0 +1,12 @@
+extends base_landing
+- load static
+
+block extra_css
+  link(href="{% static 'landing/css/landing-page.css' %}", rel='stylesheet', type='text/css')
+
+block content
+    .container
+        h1 Sobre nosotros
+        .row.p-l-50
+            p.
+                TRYS nace como una idea

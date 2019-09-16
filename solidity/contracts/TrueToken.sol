@@ -5,7 +5,7 @@ import "./lib/ERC20.sol";
 
 contract TrueToken is ERC20 {
     using SafeMath for uint;
-     
+
     string internal _name;
     string internal _symbol;
     uint8 internal _decimals;

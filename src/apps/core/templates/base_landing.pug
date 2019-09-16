@@ -37,8 +37,8 @@ html
           | Trys
       .float-right
         a.m-r-50.navbar-item(href="{% url 'tokens:pools-list' %}") Lista de pozos
-        a.m-r-50.navbar-item(href="/about-us") Sobre nosotros
-        a.m-r-50.navbar-item(href="/about-us") Como funciona
+        a.m-r-50.navbar-item(href="{% url 'profiles:about-us' %}") Sobre nosotros
+        a.m-r-50.navbar-item(href="{% url 'profiles:how-it-works' %}") Como funciona
         a.m-r-50.btn.btn-green(href="{% url 'profiles:login' %}") Login
     block content
     footer.footer.mt-auto

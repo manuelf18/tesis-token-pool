@@ -18,7 +18,6 @@ urlpatterns = [
     path('admin/pool/new', login_required(AdminPoolCreateView.as_view()), name='admin-create-pool'),
     path('admin/token-type/new', login_required(AdminTokenTypeCreateView.as_view()), name='admin-create-token-type'),
 
-
     # AJAX views
     path('pay/withdraw', pay_withdraw_view, name='pay-withdraw'),
 ]

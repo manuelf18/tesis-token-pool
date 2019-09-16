@@ -8,7 +8,7 @@ from ..tokens.models import TokenType
 from .forms import UserModelForm
 
 
-class HomeView(TemplateView):
+class LandingView(TemplateView):
     template_name = 'index.pug'
 
 
@@ -41,3 +41,14 @@ class DashboardView(TemplateView):
         ctx['keys'] = pc.get_pool_keys()
         ctx['pools'] = pc.get_all_pools()
         return ctx
+
+
+class AboutUsView(TemplateView):
+    template_name = 'about-us.pug'
+
+    def get_context_data(self, **kwargs):
+        return super().get_context_data(**kwargs)
+
+
+class HowItWorksView(TemplateView):
+    template_name = 'how-it-works.pug'

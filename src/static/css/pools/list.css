@@ -21,7 +21,7 @@ tbody > tr:hover{
 }
 
 /* pool card */
-.pool-list .title{
+.pool-list .title, .offer-card .title{
     font-size: 30px;
     font-family: 'Montserrat', sans-serif;
     color: black;

@@ -9,8 +9,12 @@
 }
 
 .herotron .contra-header{
-    width: 500px;
-    height: 300px;
+    /* width: 400px;
+    height: 300px; */
+
+    max-width: 70%;
+    max-height: 70%;
+    margin-left: 30%;
 }
 
 /* section */
@@ -19,9 +23,8 @@
     color: white;
 }
 
-.about-section .section-content {
+.about-section .section-content, .testimony-section .section-content {
     margin: 0 100px;
-
 }
 
 .section-content .card, .testimony{
@@ -45,6 +48,10 @@
 
 /* testimony */
 .testimony img{
-    width: 100%;
+    width: 75%;
     object-fit: cover;
+}
+
+.testimony p{
+    font-size: 45px;
 }
