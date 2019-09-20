@@ -1,7 +1,7 @@
+import datetime
 import json
 import os
 import time
-import datetime
 
 import requests
 from web3 import HTTPProvider, Web3
@@ -28,6 +28,14 @@ class Contract:
         r = requests.get('http://localhost:8000/static/json/{}.json'.format(contract_name))
         return r.json()
 
+    def get_current_token_value(self, token_address):
+        r = requests.get('http://express:3000/api/tokens/{}'.format(token_address))
+        price = r.json()['data']['price']
+        return float("{0:.2f}".format(price))
+
+    def get_payment_token_address(self):
+        return '0x66A32B96036C08aD3554d87428af417EF4831B43'
+
 
 class TokenContract(Contract):
     def __init__(self, token_name):
@@ -49,6 +57,18 @@ class TokenContract(Contract):
 
     def transferFrom(self, _from, to, amount):
         return self.contract.functions.transferFrom(_from, to, amount).transact()
+
+    def get_current_token_value(self):
+        return super().get_current_token_value(self.address)
+
+    def get_pool_by_address(self):
+        pc = PoolContract()
+        return pc.get_pool_by_address(self.address)
+
+    @classmethod
+    def get_pool_address(cls):
+        pool = cls('PoolManager')
+        return pool.address
 
 
 class PoolContract(Contract):
@@ -116,7 +136,8 @@ class PoolContract(Contract):
         pools = []
         for key in keys:
             pool = self.get_pool_by_key(key, mapped=True)
-            pools.append(pool)
+            if pool['open']:
+                pools.append(pool)
         return pools
 
     def get_pool_by_key(self, key, mapped=False):
@@ -127,6 +148,13 @@ class PoolContract(Contract):
             pool = self.pool_map(pool)
         return pool
 
+    def get_pool_by_address(self, address):
+        pools = self.get_all_pools()
+        for pool in pools:
+            if pool['tokenAddress'] == address:
+                return pool
+        return None
+
     def pool_map(self, pool):
         return {
             'poolName': pool[0],
@@ -136,6 +164,7 @@ class PoolContract(Contract):
             'open': pool[4],
             'key': pool[5],
             'amountOfOffers': pool[6],
+            'tokenValue': self.get_current_token_value(pool[2])
         }
 
     def offer_map(self, offer):
@@ -150,6 +179,17 @@ class PoolContract(Contract):
             'createdAt': datetime.datetime.fromtimestamp(offer[7]).strftime('%d/%m/%Y'),
             'recentlyCreated': True if int(datetime.datetime.now().strftime('%d')) - int(datetime.datetime.fromtimestamp(offer[7]).strftime('%d')) <= 1 else False
         }
+
+    def get_offers_clean(self, key):
+        offers = self.get_offers_by_key(key)
+        pool = self.get_pool_by_key(key, mapped=True)
+        current_value = self.get_current_token_value(pool['tokenAddress'])
+        for offer in offers:
+            if offer['offeredValue'] <= current_value:
+                offer['offeredValue'] = (0.05 * current_value + current_value)
+            else:
+                offer['offeredValue'] *= (0.10 * current_value + current_value)
+        return offers
 
     def get_offer_statistics(self, offers=[], key=None):
         if len(offers) is 0 and key is None:
@@ -170,5 +210,13 @@ class PoolContract(Contract):
             'average': total/len(offers),
         }
 
+    def create_offer(self, key, email, amount, decimals, account, value, address):
+        offer_value = int(value * 10 ** 2)
+        payment_address = self.get_payment_token_address()
+        return self.contract.functions.createOffer(key, int(amount), decimals, offer_value, email, int(time.time()), address, account, payment_address).transact()
+
     def withdraw_from_offer(self, offer_id, amount, token_address, user_address):
         return self.contract.functions.withdrawFromOffer(offer_id, amount, token_address, user_address).transact()
+
+    def close_pool(self, key):
+        return self.contract.functions.closePool(key).transact()

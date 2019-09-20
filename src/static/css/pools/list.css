@@ -1,19 +1,29 @@
-/* tbody > tr{
-    cursor: pointer;
+.navbar {
+    margin-top: 0 !important;
+    padding: 20px 0;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.20);
+    margin-bottom: 0px !important;
 }
-tbody > tr:hover{
-    background-color: #1abc9c !important;
-} 
-#tableWithSearch{
-    border-collapse: collapse;
+
+h1 {
+    font-weight: bold;
 }
-*/
 
+.card{
+    border-color: black;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
 
-/* containter */
+.info-data{
+    color: black;
+    font-weight: 300;
+}
 
 .main-cont{
-    margin: 0 100px;
+    height: 40em;
+    margin: 50px 50px 0px 50px;
+    padding: 3% 5%;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 }
 
 .flex{
@@ -33,5 +43,5 @@ tbody > tr:hover{
 
 /* extra */
 #no-offers{
-    font-size: 40px;
+    font-size: 20px;
 }

@@ -1,4 +1,4 @@
-extends base_landing
+extends base_client
 -load static
 
 block extra_css
@@ -7,44 +7,51 @@ block extra_css
     link(href='{% static "css/pools/list.css" %}', rel='stylesheet', type='text/css')
     link(href='https://fonts.googleapis.com/css?family=Montserrat:300,400&display=swap', rel='stylesheet')
 
+    style.
+        #transactionList{
+            margin-top: 15px;
+        }
+        #transactionList span{
+            margin-left: 10px;
+            font-size: 16px;
+        }
+        #transactionList .transaction-type{
+            color: green;
+            font-size: 16px;
+        }
 
 block content
-    .main-cont.h-100
-        .row
-            .col-12
-                h1 Lista de pozos
-        .row
-            .col-12
-                //- table#tableWithSearch.table.table-hover.demo-table-search.table-responsive-block.dataTable.no-footer(role='grid')
-                //-     thead
-                //-         tr(role='row')
-                //-             th Nombre del Pozo
-                //-             th Nombre del Token
-                //-             th Fecha de apertura
-                //-             th Cantidad de ofertas
-                //-         tbody
-                if pools|length is 0
-                    span#no-offers.m-t-30 No hay pozos disponibles
-                each pool in pools
-                    #{pool}
-                    if pool.open
-                        .flex.pool-list
-                            .card.col-8.flex-horizontal-center
-                                .card-body
-                                    .row
-                                        .col-sm-12.col-md-7.text-justify
+    .row.h-100(style='background-color: #E6E7EF;')
+        .col-12
+            .main-cont(style='background-color: white;')
+                .row
+                    .col-8
+                        h1 Lista de pozos
+                        if pools|length is 0
+                            span#no-offers.m-t-30 No hay pozos disponibles
+                        each pool in pools
+                            if pool.open
+                                .flex.pool-list
+                                    .card.col-12.flex-horizontal-center
+                                        .card-body
                                             .row
-                                                .title
-                                                    span #{pool.poolName}
-                                            .row
-                                                .sub-title
-                                                    span.label.label-info Abierto: #{pool.startDate}
-                                            .row.m-t-20.pr-md-3
-                                                span.qty-offers Cantidad de ofertas: #{pool.amountOfOffers}
-                                        .col-sm-12.col-md-5.text-right
-                                            if pool.amountOfOffers > 0
-                                                a.btn.btn-green.btn-block.m-t-20(href="{% url 'tokens:pools-offers-list' key=pool.key %}") Ver ofertas
-                                            a.btn.btn-danger.btn-block.m-t-20(href="{% url 'tokens:pools-offers-create' key=pool.key %}") Crear nueva oferta
+                                                .col-sm-12.col-md-7.text-justify
+                                                    .row
+                                                        .title
+                                                            span #{pool.poolName}
+                                                    .row
+                                                        .sub-title
+                                                            span.label.label-info Abierto: #{pool.startDate}
+                                                    .row.m-t-20.pr-md-3
+                                                        span.info-data.qty-offers Valor actual del token: #{pool.tokenValue|currency}
+                                                        br
+                                                        span.info-data.qty-offers Cantidad de ofertas: #{pool.amountOfOffers}
+                                                .col-sm-12.col-md-5.text-right
+                                                    if pool.amountOfOffers > 0
+                                                        a.btn.btn-block.m-t-20(href="{% url 'tokens:pools-offers-list' key=pool.key %}" style='background-color:#087CA7; color:white') Ver ofertas
+                                                    a.btn.btn-danger.btn-block.m-t-20(href="{% url 'tokens:pools-offers-create' key=pool.key %}") Crear nueva oferta
+                    .col-4#transactionList
+                        h2 Transacciones recientes
 
 
 block extra_js
@@ -60,88 +67,46 @@ block extra_js
         (function (){
             var App = {
                 Controls: {
-                    table: $('#tableWithSearch'),
+                    transactionList: $('#transactionList'),
                 },
                 init: async function(){
-                    App.Methods.initTable();
-                    await App.Methods.setDataToTable();
+                    App.Methods.drawTransactions();
                     App.bindEvents();
                 },
                 bindEvents: function(){
-                    $('tbody > tr').on('click', App.eventListeners.onRowClick);
                 },
                 eventListeners:{
-                    onRowClick: function(ev){
-                        const id = $(this).data('id');
-                        if(id === undefined){
-                            Swal.fire({type:'error', title:'id no definido'});
-                            return;
-                        }
-                        window.location.href = `pools/${id}`;
-                    },
                 },
                 Methods: {
-                    initTable: function(){
-                        const SETTINGS = {
-                            "order": [],
-                            "sDom": "<t><'row'<p i>>",
-                            "destroy": true,
-                            "scrollCollapse": true,
-                            "responsive": true,
-                            "createdRow": function( row, data, dataIndex){
-                                $(row).attr('data-id', dataIndex + 1);
-                            },
-                            "oLanguage": {
-                                "sLengthMenu": "Mostrar _MENU_ entradas",
-                                "sInfo": "Mostrando <b>_START_ hasta _END_</b> de _TOTAL_ entradas",
-                                "sInfoEmpty": "-",
-                                "sInfoFiltered": " - filtrando de _MAX_ entradas",
-                                "sEmptyTable": "No hay datos disponible en la tabla",
-                                "sSearch": "Filtrar entradas"
-                            },
-                            "columnDefs": [
-                            ],
-                            "iDisplayLength": 10
-                        };
-                        App.Controls.table.DataTable(SETTINGS);
-                    },
-                    setDataToTable: async function(){
-                        try {
-                            let keys = [];
-                            {% for key in keys %}
-                                keys.push('{{key}}');
-                            {% endfor %}
-                            if(!keys) return;
-                            let networkId = 5777;
-                            let resp = await App.Requests.getContractJSON();
-                            const { abi } = resp
-                            const { address } = resp['networks'][networkId];
-                            const contract = new PoolContractV2(abi, networkId, address);
-                            await contract.setContract();
-                            const pools = await contract.getAllPools(keys);
-                            const table = App.Controls.table.DataTable();
-                            for (const pool of pools){
-                                if(pool['4'] === true){
-                                    table.row.add( [
-                                    pool['0'],
-                                    pool['1'],
-                                    new Date(pool['3']*1000),
-                                    pool['offers']
-                                    ] ).draw( false );
-                                }
+                    drawTransactions: async function(){
+                        try{
+                            const accounts = await App.Methods.getAccounts();
+                            const transaccions = await App.Requests.getTransctionsByAccount(accounts[0]);
+                            if(!transaccions || transaccions.length === 0){
+                                App.Controls.transactionList.append('<span>No hay registros</span>')
                             }
+                            for(const transaccion of transaccions){
+                                if(transaccion.fields.transaction_type === 0)
+                                    App.Controls.transactionList.append(`<span><label class='transaction-type info-data'>OFERTA CREADA</label> por ${transaccion.fields.amount} tokens</span><br>`);
+                                else
+                                    App.Controls.transactionList.append(`<span><label class='transaction-type info-data'>RETIRO</label> de ${transaccion.fields.amount} tokens</span><br>`);
+                            }
+                        } catch(e){
+                            console.error(e);
+                            throw e;
                         }
-                        catch(e){
-                            console.log(e);
-                            return;
-                        }
+                    },
+                    getAccounts: function(){
+                        const web3 = new Web3(Web3.givenProvider);
+                        return web3.eth.getAccounts();
                     },
                 },
                 Requests: {
-                    getContractJSON: function(){
+                    getTransctionsByAccount: function(account){
                         return $.ajax({
+                            url: "{% url 'tokens:ajax-get-transactions' %}",
+                            data: { account },
                             method: 'GET',
-                            url: '/static/json/PoolManager.json'
                         });
                     },
                 },

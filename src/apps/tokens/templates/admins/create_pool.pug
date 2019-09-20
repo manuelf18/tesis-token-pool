@@ -1,16 +1,15 @@
 extends base_admin
-- load static
+- load static utils
 
 block extra_css
     link(rel="stylesheet", href="{% static 'pages/plugins/select2/css/select2.min.css' %}")
     link(rel="stylesheet", href="{% static 'pages/plugins/bootstrap-datepicker/css/datepicker3.css' %}")
 
 block content
-    .row.m-t-20
-        .col-lg-8.m-b-10.d-flex
+    h1(style='color:#004385') Formulario de creación de pozos
+    .row
+        .col-lg-10.m-b-10.d-flex
             .card.card-default
-                .card-header
-                    h2.text-success.no-margin Formulario de creación de pozos
                 .card-body.p-l-25
                     form(action="", method="POST")
                         - csrf_token
@@ -23,40 +22,26 @@ block content
                                         input.form-control(type="text", name="name")
                                 .col-sm-12.col-lg-6
                                     .form-group.form-group-default.required(style='height: 70px;')
-                                        label(for='token_type') Token del pozo
+                                        label(for='token_type') Tipo de token
                                         select.full-width.select-init(name="token_type")
-                                            for token in available_tokens
-                                                option(value='{{token.pk}}'){{token.name}}
-                        p Rango de fechas
-                        .form-group
-                            .row
-                                #datepicker-range.input-daterange.input-group
-                                    .col-sm-12.col-lg-6
-                                        .form-group.form-group-default
-                                            label(for='start') Fecha de inicio
-                                            input.input-sm.form-control(type='text', name='start')
-                                    .col-sm-12.col-lg-6
-                                        .form-group.form-group-default
-                                            label(for='end') Fecha de cierre
-                                            input.input-sm.form-control(type='text', name='end')            
+                                            each token in available_tokens
+                                                option(value='{{token.pk}}'){{token.name}}({{token.value | currency}})
+                        //- p Rango de fechas
+                        //- .form-group
+                        //-     .row
+                        //-         #datepicker-range.input-daterange.input-group
+                        //-             .col-sm-12.col-lg-6
+                        //-                 .form-group.form-group-default
+                        //-                     label(for='start') Fecha de inicio
+                        //-                     input.input-sm.form-control(type='text', name='start')
+                        //-             .col-sm-12.col-lg-6
+                        //-                 .form-group.form-group-default
+                        //-                     label(for='end') Fecha de cierre
+                        //-                     input.input-sm.form-control(type='text', name='end')            
                         .row.m-t-20
                             .col-12
                                 input.float-right.btn.btn-primary(type="submit", value="Enviar")
-        .col-lg-4.m-b-10.d-flex
-            .card.card-default
-                .card-header
-                    h2.text-success.no-margin Ayuda
-                .card-body
-                    p(style='font-size:20px;')
-                        | Llene los siguientes datos con el fin de crear un pozo.
-                        br
-                        br
-                        if used_tokens|length is 0
-                           | Por ahora no existen pozos
-                        else
-                            | Ya existen pozos para los siguientes tipos de tokens:
-
-                        
+                   
 block extra_js
     script(src='{% static "js/Contract.js" %}')
     script(src="{% static 'pages/plugins/select2/js/select2.min.js' %}")

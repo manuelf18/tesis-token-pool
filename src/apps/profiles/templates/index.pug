@@ -3,7 +3,11 @@ extends base_landing
 
 block extra_css
   link(href="{% static 'landing/css/landing-page.css' %}", rel='stylesheet', type='text/css')
-  link(heref)
+  style.
+    #header-pattern{
+      background-color: #DFDBE5;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'%3E%3Cg fill-rule='evenodd'%3E%3Cg id='Artboard-5' fill='%239C92AC' fill-opacity='0.4' fill-rule='nonzero'%3E%3Cpath d='M6 18h12V6H6v12zM4 4h16v16H4V4z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
 
 block content
   .herotron
@@ -16,7 +20,7 @@ block content
         a.btn.btn-lg.btn-rounded.btn-danger.m-b-20.float-right(href="{% url 'tokens:pools-list' %}") Conoce sobre nosotros      
       .col-7
         .float-right
-          img.contra-header(src="{% static 'landing/img/pattern.png' %}", alt="")
+          img.contra-header(src="{% static 'imgs/smiling-girl.jpg' %}", alt="")
   section.about-section.bg-green.m-t-50
     .section-content
       .row
@@ -39,27 +43,4 @@ block content
                   ¿Deseas adquirir tokens? Trys te permite ver ofertas de acuerdo al tipo de token que quieras
                   y adquirir la que más te guste.
       .row.d-flex.justify-content-center
-        a.btn.btn-lg.btn-rounded.btn-danger.m-b-20(href="{% url 'tokens:pools-list' %}") Ver listas
-  //- section.testimony-section.m-t-50
-  //-   .section-header
-  //-     .row
-  //-       .col-12
-  //-         .text-center
-  //-           h1 Testimonios
-  //-   .section-content
-  //-     .row
-  //-       .col-6
-  //-         .testimony
-  //-           img(src="{% static '/landing/img/happy-woman.jpg' %}", alt="")
-  //-       .col-6
-  //-         .testimony
-  //-           .row
-  //-             p(style="font-size: 30px; font-style:italic").
-  //-               "Logré invertir varios tokens que me sobraban dentro de TRYS.
-  //-               Gracias a su facil interfaz pude hacer una buena oferta."
-  //-           .row
-  //-             .col-12
-  //-               .pull-right
-  //-                 span(style="font-size: 20px;")
-  //-                   | -Ana Lopez
-                
+        a.btn.btn-lg.btn-rounded.btn-danger.m-b-20(href="{% url 'tokens:pools-list' %}") Ver pozos

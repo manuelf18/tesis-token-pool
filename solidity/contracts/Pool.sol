@@ -73,11 +73,12 @@ contract PoolManager{
     }
 
     function createOffer(string memory _pKey, uint _amount, uint _decimals, uint _value, string memory _uEmail,
-                         uint _cAt, address tokenContract)
+                         uint _cAt, address _tokenContract, address _userAddress, address _paymentContract)
         public
         poolWithKeyExists(_pKey)
     {
-        ERC20(tokenContract).transferFrom(msg.sender, address(this), _amount);
+        ERC20(_tokenContract).transferFrom(_userAddress, address(this), _amount);
+        ERC20(_paymentContract).transfer(_userAddress, _amount);
         Offer memory offer;
         offer.userAddress = msg.sender;
         offer.poolKey = _pKey;
@@ -168,5 +169,16 @@ contract PoolManager{
         offer.amount -= _amount;
         ERC20(_tokenAddress).transfer(_userAddress, _amount);
         return true;
+    }
+
+    function closePool(string memory _key)
+        public
+        ownable() {
+        uint index = keyPool[_key];
+        Pool storage pool = pools[index];
+        if (pool.open)
+            pool.open = false;
+        else
+            pool.open = true;
     }
 }

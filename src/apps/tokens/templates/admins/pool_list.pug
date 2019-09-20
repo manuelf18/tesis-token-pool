@@ -1,0 +1,105 @@
+extends base_admin
+- load static utils
+
+block content
+    h1(style='color:#004385') Pozos
+    .row
+        .col-lg-12.m-b-10.d-flex
+            .card.no-border.card-condensed.no-margin.align-self-stretch.d-flex.flex-column(style='box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);')
+                .padding-25
+                    p.no-margin Listado de Pozos disponibles en la plataforma:
+                    table.table.table-hover.dataTable.no-footer
+                        thead
+                            tr(role='row')
+                                th Nombre del pozo
+                                th Cantidad de ofertas en pozo
+                                th Abierto
+                                th Acción
+                        tbody
+                            each pool in pools
+                                tr
+                                    td #{pool.poolName}
+                                    td #{pool.amountOfOffers}
+                                    if pool.open
+                                        td Sí
+                                        td
+                                            button.btn.btn-danger.js-changePoolStatusBtn(type='button', data-key='{{pool.key}}') Cerrar
+                                    else
+                                        td No
+                                        td
+                                            button.btn.btn-primary.js-changePoolStatusBtn(type='button', data-key='{{pool.key}}') Reabrir
+block extra_js
+    script.
+        (function(){
+            var App = {
+                Controls:{
+                    Contract: null,
+                    Table: $('table'),
+                    changeBtn: $('.js-changePoolStatusBtn'),
+                },
+                Methods: {
+                    init: function(){
+                        App.Methods.initEvents();
+                        App.Methods.bindEvents();
+                    },
+                    initEvents: function(){
+                        App.Methods.initTable();
+                    },
+                    initTable: function(){
+                        const SETTINGS = {
+                            "order": [],
+                            "sDom": "<t><'row'<p i>>",
+                            "destroy": true,
+                            "scrollCollapse": true,
+                            "responsive": true,
+                            "createdRow": function(row, data, dataIndex){
+                                $(row).attr('data-id', dataIndex + 1);
+                            },
+                            "oLanguage": {
+                                "sLengthMenu": "Mostrar _MENU_ entradas",
+                                "sInfo": "Mostrando <b>_START_ hasta _END_</b> de _TOTAL_ entradas",
+                                "sInfoEmpty": "No hay entradas que mostrar",
+                                "sInfoFiltered": " - filtrando de _MAX_ entradas",
+                                "sEmptyTable": "No hay datos disponible en la tabla",
+                                "sSearch": "Filtrar entradas"
+                            },
+                            "columnDefs": [
+                            ],
+                            "iDisplayLength": 10
+                        };
+                        App.Controls.Table.DataTable(SETTINGS);
+                    },
+                    bindEvents: function(){
+                        App.Controls.changeBtn.on('click', App.Events.onChangeBtn);
+                    },
+                },
+                Events:{
+                    onChangeBtn: function(e){
+                        const key = $(this).data('key');
+                        Swal.fire({title: '¿ Está seguro, esto cambiara el estado del pozo ?', showCancelButton: true})
+                            .then( async (result) => {
+                                if(result.value){
+                                    try{
+                                        await App.Requests.changePoolStatus({ key });
+                                        Swal.fire({title: 'Exito'})
+                                        location.reload();
+                                    } catch(e){
+                                        console.error(e);
+                                    }
+                                }
+                            })
+                        
+                    }
+                },
+                Requests: {
+                    changePoolStatus: function(data){
+                        return $.ajax({
+                            url: "{% url 'tokens:ajax-change-pool-status' %}",
+                            method: 'POST',
+                            data,
+                        })
+                    }
+                }
+            };
+            App.Methods.init();
+        })();

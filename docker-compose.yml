@@ -49,6 +49,17 @@ services:
     hostname: tesis_ganache
     command: sh -c "concurrently 'npm run start-ganache' 'npm run compile' "
     restart: always
-
+  express:
+    build: 
+      context: .
+      dockerfile: ./docker/express/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src/api:/code
+    container_name: tesis_express_01
+    hostname: tesis_express_01
+    command: bash -c "npm install && nodemon app.js"
+    restart: always
 volumes:
   contracts: 

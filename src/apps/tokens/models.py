@@ -4,16 +4,20 @@ from django.utils import timezone
 from ..core.models import AbstractHistory
 from ..profiles.models import User
 from .signals import PoolSignals
-from .contracts import Contract
+from .contracts import TokenContract
 
 
 class TokenType(AbstractHistory):
     name = models.CharField(max_length=50, null=True, blank=True, unique=True,
                             default='', verbose_name="Nombre")
 
+    address = models.CharField(max_length=100, null=True, blank=True, unique=True,
+                               default='', verbose_name="Nombre")
+
     def save(self, *args, **kwargs):
         try:
-            generic_contract = Contract(self.name)
+            tc = TokenContract(self.name)
+            self.address = tc.address
             super().save(self, *args, **kwargs)
         except Exception as e:
             print('hubo un error {}'.format(e))
@@ -46,3 +50,15 @@ class Network(AbstractHistory):
     port = models.CharField(max_length=50, null=True, blank=True,
                             default='', verbose_name="Puerto")
     connected = models.BooleanField(default=False, verbose_name='Conectado')
+
+
+class Transaction(AbstractHistory):
+    DEPOSIT = 0
+    WITHDRAW = 1
+
+    CHOICES = [(DEPOSIT, 0), (WITHDRAW, 1)]
+
+    address = models.CharField(max_length=50, default='', verbose_name='Dirección')
+    transaction_type = models.IntegerField(choices=CHOICES)
+    amount = models.DecimalField(verbose_name='Cantidad de tokens', max_digits=9, decimal_places=4)
+    value = models.DecimalField(verbose_name='Valor de los tokens', max_digits=9, decimal_places=4)

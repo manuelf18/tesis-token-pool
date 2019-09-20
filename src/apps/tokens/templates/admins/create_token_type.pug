@@ -3,23 +3,22 @@ extends base_admin
 
 
 block content
+    h1(style='color:#004385') Nuevo tipo de token
     .row
-        .col-lg-8.m-b-10.d-flex
-            .card.no-border.card-condensed.no-margin.align-self-stretch.d-flex.flex-column
+        .col-lg-10.m-b-10.d-flex
+            .card.no-border.card-condensed.no-margin.align-self-stretch.d-flex.flex-column(style='box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);')
                 .padding-25
                     .pull-left
-                        h2.text-success.no-margin Formulario
-                        p.no-margin Aquí podrá abrir un nuevo pozo
+                        p.no-margin Aquí podrá agregar un nuevo tipo de token a la plataforma
                 .card-body.p-l-25
                     form(action="", method="POST")
                         - csrf_token
-                        p Información basica
                         .form-group
                             .row
-                                .col-12
+                                .col-8
                                     .form-group.form-group-default.required
                                         label(for='name') Nombre del Token
                                         input.form-control(type="text", name="name")
-                            .row.m-t-20
-                                .col-12
-                                    input.float-right.btn.btn-primary(type="submit", value="Enviar")
+                                .col-4
+                                    .m-t-5
+                                        input.btn.btn-primary(type="submit", value="Enviar")

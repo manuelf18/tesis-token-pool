@@ -2,7 +2,6 @@ extends base_admin
 - load static
 
 block extra_css
-    link(href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css", rel='stylesheet', type='text/css')
     style.
         #tableWithSearch{
             border-collapse: collapse;
@@ -45,7 +44,7 @@ block content
                 .padding-25
                     h2.text-success.no-margin Pozos
                     p.no-margin Aquí tienes todos los pozos disponibles:
-                    table#tableWithSearch.table.table-bordered(style='width:100%; margin-top: 1rem;')
+                    table.table.table-hover.dataTable.no-footer
                         thead
                             tr(role='row')
                                 th Nombre del Pozo
@@ -60,10 +59,6 @@ block content
 
 
 block extra_js
-    script(src="{% static 'pages/plugins/Datatables/datatables.min.js' %}", type='text/javascript')
-    script(src='https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js')   
-    script(src='https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.js')
-    script(src='{% static "js/Contract.js" %}')
     script.
         (function(){
             var App = {
@@ -108,7 +103,7 @@ block extra_js
                         "iDisplayLength": 10
                     };
                     App.Controls.Table.DataTable(SETTINGS);
-                    },
+                },
                 bindEvents: function(){
                     $('.btn-js-deposit').on('click', App.eventListeners.onBtnDepositClick);
                     $('.btn-js-withdraw').on('click', App.eventListeners.onBtnWithdrawClick);

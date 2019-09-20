@@ -9,63 +9,47 @@ block extra_css
     link(href='https://fonts.googleapis.com/css?family=Montserrat:300,400&display=swap', rel='stylesheet')
 
 block content
-    .main-cont.h-100
-        .row
-            .col-12
-                .title
-                    h1 Crear nueva oferta
-                .subtitles
-                    span Actualmente conectado desde:
-                    span#userAddress(style='color:green')
-                    br
-                    span Cantidad de #{object.tokenName}s disponible:
-                    span#amountOfTokensAvailable(style='color:green')
-        .row
-            .col-8
-                .card.card-default(style='border:2px solid lightgray;')
-                    .card-header
-                        span Ingrese los siguientes datos:
-                    .card-body
+    .row.h-100(style='background-color: #E6E7EF;')
+        .col-12
+            .main-cont(style='background-color: white;')
+                .row
+                    .col-12
+                        h1 Crear nueva oferta
                         .row
                             .col-6
-                                .form-group.form-group-default
-                                    label(for="value") Valor de los tokens
-                                    input#value.form-control(type="number", name="value")
+                                .card.card-default(style='border:2px solid lightgray;')
+                                    .card-header
+                                        span Ingrese los siguientes datos:
+                                    .card-body
+                                        .row
+                                            .col-6
+                                                .form-group.form-group-default
+                                                    label(for="amount") Cantidad de tokens
+                                                    input#amount.form-control(type="number", name="amount")
+                                            .col-6
+                                                .m-l-10
+                                                    h2 x #{object.tokenValue | currency}
+                                        .row
+                                            .col-12
+                                                .form-group.form-group-default
+                                                    label(for="amount") Email
+                                                    input#email.form-control(type="email", name="email")                                               
+                                        .row
+                                            .col-12
+                                                .float-right
+                                                    button.btn.btn-green.js-create-offer-btn(type='button') Crear nueva oferta
+       
                             .col-6
-                                .form-group.form-group-default
-                                    label(for="amount") Cantidad de tokens
-                                    input#amount.form-control(type="number", name="amount")
-                        .row
-                            .col-12
-                                .form-group.form-group-default
-                                    label(for="email") Correo
-                                    input#email.form-control(type="email", name="email")
-                        .row.m-t-20
-                            .col-12
-                                .float-right
-                                    button.btn.btn-green.js-create-offer-btn(type='button') Crear nueva oferta
-                
-            .col-4
-                .card.card-default(style='border:2px solid lightgray;')
-                    .card-header
-                        h3 Consejos para una buena oferta
-                    .card-body
-                        ol
-                            li Mira los precios de las otras ofertas
-                            li 
-
-
-
-
-
-
-
-                    //-     h2 Mejor oferta
-                    //- .card-body
-                    //-     if offerStats
-                    //-         p(style='color:black') #{offerStats.lowest_offer.qty} tokens por #{offerStats.lowest_offer.value|currency}
-                    //-     else
-                    //-         p(style='color:black') No existen ofertas todavía.
+                                .card.card-default(style='border:2px solid lightgray; padding-bottom: 15px;')
+                                    .card-header
+                                        h3 Información
+                                    .card-body
+                                        .subtitles
+                                            span Conectado desde:
+                                            span#userAddress(style='color:green; font-size:14')
+                                            br
+                                            span Cantidad de #{object.tokenName}s disponible:
+                                            span#amountOfTokensAvailable(style='color:green')
 
 
 block extra_js
@@ -127,9 +111,11 @@ block extra_js
                     },
                     createNewOffer: async function(){
                         try {
-                            const { amount, decimals, email, value } = await App.Validations.getCleanedOfferData();
+                            const { amount, decimals, email } = await App.Validations.getCleanedOfferData();
+                            const account = App.Controls.poolContract.accounts[0];
                             await App.Controls.tokenContract.approve('#{poolContractAddress}', amount);
-                            await App.Controls.poolContract.createOffer('#{object.key}', amount, decimals, value, email, '#{object.tokenAddress}');
+                            //- await App.Controls.poolContract.createOffer( amount, decimals, );
+                            await App.Requests.createTransaction({key:'#{object.key}', amount, decimals, account, email, tokenAddress:'#{object.tokenAddress}'});
                         } catch(e){
                             console.error(e);
                             throw e;
@@ -164,15 +150,23 @@ block extra_js
                             url: `/static/json/${contractName}.json`
                         });
                     },
+                    createTransaction: function(data){
+                        return $.ajax({
+                            method: 'POST',
+                            url: "{% url 'tokens:ajax-create-transaction' %}",
+                            data,
+                        });
+                    },
                 },
                 Validations: {
                     getCleanedOfferData: async function(){
                         try{
                             const email = $('#email').val();
-                            const value = parseFloat($('#value').val()) * 100;
-                            if (App.Utils.countDecimals(value) > 2) throw Error('Error en valor de la oferta');
+                            //- const value = parseFloat($('#value').val()) * 100;
+                            // if (App.Utils.countDecimals(value) > 2) throw Error('Error en valor de la oferta');
                             const { amount, decimals } = await App.Utils.transformToTokenAmount($('#amount').val());
-                            return { amount, decimals, email, value };
+                            //- return { amount, decimals, email, value };
+                            return { amount, decimals, email };
                         } catch(e) {
                             console.error(e);
                             throw e;
