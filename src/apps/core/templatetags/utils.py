@@ -3,6 +3,11 @@ from django.template.defaulttags import register
 
 
 @register.filter
+def decimals(number):
+    number = round(float(number), 2)
+    return "%s%s" % (intcomma(int(number), False), ("%0.2f" % number)[-3:])
+
+
+@register.filter
 def currency(dollars):
-    dollars = round(float(dollars), 2)
-    return "B/.%s%s" % (intcomma(int(dollars), False), ("%0.2f" % dollars)[-3:])
+    return 'B/.{}'.format(decimals(dollars))

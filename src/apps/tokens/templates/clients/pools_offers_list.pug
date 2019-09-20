@@ -11,35 +11,35 @@ block extra_css
 
 block content
     - csrf_token
-    .main-cont.h-100
-        .row
-            .col-12
+    .row.h-100(style='background-color: #AF929D;')
+        .col-12
+            .main-cont(style='background-color: white;')
                 h1 Ofertas de #{object.tokenName}s
-        .row
-            .col-8
-                if offers|length is 0
-                    span#no-offers.m-t-30 No hay ofertas disponibles
-                each offer in offers
-                    if offer.offeredAmount > 0
-                        .flex.offer-card
-                            .card.col-12.flex-horizontal-center
-                                .card-body
-                                    .row
-                                        .col-sm-12.col-md-7.text-justify
+                .row
+                    .col-8
+                        if offers|length is 0
+                            span#no-offers.m-t-30 No hay ofertas disponibles
+                        each offer in offers
+                            if offer.offeredAmount > 0
+                                .flex.offer-card
+                                    .card.col-12.flex-horizontal-center
+                                        .card-body
                                             .row
-                                                .title
-                                                    span Oferta ##{forloop.counter}
-                                            .row
-                                                .sub-title
-                                                    if offer.recentlyCreated
-                                                        span.label.label-danger.m-r-10 Nueva oferta
-                                                    span.label.label-info Creada: #{offer.createdAt}
-                                        .col-sm-12.col-md-5.text-right
-                                            span.offer-info Precio: #{offer.offeredValue|currency}
-                                            br
-                                            span.offer-info Cantidad de tokens: #{offer.offeredAmount}
-                                            input.maxAmount(type="hidden", value='{{offer.offeredAmount}}')
-                                            button.btn.btn-block.btn-warning.js-btn-getTokens(type='button', data-id='{{offer.id}}' data-key='{{offer.poolKey}}', data-value='{{offer.offeredValue}}', data-max-amount='{{offer.offeredAmount}}' data-index='{{offer.index}}') Obtener tokens
+                                                .col-sm-12.col-md-7.text-justify
+                                                    .row
+                                                        .title
+                                                            span Oferta ##{forloop.counter}
+                                                    .row
+                                                        .sub-title
+                                                            if offer.recentlyCreated
+                                                                span.label.label-danger.m-r-10 Nueva oferta
+                                                            span.label.label-info Creada: #{offer.createdAt}
+                                                .col-sm-12.col-md-5.text-right
+                                                    span.offer-info Precio: #{offer.offeredValue|currency}
+                                                    br
+                                                    span.offer-info Cantidad de tokens: #{offer.offeredAmount | decimals }
+                                                    input.maxAmount(type="hidden", value='{{offer.offeredAmount}}')
+                                                    button.btn.btn-block.btn-warning.js-btn-getTokens(type='button', data-id='{{offer.id}}' data-key='{{offer.poolKey}}', data-value='{{offer.offeredValue}}', data-max-amount='{{offer.offeredAmount}}' data-index='{{offer.index}}') Obtener tokens
 
     #modalSlideUp.modal.fade.slide-up.disable-scroll(tabindex="-1" role="dialog" aria-hidden="false")
         .modal-dialog
@@ -143,12 +143,19 @@ block extra_js
                             const account = accounts[0];
                             const tk = await App.Controls.stripeInstance.createToken(App.Controls.cardElement);
                             const token = tk.token.id;
+                            Swal.fire( 
+                            {   title: 'Procesando pago', 
+                                onBeforeOpen: () => { 
+                                    Swal.showLoading();
+                            }});
                             await App.Requests.getTokens({amount, index, token, key, account});
+                            Swal.close();
                             $('#modalSlideUp').modal('hide');
                             Swal.fire({title: 'Exito'});
                             location.reload();
                         } catch(e){
                             console.error(e);
+                            Swal.close();
                             Swal.fire({type: 'error', title: e.toString()})
                         }
                     },

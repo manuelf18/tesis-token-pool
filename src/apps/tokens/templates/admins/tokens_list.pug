@@ -20,7 +20,7 @@ block content
                             each token in tokens
                                 tr
                                     td #{token.name}
-                                    td #{token.balanceOf}
+                                    td #{token.balanceOf | decimals}
                                     td #{token.value | currency}
                                     td 0
                                     if token.hasPool

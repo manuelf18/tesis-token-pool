@@ -2,11 +2,41 @@ extends base_landing
 - load static
 
 block extra_css
-  link(href="{% static 'landing/css/landing-page.css' %}", rel='stylesheet', type='text/css')
+    link(href="{% static 'landing/css/landing-page.css' %}", rel='stylesheet', type='text/css')
+    style.
+        .main-cont{
+            margin: 60px 100px 0;
+            padding: 3%;
+        }
+        .title{
+            font-weight: bold;
+        }
+        p{
+            font-size:17px;
+        }
 
 block content
-    .container
-        h1 Sobre nosotros
-        .row.p-l-50
-            p.
-                TRYS nace como una idea
+    .row.h-100(style='background-color: #AF929D;')
+        .col-12
+            .main-cont(style='background-color: white;')
+                .row
+                    .col-6
+                        h1.title Sobre nosotros
+                        p
+                            | Trys es la primera aplicación web que pertmite el intercambio de activos
+                            | digitales sobre el blockchain de Ethereum.
+                            br
+                            br
+                            | Este proyecto nace por la necesidad de los usuarios de una plataforma que permita a 
+                            span.text-danger compradores 
+                            | e 
+                            span.text-danger inversores 
+                            | encontrar el mejor espacio para cambiar sus tokens.
+                            br
+                            br
+                            | No pierdas la oportunidad, entra, y mira nuestras ofertas
+                            br
+                            br
+                            a.btn.btn-lg.btn-rounded.btn-danger(href="{% url 'tokens:pools-list' %}") Ver pozos
+                    .col-6
+                        img(src="{% static 'imgs/smiling-girl-2.jpg' %}", alt="", style='height: 300px; width: 500px')

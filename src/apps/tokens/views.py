@@ -112,7 +112,7 @@ class AdminTokenTypeList(TemplateView):
         tokens = TokenType.objects.all()
         for token in tokens:
             tc = TokenContract(token.name)
-            token.balanceOf = tc.balanceOf(TokenContract.get_pool_address())
+            token.balanceOf = tc.balanceOf(TokenContract.get_pool_address()) * 10 ** -2
             token.value = tc.get_current_token_value()
             pool_for_token = tc.get_pool_by_address()
             if pool_for_token and pool_for_token['open']:
